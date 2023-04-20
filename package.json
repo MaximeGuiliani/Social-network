@@ -1,0 +1,26 @@
+{
+  "name": "rest-server",
+  "version": "1.0.0",
+  "description": "Node serveur for social regroupement app",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [
+    "node",
+    "restful",
+    "api"
+  ],
+  "author": "Maxime Guiliani",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "knex": "^2.4.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "sqlite3": "^5.1.6"
+  }
+}
