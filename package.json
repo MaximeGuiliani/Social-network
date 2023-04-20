@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --require @babel/register --timeout 5000 --reporter spec --recursive tests/**/*.js",
+    "rapport": "mocha --dry-run --recursive tests/**/*.js",
     "start": "nodemon server.js"
   },
   "keywords": [
@@ -21,6 +22,13 @@
     "knex": "^2.4.2",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.22",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "cls-hooked": "^4.2.2",
+    "sequelize": "^6.31.0",
+  },
+  "devDependencies": {
+    "@babel/register": "^7.21.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
   }
 }
