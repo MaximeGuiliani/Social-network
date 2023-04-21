@@ -47,6 +47,14 @@ class Event extends Model {
             len: [0, 100],
           },
         },
+        date: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          validate: {
+            isDate: true,
+            isAfter: "2022-12-31",    // only allow date strings after 31/12/2022
+          },
+        },
       },
       {
         sequelize,
