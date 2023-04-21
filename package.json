@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha --require @babel/register --timeout 5000 --reporter spec --recursive tests/**/*.js",
     "rapport": "mocha --dry-run --recursive tests/**/*.js",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "index": "node index.js"
   },
   "keywords": [
     "node",
@@ -24,7 +25,7 @@
     "nodemon": "^2.0.22",
     "sqlite3": "^5.1.6",
     "cls-hooked": "^4.2.2",
-    "sequelize": "^6.31.0",
+    "sequelize": "^6.31.0"
   },
   "devDependencies": {
     "@babel/register": "^7.21.0",
