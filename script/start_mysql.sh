@@ -18,7 +18,6 @@ brew services start mysql
 # DEFAULT LOGIN
 # usernam:root password:empty
 
-
 # Creer la database de test:
 # CREATE DATABASE IF NOT EXISTS sn_test_db;
 
