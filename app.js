@@ -4,7 +4,6 @@ import morgan from "morgan";
 import pkg from 'body-parser';
 const { urlencoded, json } = pkg;
 import eventRoutes from "./api/routes/events.js";
-import subscribersRoutes from "./api/routes/subscribers.js";
 import usersRoutes from "./api/routes/users.js";
 
 app.use(morgan("dev"));
@@ -27,7 +26,6 @@ app.use((req, res, next) => {
 
 app.use("/users", usersRoutes);
 app.use("/events", eventRoutes);
-app.use("/subscribers", subscribersRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
