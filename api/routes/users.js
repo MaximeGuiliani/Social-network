@@ -12,6 +12,7 @@ import {
   schemaLoginUser
 } from "../validator/validatorsUsers.js";
 import { myDAO } from "../../app.js";
+import checkAuth from "../middleware/check-auth.js";
 
 router.post("/signup", async (req, res, next) => {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
@@ -79,7 +80,7 @@ router.get("/", async (req, res, next) => {
     });
 });
 
-router.get("/:userName", async (req, res, next) => {
+router.get("/:userName",checkAuth, async (req, res, next) => {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
     res
