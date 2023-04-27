@@ -122,9 +122,14 @@ router.delete("/:eventId", async (req, res, next) => {
   (await myDAO)
     .remove_event_by_id(validId)
     .then(function (result) {
+    if(result==0){
+        res.status(404).json({
+            message: "Event not found",
+          });
+          return;
+    }
       res.status(200).json({
         message: "Deleted event with id : " + validId,
-        result: result,
       });
     })
     .catch(function (err) {
