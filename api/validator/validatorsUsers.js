@@ -12,4 +12,16 @@ const schemaUpdatePassword = Joi.object().keys({
   confirmpassword:Joi.string().valid(Joi.ref('newpassword')).required()
 });
 
-export { schemaUpdatePassword, schemacreateUser };
+
+function validate(validation, res) {
+  if (validation.error) {
+    res.status(400).json({
+      message: "Bad request",
+      error: validation.error,
+    });
+    return null;
+  }
+  return validation.value;
+}
+
+export { schemaUpdatePassword, schemacreateUser, validate };
