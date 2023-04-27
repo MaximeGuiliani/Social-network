@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { User } from "./../../database/models/User.js";
-import { hash } from "bcrypt";
+import { hash,compare } from "bcrypt";
+import pkg from 'jsonwebtoken';
+const { sign } = pkg;
 const router = Router();
 import {
   schemaUpdateUser,
   schemaUsername,
   schemaSignupUser,
   validate,
+  schemaLoginUser
 } from "../validator/validatorsUsers.js";
 import { myDAO } from "../../app.js";
 
@@ -172,8 +175,47 @@ router.delete("/:userName", async (req, res, next) => {
 
 // TODO login
 
-router.post("/signup", async (req, res, next) => {
-  const user = new User(req.body);
+router.post("/login", async (req, res, next) => {
+  const validLoginUser = validate(schemaLoginUser.validate(req.body), res);
+  if (validLoginUser == null) {
+    return;
+  }
+  (await myDAO).get_user_by_email(validLoginUser.email).then((user) => {
+    if (user == null) {
+      return res.status(401).json({
+        message: "Auth failed",
+      });
+    }
+    compare(validLoginUser.password, user.password_hash, (err, result) => {
+      if (err) {
+        return res.status(401).json({
+          message: "Auth failed",
+        });
+      }
+      if (result) {
+        const token = sign(
+          {
+            email: user.email,
+            userId: user.id,
+          },
+          process.env.JWT_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+        return res.status(200).json({
+          message: "Auth successful",
+          token: token,
+        });
+      }
+      return res.status(401).json({
+        message: "Auth failed",
+      });
+    });
+  });
+  
+
+
 });
 
 export default router;
