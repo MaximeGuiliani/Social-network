@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { User } from "./../../database/models/User.js";
 const router = Router();
-import { schemacreateUser } from "../validator/validatorsUsers.js";
+import { schemacreateUser ,validate} from "../validator/validatorsUsers.js";
 import { myDAO } from "../../app.js";
 
 // TODO validation des données
@@ -11,7 +11,7 @@ router.post("/create", async (req, res, next) => {
   // TODO verifier que le username n'apparait pas dans la base
   // TODO verifier que l'email est bien un email valide et qu'il n'est pas déjà utilisé
 
-  const validUser = validate(schemacreateUser.validate(req.body));
+  const validUser = validate(schemacreateUser.validate(req.body),res);
 
   if (validUser == null) {
     return;
@@ -58,17 +58,5 @@ router.delete("/:userName", async (req, res, next) => {
   res.status(200).json({ deletedUser: user });
 });
 
-// Part for validation ______________________
-
-function validate(validation, res) {
-  if (validation.error) {
-    res.status(400).json({
-      message: "Bad request",
-      error: validation.error,
-    });
-    return null;
-  }
-  return validation.value;
-}
 
 export default router;
