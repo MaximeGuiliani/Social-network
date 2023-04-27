@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { User } from "./../../database/models/User.js";
-import { hash,compare } from "bcrypt";
-import pkg from 'jsonwebtoken';
+import { hash, compare } from "bcrypt";
+import pkg from "jsonwebtoken";
 const { sign } = pkg;
 const router = Router();
 import {
@@ -9,10 +9,12 @@ import {
   schemaUsername,
   schemaSignupUser,
   validate,
-  schemaLoginUser
+  schemaLoginUser,
 } from "../validator/validatorsUsers.js";
 import { myDAO } from "../../app.js";
 import checkAuth from "../middleware/check-auth.js";
+
+// (POST) /users/signup
 
 router.post("/signup", async (req, res, next) => {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
@@ -61,6 +63,50 @@ router.post("/signup", async (req, res, next) => {
     });
 });
 
+// (POST) /users/login
+
+router.post("/login", async (req, res, next) => {
+  const validLoginUser = validate(schemaLoginUser.validate(req.body), res);
+  if (validLoginUser == null) {
+    return;
+  }
+  (await myDAO).get_user_by_email(validLoginUser.email).then((user) => {
+    if (user == null) {
+      return res.status(401).json({
+        message: "Auth failed",
+      });
+    }
+    compare(validLoginUser.password, user.password_hash, (err, result) => {
+      if (err) {
+        return res.status(401).json({
+          message: "Auth failed",
+        });
+      }
+      if (result) {
+        const token = sign(
+          {
+            email: user.email,
+            id: user.id,
+          },
+          process.env.JWT_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+        return res.status(200).json({
+          message: "Auth successful",
+          token: token,
+        });
+      }
+      return res.status(401).json({
+        message: "Auth failed",
+      });
+    });
+  });
+});
+
+// (GET) /users
+
 router.get("/", async (req, res, next) => {
   await (
     await myDAO
@@ -80,7 +126,9 @@ router.get("/", async (req, res, next) => {
     });
 });
 
-router.get("/:userName",checkAuth, async (req, res, next) => {
+// (GET) /users/:userName
+
+router.get("/:userName", async (req, res, next) => {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
     res
@@ -113,7 +161,9 @@ router.get("/:userName",checkAuth, async (req, res, next) => {
     });
 });
 
-router.patch("/:userName", async (req, res, next) => {
+// (PATCH) /users/:userName
+
+router.patch("/:userName", checkAuth, async (req, res, next) => {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
     res
@@ -121,11 +171,17 @@ router.patch("/:userName", async (req, res, next) => {
   if (validUsername == null) {
     return;
   }
+  if (validUsername != (await myDAO).get_user_by_id(req.userData.id).userName) {
+    res.status(401).json({
+      message: "Unauthorized access",
+    });
+    return;
+  }
+
   const validUser = validate(schemaUpdateUser.validate(req.body), res);
   if (validUser == null) {
     return;
   }
-  // TODO : vérifier que l'utilisateur est connecté et que c'est bien lui qui modifie son profil
   (await myDAO)
     .update_user_by_username(
       validUsername,
@@ -144,15 +200,24 @@ router.patch("/:userName", async (req, res, next) => {
     });
 });
 
-router.delete("/:userName", async (req, res, next) => {
-  // TODO : vérifier que l'utilisateur est connecté et que c'est bien lui qui suprime son profil
+// (DELETE) /users/:userName
+
+router.delete("/:userName", checkAuth, async (req, res, next) => {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
     res
   );
+
   if (validUsername == null) {
     return;
   }
+  if (validUsername != (await myDAO).get_user_by_id(req.userData.id).userName) {
+    res.status(401).json({
+      message: "Unauthorized access",
+    });
+    return;
+  }
+
   await (
     await myDAO
   )
@@ -172,51 +237,6 @@ router.delete("/:userName", async (req, res, next) => {
         error: err,
       });
     });
-});
-
-// TODO login
-
-router.post("/login", async (req, res, next) => {
-  const validLoginUser = validate(schemaLoginUser.validate(req.body), res);
-  if (validLoginUser == null) {
-    return;
-  }
-  (await myDAO).get_user_by_email(validLoginUser.email).then((user) => {
-    if (user == null) {
-      return res.status(401).json({
-        message: "Auth failed",
-      });
-    }
-    compare(validLoginUser.password, user.password_hash, (err, result) => {
-      if (err) {
-        return res.status(401).json({
-          message: "Auth failed",
-        });
-      }
-      if (result) {
-        const token = sign(
-          {
-            email: user.email,
-            userId: user.id,
-          },
-          process.env.JWT_KEY,
-          {
-            expiresIn: "1h",
-          }
-        );
-        return res.status(200).json({
-          message: "Auth successful",
-          token: token,
-        });
-      }
-      return res.status(401).json({
-        message: "Auth failed",
-      });
-    });
-  });
-  
-
-
 });
 
 export default router;
