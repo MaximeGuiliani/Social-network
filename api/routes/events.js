@@ -7,7 +7,11 @@ import {
   schemaId,
   schemaUpdateEvent,
 } from "../validator/validatorsEvents.js";
+import checkAuth from "../middleware/check-auth.js";
 import { myDAO } from "../../app.js";
+
+
+// (GET) /users
 
 router.get("/", async (req, res, next) => {
   (await myDAO)
@@ -26,8 +30,10 @@ router.get("/", async (req, res, next) => {
     });
 });
 
-router.post("/create", async (req, res, next) => {
-  // TODO : vérifier que l'utilisateur est connecté & prendre l'id de la personne connecté si possible
+// (POST) /users/create
+
+router.post("/create", checkAuth, async (req, res, next) => {
+  req.body.organizerId = req.userData.id;
   const validatedEvent = validate(schemaCreateEvent.validate(req.body), res);
   if (validatedEvent == null) {
     return;
@@ -50,6 +56,8 @@ router.post("/create", async (req, res, next) => {
       });
     });
 });
+
+// (GET) /users/:userName
 
 router.get("/:eventId", async (req, res, next) => {
   const validId = validate(schemaId.validate(req.params.eventId), res);
@@ -78,13 +86,23 @@ router.get("/:eventId", async (req, res, next) => {
     });
 });
 
-router.patch("/:eventId", async (req, res, next) => {
-  // TODO : regarder si l'utilisateur est l'organisateur de l'event
+// (PATCH) /users/:userName
 
+router.patch("/:eventId",checkAuth, async (req, res, next) => {
+  
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
+  
+  if( req.userData.id != (await myDAO).get_event_by_id(validId).organizerId){
+    res.status(401).json({
+      message: "Unauthorized access",
+    });
+    return;
+  }
+  
+  
   const validUpdate = validate(schemaUpdateEvent.validate(req.body), res);
   if (validUpdate == null) {
     return;
@@ -113,12 +131,21 @@ router.patch("/:eventId", async (req, res, next) => {
     });
 });
 
+// (DELETE) /users/:userName
+
 router.delete("/:eventId", async (req, res, next) => {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
-  // TODO : vérifier que l'id de l'event appartiens bien à l'utilisateur connecté
+
+  if( req.userData.id != (await myDAO).get_event_by_id(validId).organizerId){
+    res.status(401).json({
+      message: "Unauthorized access",
+    });
+    return;
+  }
+
   (await myDAO)
     .remove_event_by_id(validId)
     .then(function (result) {
