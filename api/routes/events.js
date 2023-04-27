@@ -1,25 +1,29 @@
 import { Router } from "express";
 import { Event } from "../../database/models/Event.js";
 const router = Router();
-import {schemaCreateEvent} from "../validator/validatorsEvents.js"; 
+import { schemaCreateEvent,schemaId } from "../validator/validatorsEvents.js";
+import { myDAO } from "../../app.js";
 
-
-router.get("/", (req, res, next) => {
-  // TODO recupérer tous les events de la base de données
-  const events = [new Event(), new Event(), new Event()];
-  res.status(200).json({
-    message: "Handling GET requests to /events : returning all events",
-    events: events,
-  });
+router.get("/", async (req, res, next) => {
+  (await myDAO)
+    .get_all_events()
+    .then(function (result) {
+      res.status(200).json({
+        message: "Handling GET requests to /events : returning all events",
+        events: result,
+      });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
-router.post("/create", (req, res, next) => {
-  // TODO : vérifier que l'utilisateur est connecté
-  // TODO : prendre l'id de la personne connecté si possible
-  // TODO : validation des données
-  // TODO : ajouter l'event a la BD si tout est valide
-  
-  const result = schemaCreateEvent.validate(req.body)
+router.post("/create", async (req, res, next) => {
+  // TODO : vérifier que l'utilisateur est connecté & prendre l'id de la personne connecté si possible
+  const result = schemaCreateEvent.validate(req.body);
   if (result.error) {
     res.status(400).json({
       message: "Bad request",
@@ -27,31 +31,58 @@ router.post("/create", (req, res, next) => {
     });
     return;
   }
-
-  const validatedEvent = new Event();
-
-  res.status(201).json({
-    message: "Handling POST requests to /events/create",
-    createdEvent: validatedEvent,
-  });
+  const validatedEvent = new Event(result.value);
+  await (
+    await myDAO
+  )
+    .save_event(validatedEvent)
+    .then(function (result) {
+      res.status(201).json({
+        message: "Handling POST requests to /events/create",
+        createdEvent: validatedEvent,
+      });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
-router.get("/:eventId", (req, res, next) => {
+router.get("/:eventId", async (req, res, next) => {
   const id = req.params.eventId;
-  // TODO : vérifier que l'id est bien un nombre
-  // TODO : vérifier que l'id existe dans la base de données
-  // TODO : récupérer l'event de la base de données
-  const event = new Event();
-  res.status(200).json({
-    message: "Handling GET requests to /events/" + req.params.eventId,
-    event: event,
+  const result = schemaId.validate(id);
+  if (result.error) {
+    res.status(400).json({
+      message: "Bad request",
+      error: result.error,
+    });
+    return;
+  }
+  (await myDAO).get_event_by_id(id).then(function (event) {
+    if(event == null){
+      res.status(404).json({
+        message: "Event not found",
+      });
+      return;
+    }
+    res.status(200).json({
+      message: "Handling GET requests to /events/" + req.params.eventId,
+      event: event,
+    });
+  }).catch(function (err) {
+    res.status(400).json({
+      message: "Bad request",
+      error: err,
+    });
   });
 });
 
 router.patch("/:eventId", (req, res, next) => {
+  // TODO : regarder si l'utilisateur est l'organisateur de l'event
   // TODO : validation des données
   // TODO : vérifier que eventID est un ID
-
   const modifiedEvent = new Event();
 
   res.status(200).json({
