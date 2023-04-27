@@ -1,9 +1,9 @@
 import Joi from "joi";
 
 const schemaCreateEvent = Joi.object().keys({
-  nb_participants: Joi.number().integer().min(1).max(100).required(),
-  categories: Joi.array().items(Joi.string().alphanum().min(3).max(30)),
-  location : Joi.string().alphanum().min(3).max(30).required(),
+  participants_number : Joi.number().integer().min(1).max(100).required(),
+  category: Joi.string().alphanum().min(3).max(30),//Joi.array().items
+  address : Joi.string().alphanum().min(3).max(30).required(),
   description: Joi.string().alphanum().min(0).max(300),
   image_url: Joi.string().alphanum().min(3),
   date: Joi.date().required(),
@@ -12,13 +12,15 @@ const schemaCreateEvent = Joi.object().keys({
 });
 
 const schemaUpdateEvent = Joi.object().keys({
-    nb_participants: Joi.number().integer().min(1).max(100).required(),
-    categories: Joi.array().items(Joi.string().alphanum().min(3).max(30)),
-    location : Joi.string().alphanum().min(3).max(30).required(),
+  participants_number : Joi.number().integer().min(1).max(100).required(),
+  category: Joi.string().alphanum().min(3).max(30),//Joi.array().items
+  address : Joi.string().alphanum().min(3).max(30).required(),
     description: Joi.string().alphanum().min(0).max(300),
     image_url: Joi.string().alphanum().min(3),
     date: Joi.date().required(),
     name: Joi.string().alphanum().min(3).max(30).required(),
 });
 
-export { schemaCreateEvent, schemaUpdateEvent };
+// verify that an objetc is an id
+const schemaId = Joi.number().integer().required();
+export { schemaCreateEvent, schemaUpdateEvent,schemaId };
