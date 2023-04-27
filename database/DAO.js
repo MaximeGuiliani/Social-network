@@ -185,6 +185,12 @@ class DAO {
 		});
 	}
 
+	async  remove_event_by_id(event_id) {
+		return this.sequelize.transaction( t => {
+			return Event.destroy({where: {name: event_id}});
+		});
+	}
+
 
 	//modif d'un event
 	async  update_event_by_name(name, new_name, category, address, description, image_url) {
