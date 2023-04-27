@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { Event } from "../../database/models/Event.js";
 const router = Router();
-import { schemaCreateEvent,schemaId } from "../validator/validatorsEvents.js";
+import {
+  schemaCreateEvent,
+  schemaId,
+  schemaUpdateEvent,
+} from "../validator/validatorsEvents.js";
 import { myDAO } from "../../app.js";
 
 router.get("/", async (req, res, next) => {
@@ -23,15 +27,10 @@ router.get("/", async (req, res, next) => {
 
 router.post("/create", async (req, res, next) => {
   // TODO : vérifier que l'utilisateur est connecté & prendre l'id de la personne connecté si possible
-  const result = schemaCreateEvent.validate(req.body);
-  if (result.error) {
-    res.status(400).json({
-      message: "Bad request",
-      error: result.error,
-    });
+  const validatedEvent = validate(schemaCreateEvent.validate(req.body),res);
+  if (validatedEvent == null) {
     return;
   }
-  const validatedEvent = new Event(result.value);
   await (
     await myDAO
   )
@@ -51,44 +50,61 @@ router.post("/create", async (req, res, next) => {
 });
 
 router.get("/:eventId", async (req, res, next) => {
-  const id = req.params.eventId;
-  const result = schemaId.validate(id);
-  if (result.error) {
-    res.status(400).json({
-      message: "Bad request",
-      error: result.error,
-    });
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null ) {
     return;
   }
-  (await myDAO).get_event_by_id(id).then(function (event) {
-    if(event == null){
-      res.status(404).json({
-        message: "Event not found",
+  (await myDAO)
+    .get_event_by_id(id)
+    .then(function (event) {
+      if (event == null) {
+        res.status(404).json({
+          message: "Event not found",
+        });
+        return;
+      }
+      res.status(200).json({
+        message: "Handling GET requests to /events/" + req.params.eventId,
+        event: event,
       });
-      return;
-    }
-    res.status(200).json({
-      message: "Handling GET requests to /events/" + req.params.eventId,
-      event: event,
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
     });
-  }).catch(function (err) {
-    res.status(400).json({
-      message: "Bad request",
-      error: err,
-    });
-  });
 });
 
-router.patch("/:eventId", (req, res, next) => {
+router.patch("/:eventId", async (req, res, next) => {
   // TODO : regarder si l'utilisateur est l'organisateur de l'event
-  // TODO : validation des données
-  // TODO : vérifier que eventID est un ID
-  const modifiedEvent = new Event();
+  const validUpdate = validate(schemaUpdateEvent.validate(req.body), res);
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null || validUpdate == null) {
+    return;
+  }
 
-  res.status(200).json({
-    message: "Updated event with id " + req.params.eventId,
-    modifiedEvent: modifiedEvent,
-  });
+  (await myDAO)
+    .update_event_by_id(
+      validId,
+      validUpdate.name,
+      validUpdate.category,
+      validUpdate.address,
+      validUpdate.description,
+      validUpdate.image_url
+    )
+    .then(function (modifiedEvent) {
+      res.status(200).json({
+        message: "Updated event with id " + req.params.eventId,
+        modifiedEvent: modifiedEvent,
+      });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
 router.delete("/:eventId", (req, res, next) => {
@@ -99,5 +115,18 @@ router.delete("/:eventId", (req, res, next) => {
     message: "Deleted event with id : " + req.params.eventId,
   });
 });
+
+// Part for validation ______________________
+
+function validate(validation, res) {
+  if (validation.error) {
+    res.status(400).json({
+      message: "Bad request",
+      error: validation.error,
+    });
+    return null;
+  }
+  return validation.value;
+}
 
 export default router;
