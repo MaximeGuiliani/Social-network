@@ -169,6 +169,13 @@ class DAO {
 		});
 	}
 
+	
+	async  get_user_by_email(email) {
+		return this.sequelize.transaction( t => {
+			return User.findOne({where: {email: email}});
+		});
+	}
+	
 
 	//get d'un event par id
 	async get_event_by_id(id) {
