@@ -5,10 +5,21 @@ import pkg from 'body-parser';
 const { urlencoded, json } = pkg;
 import eventRoutes from "./api/routes/events.js";
 import usersRoutes from "./api/routes/users.js";
+import { setup_db } from './database/setup_db.js';
+import { DAO } from './database/DAO.js';
 
 app.use(morgan("dev"));
 app.use(urlencoded({ extended: false }));
 app.use(json());
+
+let sequelize;
+
+
+const myDAO = async function test() {
+  sequelize = await setup_db(true, "prod");
+  return  new DAO(sequelize);
+}();
+export {myDAO};
 
 // handling CORS errors
 app.use((req, res, next) => {
