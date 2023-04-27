@@ -27,7 +27,7 @@ router.get("/", async (req, res, next) => {
 
 router.post("/create", async (req, res, next) => {
   // TODO : vérifier que l'utilisateur est connecté & prendre l'id de la personne connecté si possible
-  const validatedEvent = validate(schemaCreateEvent.validate(req.body),res);
+  const validatedEvent = validate(schemaCreateEvent.validate(req.body), res);
   if (validatedEvent == null) {
     return;
   }
@@ -51,7 +51,7 @@ router.post("/create", async (req, res, next) => {
 
 router.get("/:eventId", async (req, res, next) => {
   const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null ) {
+  if (validId == null) {
     return;
   }
   (await myDAO)
@@ -107,13 +107,26 @@ router.patch("/:eventId", async (req, res, next) => {
     });
 });
 
-router.delete("/:eventId", (req, res, next) => {
-  // TODO : vérifier que eventID est un ID
-  // TODO : verifier que l'event existe dans la base de données
-  // TODO : supprimer l'event de la base de données si tout est valide et que l'utilisateur est l'organisateur de l'event
-  res.status(200).json({
-    message: "Deleted event with id : " + req.params.eventId,
-  });
+router.delete("/:eventId", async (req, res, next) => {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+  // TODO : vérifier que l'id de l'event appartiens bien à l'utilisateur connecté
+  (await myDAO)
+    .remove_event_by_id(validId)
+    .then(function (result) {
+      res.status(200).json({
+        message: "Deleted event with id : " + validId,
+        result: result
+      });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
 // Part for validation ______________________
