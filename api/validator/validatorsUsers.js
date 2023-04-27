@@ -12,6 +12,14 @@ const schemaUpdateUser = Joi.object().keys({
   email: Joi.string().email().required(),
 });
 
+
+const schemaLoginUser = Joi.object().keys({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+});
+
+
+
 const schemaUpdatePassword = Joi.object().keys({
   oldpassword: Joi.string().alphanum().min(3).max(30).required(),
   newpassword: Joi.string().pattern(new RegExp("^[0-9a-f]{64,}$")),
@@ -46,4 +54,5 @@ export {
   validate,
   schemaUsername,
   schemaUpdateUser,
+  schemaLoginUser
 };
