@@ -1,6 +1,6 @@
 // const { DataTypes } = require('sequelize');
 //const sequelize = require('../db.js');
-import { DataTypes, Model} from "sequelize";
+import { DataTypes, Model } from "sequelize";
 
 class User extends Model {
   static init(sequelize) {
@@ -43,8 +43,16 @@ class User extends Model {
         password_hash: {
           type: DataTypes.STRING,
           allowNull: false,
-          validate: {
-            is: /^[0-9a-f]{64,}$/i, // 64 caractères hexadécimaux = 256 bits
+          password_hash: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+              isBcryptHash: function (value) {
+                if (!bcrypt.compareSync("password", value)) {
+                  throw new Error("Invalid password hash");
+                }
+              },
+            },
           },
         },
       },
