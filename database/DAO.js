@@ -187,7 +187,7 @@ class DAO {
 
 	async  remove_event_by_id(event_id) {
 		return this.sequelize.transaction( t => {
-			return Event.destroy({where: {name: event_id}});
+			return Event.destroy({where: {id: event_id}});
 		});
 	}
 
