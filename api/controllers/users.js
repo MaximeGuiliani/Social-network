@@ -10,7 +10,6 @@ import {
 import { hash, compare } from "bcrypt";
 import pkg from "jsonwebtoken";
 const { sign } = pkg;
-import { myDAO } from "../../app.js";
 
 export async function user_signup(req, res, next) {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
