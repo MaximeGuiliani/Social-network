@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Event } from "../../database/models/Event.js";
 const router = Router();
 import {
+  validate,
   schemaCreateEvent,
   schemaId,
   schemaUpdateEvent,
@@ -31,14 +32,15 @@ router.post("/create", async (req, res, next) => {
   if (validatedEvent == null) {
     return;
   }
+  const event = new Event(validatedEvent);
   await (
     await myDAO
   )
-    .save_event(validatedEvent)
+    .save_event(event)
     .then(function (result) {
       res.status(201).json({
         message: "Handling POST requests to /events/create",
-        createdEvent: validatedEvent,
+        createdEvent: event,
       });
     })
     .catch(function (err) {
@@ -55,7 +57,7 @@ router.get("/:eventId", async (req, res, next) => {
     return;
   }
   (await myDAO)
-    .get_event_by_id(id)
+    .get_event_by_id(validId)
     .then(function (event) {
       if (event == null) {
         res.status(404).json({
@@ -78,9 +80,13 @@ router.get("/:eventId", async (req, res, next) => {
 
 router.patch("/:eventId", async (req, res, next) => {
   // TODO : regarder si l'utilisateur est l'organisateur de l'event
-  const validUpdate = validate(schemaUpdateEvent.validate(req.body), res);
+
   const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null || validUpdate == null) {
+  if (validId == null) {
+    return;
+  }
+  const validUpdate = validate(schemaUpdateEvent.validate(req.body), res);
+  if (validUpdate == null) {
     return;
   }
 
@@ -95,8 +101,8 @@ router.patch("/:eventId", async (req, res, next) => {
     )
     .then(function (modifiedEvent) {
       res.status(200).json({
-        message: "Updated event with id " + req.params.eventId,
-        modifiedEvent: modifiedEvent,
+        message: "Updated event with id " + validId,
+        modifiedEvent: validUpdate,
       });
     })
     .catch(function (err) {
@@ -118,7 +124,7 @@ router.delete("/:eventId", async (req, res, next) => {
     .then(function (result) {
       res.status(200).json({
         message: "Deleted event with id : " + validId,
-        result: result
+        result: result,
       });
     })
     .catch(function (err) {
@@ -128,18 +134,5 @@ router.delete("/:eventId", async (req, res, next) => {
       });
     });
 });
-
-// Part for validation ______________________
-
-function validate(validation, res) {
-  if (validation.error) {
-    res.status(400).json({
-      message: "Bad request",
-      error: validation.error,
-    });
-    return null;
-  }
-  return validation.value;
-}
 
 export default router;
