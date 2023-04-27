@@ -201,8 +201,23 @@ class DAO {
 			);
 		});
 	}
+
+	async  update_event_by_id(id, name, category, address, description, image_url) {
+		return this.sequelize.transaction( t => {
+			return Event.update(
+				{
+					name: name,
+					category: category,
+					address: address,
+					description: description,
+					image_url: image_url,
+				},
+				{ where: { id: id } }
+			);
+		});
+	}
 	
-	
+
 	// get d'un event par nom like
 	async  get_events_by_name_like(name) {
 		return this.sequelize.transaction( t => {
