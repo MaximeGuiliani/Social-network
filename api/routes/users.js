@@ -1,17 +1,18 @@
 import { Router } from "express";
 import { User } from "./../../database/models/User.js";
 const router = Router();
-import { schemacreateUser ,validate} from "../validator/validatorsUsers.js";
+import {
+  schemaUpdateUser,
+  schemaUsername,
+  schemacreateUser,
+  validate,
+} from "../validator/validatorsUsers.js";
 import { myDAO } from "../../app.js";
 
-// TODO validation des données
-// TODO Faire des catch pour les erreurs de la base de données
+// TODO : login
 
 router.post("/create", async (req, res, next) => {
-  // TODO verifier que le username n'apparait pas dans la base
-  // TODO verifier que l'email est bien un email valide et qu'il n'est pas déjà utilisé
-
-  const validUser = validate(schemacreateUser.validate(req.body),res);
+  const validUser = validate(schemacreateUser.validate(req.body), res);
 
   if (validUser == null) {
     return;
@@ -39,24 +40,110 @@ router.post("/create", async (req, res, next) => {
 });
 
 router.get("/", async (req, res, next) => {
-  const users = await (await myDAO).get_all_users();
-  res.status(200).json(users);
+  await (
+    await myDAO
+  )
+    .get_all_users()
+    .then(function (users) {
+      res.status(200).json({
+        message: "Handling GET requests to /users : returning all users",
+        users: users,
+      });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
 router.get("/:userName", async (req, res, next) => {
-  const user = await (await myDAO).get_user_by_username(req.params.userName);
-  res.status(200).json(user);
+  const validUsername = validate(schemaUsername.validate(req.params.userName),res);
+  if (validUsername == null) {
+    return;
+  }
+
+  await (
+    await myDAO
+  )
+    .get_user_by_username(validUsername)
+    .then(function (user) {
+      if(user == null){
+        res.status(404).json({
+          message: "User not found",
+        });
+        return;
+      }
+      res.status(200).json(
+        {
+          message: "Handling GET requests to /users/:userName : returning user",
+          user: user
+
+        });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
 router.patch("/:userName", async (req, res, next) => {
-  const user = await (await myDAO).update_user(req.params.userName);
-  res.status(200).json({ deletedUser: user });
+  const validUsername = validate(schemaUsername.validate(req.params.userName),res);
+  if (validUsername == null) {
+    return;
+  }
+  const validUser = validate(schemaUpdateUser.validate(req.body), res);
+  if (validUser == null) {
+    return;
+  }
+  // TODO : vérifier que l'utilisateur est connecté et que c'est bien lui qui modifie son profil
+  (await myDAO)
+    .update_user_by_username(
+      validUsername,
+      validUser.username,
+      validUser.email,
+      validUser.password_hash
+    )
+    .then(function (user) {
+      res.status(200).json({ updatedUser: user });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
 
 router.delete("/:userName", async (req, res, next) => {
-  const user = await (await myDAO).remove_user_by_username(req.params.userName);
-  res.status(200).json({ deletedUser: user });
+    // TODO : vérifier que l'utilisateur est connecté et que c'est bien lui qui suprime son profil
+  const validUsername = validate(schemaUsername.validate(req.params.userName),res);
+  if (validUsername == null) {
+    return;
+  }
+  await (
+    await myDAO
+  )
+    .remove_user_by_username(validUsername)
+    .then(function (user) {
+      if (user == 0) {
+        res.status(404).json({
+          message: "User not found",
+        });
+        return;
+        
+      }
+      res.status(200).json({ deletedUser: validUsername });
+    })
+    .catch(function (err) {
+      res.status(400).json({
+        message: "Bad request",
+        error: err,
+      });
+    });
 });
-
 
 export default router;
