@@ -8,8 +8,7 @@ import {
 import { myDAO } from "../../app.js";
 
 export async function event_get_all(req, res, next) {
-  (await myDAO)
-    .get_all_events()
+   myDAO.get_all_events()
     .then(function (result) {
       res.status(200).json({
         message: "Handling GET requests to /events : returning all events",
@@ -32,9 +31,7 @@ export async function event_create(req, res, next) {
     return;
   }
   const event = new Event(validatedEvent);
-  await (
-    await myDAO
-  )
+  await myDAO
     .save_event(event)
     .then(function (result) {
       res.status(201).json({
@@ -55,7 +52,7 @@ export async function event_get_by_id(req, res, next) {
   if (validId == null) {
     return;
   }
-  (await myDAO)
+  await myDAO
     .get_event_by_id(validId)
     .then(function (event) {
       if (event == null) {
@@ -95,7 +92,7 @@ export async function event_update(req, res, next) {
     return;
   }
 
-  (await myDAO)
+  await myDAO
     .update_event_by_id(
       validId,
       validUpdate.name,
@@ -124,14 +121,14 @@ export async function event_delete(req, res, next) {
     return;
   }
 
-  if (req.userData.id != (await myDAO).get_event_by_id(validId).organizerId) {
+  if (req.userData.id != await myDAO.get_event_by_id(validId).organizerId) {
     res.status(401).json({
       message: "Unauthorized access",
     });
     return;
   }
 
-  (await myDAO)
+  await myDAO
     .remove_event_by_id(validId)
     .then(function (result) {
       if (result == 0) {

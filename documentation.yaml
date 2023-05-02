@@ -1,0 +1,606 @@
+openapi: 3.0.0
+servers:
+  - description: social network API
+    url: https://virtserver.swaggerhub.com/MAXIMEGUILIANI_1/DocSN/1.1.0
+info:
+  version: 1.1.0
+  title: SN-api
+  description: The API for the EatBacon IOT project
+paths:
+  /home:
+    options:
+      tags: 
+      - TODO
+      summary: Supprimer un utilisateur
+      description: Supprime un utilisateur stocké dans la base de données.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+  /Search:
+    options:
+      tags: 
+      - TODO
+      summary: Rechercher un utilisateur avec une ou plusieur option précise.
+      description: Recherche un utilisateur avec une ou plusieur option précise.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+                    
+  /myevents:
+    options:
+      tags: 
+      - TODO
+      summary: Liste de mes evenements créés
+      description: Liste de mes evenements créés
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+  /myParticipation:
+    options:
+      tags: 
+      - TODO
+      summary: Liste de mes evenements créés
+      description: Liste de mes evenements créés
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+  /events:
+    get:
+      tags: 
+      - Events
+      summary: Récupérer tous les événements
+      description: Retourne tous les événements stockés dans la base de données.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+                  events:
+                    type: array
+                    description: Liste de tous les événements.
+                    items:
+                      $ref: '#/components/schemas/Event'
+        400:
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+  /events/{id}:
+    get:
+      tags: 
+      - Events
+      summary: Récupérer un événement
+      description: Retourne un événement stocké dans la base de données.
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'événement à récupérer
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+                  event:
+                    $ref: '#/components/schemas/Event'
+        400:
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+        404:
+          description: Événement non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+    patch:
+      tags: 
+      - Events
+      security:
+        - BearerAuth: []
+      summary: Mettre à jour un événement
+      description: Permet à un utilisateur de mettre à jour un événement
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'événement à mettre à jour
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        description: Objet représentant les informations de l'événement à mettre à jour
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdate'
+      responses:
+        '200':
+          description: Événement mis à jour avec succès
+        '400':
+          description: Données de l'événement invalides
+        '404':
+          description: Événement non trouvé
+        '500':
+          description: Erreur interne du serveur
+    delete:
+      tags: 
+      - Events
+      security:
+        - BearerAuth: []
+      summary: Supprimer un événement
+      description: Permet à un utilisateur de supprimer un événement
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'événement à supprimer
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Événement supprimé avec succès
+        '404':
+          description: Événement non trouvé
+        '500':
+          description: Erreur interne du serveur
+
+  /events/create:
+    post:
+      tags: 
+      - Events
+      security:
+        - BearerAuth: []
+      summary: Créer un événement
+      description: Permet à un utilisateur de créer un événement
+      requestBody:
+        description: Objet représentant les informations de l'événement à créer
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '201':
+          description: Événement créé avec succès
+        '400':
+          description: Données de l'événement invalides
+        '500':
+          description: Erreur interne du serveur
+
+  /users/signup:
+    post:
+      tags: 
+      - Users
+      security:
+        - BearerAuth: []
+      summary: Inscription d'un utilisateur
+      description: Permet à un utilisateur de s'inscrire à l'application
+      requestBody:
+        description: Objet représentant les informations de l'utilisateur à créer
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignup'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Données de l'utilisateur invalides
+        '409':
+          description: Nom d'utilisateur déjà utilisé
+        '500':
+          description: Erreur interne du serveur
+          
+  /users/login :     
+    post:
+      tags: 
+      - Users
+      summary: Connectez-vous en tant qu'utilisateur enregistré
+      description: Connectez-vous en utilisant un email et un mot de passe valides. Si     l'authentification réussit, un jeton d'accès est renvoyé dans la réponse.
+      requestBody:
+        description: Les informations de connexion de l'utilisateur
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+      responses:
+        '200':
+          description: Succès de l'authentification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        '401':
+          description: Échec de l'authentification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Erreur interne du serveur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users :
+    get:
+      tags: 
+      - Users
+      summary: Récupérer tous les utilisateurs
+      description: Retourne tous les utilisateurs stockés dans la base de données.
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+                  users:
+                    type: array
+                    description: Liste de tous les utilisateurs.
+                    items:
+                      $ref: '#/components/schemas/User'
+        400:
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+  /users/{id}:
+    get:
+      tags: 
+      - Users
+      summary: Récupérer un utilisateur
+      description: Retourne un utilisateur stocké dans la base de données.
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur à récupérer
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+                  user:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+        404:
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+    patch:
+      tags: 
+      - Users
+      summary: Mettre à jour un utilisateur
+      description: Met à jour un utilisateur stocké dans la base de données.
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur à mettre à jour
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        description: Objet représentant les informations de l'utilisateur à mettre à jour
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+                  user:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+      security:
+        - BearerAuth: []
+    delete:
+      tags: 
+      - Users
+      summary: Supprimer un utilisateur
+      description: Supprime un utilisateur stocké dans la base de données.
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur à supprimer
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message de réussite.
+        400:
+          description: Requête invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+        404:
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message d'erreur.
+                  error:
+                    type: string
+                    description: Description de l'erreur.
+      security:
+        - BearerAuth: []
+
+
+
+                    
+components:
+
+  securitySchemes:
+    BearerAuth:         
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+      
+      
+  schemas:
+ 
+    User :
+      type: object
+      properties:
+        id:
+          type: integer
+        score_host:
+          type: integer
+          minimum: 1
+          maximum: 5
+        score_participant:
+          type: integer
+          minimum: 1
+          maximum: 5
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - username
+        - email
+    Event:
+      type: object
+      properties:
+        participants_number:
+          type: integer
+        address:
+          type: string
+        date:
+          type: string
+          format: date-time
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        organizerId:
+          type: integer
+
+    UserSignup :
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 2
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        
+      required:
+        - username
+        - email
+        - password
+        
+    
+    LoginUser :
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - email
+        - password
+  
+    EventUpdate:
+      type: object
+      properties:
+        participants_number:
+          type: integer
+        address:
+          type: string
+        date:
+          type: string
+          format: date-time
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        organizerId:
+          type: integer
