@@ -18,7 +18,7 @@ export async function user_signup(req, res, next) {
   }
   // TODO : verifier que l'email n'est pas déjà utilisé pareil que pour le username
 
-  (await myDAO)
+  await myDAO
     .get_user_by_username(validUser.username)
     .then((result) => {
       if (result != null) {
@@ -32,7 +32,7 @@ export async function user_signup(req, res, next) {
               error: err,
             });
           } else {
-            (await myDAO)
+            await myDAO
               .add_user(validUser.username, validUser.email, hash)
               .then((result) => {
                 console.log(result);
@@ -63,7 +63,7 @@ export async function user_login(req, res, next) {
   if (validLoginUser == null) {
     return;
   }
-  (await myDAO).get_user_by_email(validLoginUser.email).then((user) => {
+  await myDAO.get_user_by_email(validLoginUser.email).then((user) => {
     if (user == null) {
       return res.status(401).json({
         message: "Auth failed",
@@ -99,9 +99,7 @@ export async function user_login(req, res, next) {
 }
 
 export async function user_get_all(req, res, next) {
-  await (
-    await myDAO
-  )
+  await myDAO
     .get_all_users()
     .then(function (users) {
       res.status(200).json({
@@ -126,9 +124,7 @@ export async function user_get_by_username(req, res, next) {
     return;
   }
 
-  await (
-    await myDAO
-  )
+  await myDAO
     .get_user_by_username(validUsername)
     .then(function (user) {
       if (user == null) {
@@ -158,7 +154,7 @@ export async function user_update(req, res, next) {
   if (validUsername == null) {
     return;
   }
-  if (validUsername != (await myDAO).get_user_by_id(req.userData.id).userName) {
+  if (validUsername != await myDAO.get_user_by_id(req.userData.id).userName) {
     res.status(401).json({
       message: "Unauthorized access",
     });
@@ -169,7 +165,7 @@ export async function user_update(req, res, next) {
   if (validUser == null) {
     return;
   }
-  (await myDAO)
+  await myDAO
     .update_user_by_username(
       validUsername,
       validUser.username,
@@ -196,16 +192,14 @@ export async function user_delete(req, res, next) {
   if (validUsername == null) {
     return;
   }
-  if (validUsername != (await myDAO).get_user_by_id(req.userData.id).userName) {
+  if (validUsername != await myDAO.get_user_by_id(req.userData.id).userName) {
     res.status(401).json({
       message: "Unauthorized access",
     });
     return;
   }
 
-  await (
-    await myDAO
-  )
+  await myDAO
     .remove_user_by_username(validUsername)
     .then(function (user) {
       if (user == 0) {

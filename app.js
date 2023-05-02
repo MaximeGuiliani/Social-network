@@ -15,9 +15,9 @@ app.use(json());
 let sequelize;
 
 
-const myDAO = async function test() {
+const myDAO = await async function test() {
   sequelize = await setup_db(true, "prod");
-  return  new DAO(sequelize);
+  return new DAO(sequelize);
 }();
 export {myDAO};
 
