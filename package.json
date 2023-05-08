@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha --require @babel/register --timeout 5000 --reporter spec --recursive tests/**/*.js",
-    "rapport": "mocha --dry-run --recursive tests/**/*.js",
+    "test": "mocha --require @babel/register --timeout 5000 --reporter spec --recursive test/**/*.js",
+    "one": "mocha --require @babel/register --timeout 5000 --reporter spec test/test_only_one.js",
     "start": "nodemon server.js",
     "index": "node index.js"
   },
@@ -33,6 +33,7 @@
   "devDependencies": {
     "@babel/register": "^7.21.0",
     "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
     "mocha": "^10.2.0"
   }
 }
