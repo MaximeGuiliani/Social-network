@@ -1,4 +1,4 @@
-import { User, Event } from "./models/index.js";
+import { User, Event, MainCategory, Address, Note, EventMessage } from "./models/index.js";
 import { Op } from "sequelize";
 
 
@@ -11,40 +11,90 @@ class DAO {
 	
 	/*----------------------------VERY USEFUL----------------------------*/
 	
+	//ajout d'une main categoty
+	async add_main_category(name) {
+		return this.sequelize.transaction( t => {
+			return MainCategory.create({name});
+		});
+	}
+
+	// get all the main categories
+	async get_all_main_categories() {
+		return this.sequelize.transaction(t=> {
+			return MainCategory.findAll({attributes: {exclude: ['createdAt', 'updatedAt']}});
+		});
+	}
+
+	// get des main cat par nom like
+	async  get_main_categories_by_name_like(name) {
+		return this.sequelize.transaction( t => {
+			return MainCategory.findAll({
+				where: {
+					name: {
+						[Op.like]: `%${name}%`,
+					},
+				}
+			});
+		});
+	}
+
+	// get d'une main cat par nom 
+	async  get_main_categoty_by_name(name) {
+		return this.sequelize.transaction( t => {
+			return MainCategory.findOne({where: {name: name}});
+		});
+	}
+	
+
 	//ajout d'un utilisateur
-	async add_user(username, email, password_hash, score_host = null, score_participant = null) {
+	async add_user({username, email, password_hash, bio, picture=null}) {
 		return this.sequelize.transaction( t => {
 			return User.create({
 				username: username,
 				email: email,
 				password_hash: password_hash,
-				score_host: score_host,
-				score_participant: score_participant,
+				bio: bio,
+				picture : picture,
 			});
 		});
 	}
 
 	//ajout d'un event
-	async  save_event(event) {
-		return this.sequelize.transaction( t => {
-			return event.save();
+	async  save_event({participants_number, category, description, name, date, organizerId, MainCategoryId, image_url=null, address:{street, city, country, zip}}) {
+		return this.sequelize.transaction( async t => {
+			const {id} = await Address.create({
+				street,
+				city,
+				country,
+				zip,
+			});
+			return Event.create({
+				participants_number,
+				category,
+				description,
+				name,
+				date,
+				organizerId,
+				MainCategoryId,
+				image_url,
+				AddressId : id
+			});
 		});
 	}
 
 	//get d'events par places restantes, catégorie, lieu, date, etc
-	async get_events_by_filters({nb_places_wanted, category, range_places, address, description, event_name, username, range_date, score_host_min}) {
+	async get_events_by_filters({nb_places_wanted, category, range_places, address, description, event_name, username, range_date, score_host_min, MainCategoryId}) {
 		let info = {
 			attributes: [
 				'id',
 				'name',
 				'participants_number',
 				'category',
-				'address',
 				'description',
 				'image_url',
-				'organizerId',
 				'date',
-				[this.sequelize.literal('participants_number - COUNT(UserId)'), 'nb_places_left'],
+				'MainCategoryId',
+				[this.sequelize.literal('participants_number - COUNT( DISTINCT UserId)'), 'nb_places_left'],
 			],
 			include: [
 				{
@@ -56,8 +106,26 @@ class DAO {
 				{
 					model: User,
 					as: 'organizer',
-					attributes: ['score_host', 'score_participant', 'username', 'email']
+					attributes: ['id', 'username'],
+					include: [{
+						model: Note,
+						as: 'receivedNotes',
+						attributes: [
+							//'value',
+							//'type',
+							[this.sequelize.literal('AVG(value)'), 'score_host'],
+						],
+						where: {type:0}
+					}],
 				},
+				// {
+				// 	model: MainCategory,
+				// 	attributes: { exclude: ['createdAt', 'updatedAt'] }
+				// },
+				{
+					model: Address,
+					attributes: { exclude: ['createdAt', 'updatedAt'] }
+				}
 			],
 			group: ['Event.id'],
 			having: {
@@ -66,14 +134,21 @@ class DAO {
 		}
 
 		if(nb_places_wanted !== undefined) info.having[Op.and].push(   {'nb_places_left': {[Op.gte]: nb_places_wanted}}                                                                                    );
-		if(category !== undefined) info.having[Op.and].push(           this.sequelize.where(this.sequelize.fn('LOWER', this.sequelize.col('category')), Op.like, `%${category.toLowerCase()}%`)            );
+		if(category !== undefined) info.having[Op.and].push(           {'category' : {[Op.like] : `%${category}%`}}      );
 		if(range_places !== undefined) info.having[Op.and].push(       { participants_number: {[Op.between]: [range_places.min, range_places.max]} }                                                       );
-		if(address !== undefined) info.having[Op.and].push(            this.sequelize.where(this.sequelize.fn('LOWER', this.sequelize.col('address')), Op.like, `%${address.toLowerCase()}%`)              );
-		if(description !== undefined) info.having[Op.and].push(        this.sequelize.where(this.sequelize.fn('LOWER', this.sequelize.col('description')), Op.like, `%${description.toLowerCase()}%`)      );
-		if(event_name !== undefined) info.having[Op.and].push(         this.sequelize.where(this.sequelize.fn('LOWER', this.sequelize.col('name')), Op.like, `%${event_name.toLowerCase()}%`)              );
-		if(username !== undefined) info.having[Op.and].push(           this.sequelize.where(this.sequelize.fn('LOWER', this.sequelize.col('organizer.username')), Op.like, `%${username.toLowerCase()}%`)  );
+		if(MainCategoryId !== undefined) info.having[Op.and].push(     {'MainCategoryId': {[Op.eq] : MainCategoryId }}      );
+		if(description !== undefined) info.having[Op.and].push(        {'description': {[Op.like] : `%${description}%`}}      );
+		if(event_name !== undefined) info.having[Op.and].push(         {'name': {[Op.like] : `%${event_name}%`}}      );
+		if(username !== undefined) info.having[Op.and].push(           {'organizer.username': {[Op.like] : `%${username}%`}}      );
 		if(range_date !== undefined) info.having[Op.and].push(         { date : {[Op.lte]: range_date.max, [Op.gte]: range_date.min} }                                                                     );
-		if(score_host_min !== undefined) info.having[Op.and].push(     { 'organizer.score_host': {[Op.or]: {[Op.gte]: score_host_min, [Op.eq]: null} } }                                                   ); //ici on fait le choix d'inclure les event d'organisateurs qui n'ont pas de score
+		if(score_host_min !== undefined) info.having[Op.and].push(     { 'organizer.receivedNotes.score_host': {[Op.or]: {[Op.gte]: score_host_min, [Op.eq]: null} } }                                                   ); //ici on fait le choix d'inclure les event d'organisateurs qui n'ont pas de score
+		if(address){
+			const {street, city, country, zip} = address
+			if(street !== undefined) info.having[Op.and].push(             {'Address.street' : {[Op.like] : `%${street}%`}}      );
+			if(city !== undefined) info.having[Op.and].push(               {'Address.city'   : {[Op.like] : `%${city}%`}}        );
+			if(country !== undefined) info.having[Op.and].push(            {'Address.country': {[Op.like] : `%${country}%`}}     );
+			if(zip !== undefined) info.having[Op.and].push(                {'Address.zip'    : {[Op.like] : `%${zip}%`}}         );
+		}
 
 		return this.sequelize.transaction(t => {
 			return Event.findAll(info);
@@ -83,30 +158,45 @@ class DAO {
 
 
 	// get user avec ses event associés
-	async get_user_with_related_events({id, include_organizedEvents = false, include_candidateEvents = false, include_participantEvents = false}) {
+	async get_user_with_related_events({id, include_organizedEvents = false, include_candidateEvents = false, include_participantEvents=false, include_givenNotes = false, include_receivedNotes=false, include_messages=false }) {
 		const include = [];
 		if(id===undefined) throw new Error('id cannot be undefined');
-		if (include_organizedEvents===true)   include.push({ model: Event, as: 'organizedEvents', attributes: { exclude: ['createdAt', 'updatedAt'] } }); // Otherway, can be false or undefined
-		if (include_candidateEvents===true)   include.push({ model: Event, as: 'candidateEvents', attributes: { exclude: ['createdAt', 'updatedAt'] }, through: {attributes: []} });
-		if (include_participantEvents===true) include.push({ model: Event, as: 'participantEvents', attributes: { exclude: ['createdAt', 'updatedAt'] }, through: {attributes: []} });
+		if (include_organizedEvents===true)   include.push({ model: Event, as: 'organizedEvents', attributes: { exclude: ['createdAt', 'updatedAt'] }, include:[{model: MainCategory, attributes: { exclude: ['createdAt', 'updatedAt'] }},{model: Address, attributes: { exclude: ['createdAt', 'updatedAt'] }}]  }); // Otherway, can be false or undefined
+		if (include_candidateEvents===true)   include.push({ model: Event, as: 'candidateEvents', attributes: { exclude: ['createdAt', 'updatedAt'] }, through: {attributes: []}, include:[{model: MainCategory, attributes: { exclude: ['createdAt', 'updatedAt'] }},{model: Address, attributes: { exclude: ['createdAt', 'updatedAt'] }}]  });
+		if (include_participantEvents===true) include.push({ model: Event, as: 'participantEvents', attributes: { exclude: ['createdAt', 'updatedAt'] }, through: {attributes: []}, include:[{model: MainCategory, attributes: { exclude: ['createdAt', 'updatedAt'] }},{model: Address, attributes: { exclude: ['createdAt', 'updatedAt'] }}]});
+		if (include_givenNotes===true)        include.push({ model: Note, as: 'givenNotes'    , attributes: { exclude: ['createdAt', 'updatedAt', ] }, /*include:[{model: User,  as: '', attributes: { exclude: ['createdAt', 'updatedAt'] }}, ]*/ });
+		if (include_receivedNotes===true)     include.push({ model: Note, as: 'receivedNotes' , attributes: { exclude: ['createdAt', 'updatedAt', ] }, /*include:[{model: Event, as: '', attributes: { exclude: ['createdAt', 'updatedAt'] }}, ]*/ });
+		if (include_messages===true)          include.push({ model: EventMessage, as: 'messages', attributes: { exclude: ['createdAt', 'updatedAt', ] }, include:[{model: Event,as: 'event',attributes: ["name"]}] });
 
 		return this.sequelize.transaction(async t => {
 			return await User.findOne({
-				attributes: { exclude: ['createdAt', 'updatedAt'] },
+				attributes: { exclude: ['createdAt', 'updatedAt', 'password_hash'] },
 				where: { id: id },
 				include: include
 			});
 		});
 	}
 	
+
+	
+
+
 	
 	// eager loading paramtétré pour un event
-	async get_event_with_related_users({eventId, include_organizer = false, include_candidates = false, include_participants = false}) {
-		const include = [];
+	async get_event_with_related_users({eventId, include_organizer = false, include_candidates = false, include_participants = false, include_notes=false, include_messages=false /*, include_Address=false, include_MainCategory=false*/}) {
+		const include = [
+			{model: MainCategory, attributes: { exclude: ['createdAt', 'updatedAt'] }},
+			{model: Address, attributes: { exclude: ['createdAt', 'updatedAt'] }}
+		];
+
 		if(eventId===undefined) throw new Error('eventId cannot be undefined');
 		if(include_organizer===true)    include.push({ model: User, as: 'organizer', attributes: {exclude: ['createdAt', 'updatedAt', 'password_hash']}   });
 		if(include_candidates===true)   include.push({ model: User, as: 'candidates', attributes: {exclude: ['createdAt', 'updatedAt', 'password_hash']}, through: {attributes: []}  });
 		if(include_participants===true) include.push({ model: User, as: 'participants', attributes: {exclude: ['createdAt', 'updatedAt', 'password_hash']}, through: {attributes: []} });
+		if(include_notes===true)        include.push({ model: Note, as: 'notes'       , attributes: {exclude: ['createdAt', 'updatedAt', 'type']}  });
+		if (include_messages===true)    include.push({ model: EventMessage, as: 'messages', attributes: { exclude: ['createdAt', 'updatedAt', ] }, include:[{model: User,as: 'owner',attributes: ["username"]} ] });
+		// if(include_Address===true)      include.push({ model: Address,      attributes: {exclude: ['createdAt', 'updatedAt']}, });
+		// if(include_MainCategory===true) include.push({ model: MainCategory, attributes: {exclude: ['createdAt', 'updatedAt']}, });
 		
 		return this.sequelize.transaction( t => {
 			return Event.findOne({
@@ -131,7 +221,158 @@ class DAO {
 			return User.findAll({attributes: {exclude: ['createdAt', 'updatedAt', 'password_hash']}});
 		});
 	}
+
+	//add note à un participant
+	async add_note_from_host({creationDate, ownerId, eventId, targetId, value, title=null, comment=null }) {
+		return this.sequelize.transaction(async t=> {
+			if(! await this.note_participant_is_possible({ownerId, targetId, eventId})) throw new Error("Cette note ne respecte pas les règles de coherence");
+			return Note.create({
+				type:1,
+				creationDate,
+				ownerId,
+				eventId,
+				targetId,
+				title,
+				comment,
+				value,
+			});
+		});
+	}
+
+
+	//add note à un event
+	async add_note_from_participant({creationDate, ownerId, eventId, value, title=null, comment=null }) {
+		return this.sequelize.transaction(async t=> {
+			const {organizerId} = await this.get_event_by_id(eventId);
+			if(! await this.note_host_is_possible({ownerId, targetId:organizerId, eventId})) throw new Error("Cette note ne respecte pas les règles de coherence");
+			return Note.create({
+				type:0,
+				creationDate,
+				ownerId,
+				eventId,
+				targetId : organizerId,
+				title,
+				comment,
+				value,
+			});
+		});
+	}
+
 	
+	async note_participant_is_possible({ownerId, targetId, eventId}) {
+		return this.sequelize.transaction(async t=> {
+			const events = await Event.findAll({
+				include: [{
+					model: User,
+					as: 'participants',
+					where:{
+						id:targetId
+					},
+					attributes: ["username"],
+					through: {attributes: []},
+				}],
+				where: {
+					id: eventId,
+					organizerId:ownerId,
+				},
+				attributes: ["name"],
+			});
+
+			// console.log("<--->\n" + JSON.stringify(events, null, 2).toString());
+			return events.length !== 0
+		});
+	}
+
+
+	async note_host_is_possible({ownerId, targetId, eventId}) {
+		return this.sequelize.transaction(async t=> {	
+			const events = await Event.findAll({
+				include: [{
+					model: User,
+					as: 'participants',
+					where:{
+						id:ownerId
+					},
+					attributes: ["username"],
+					through: {attributes: []},
+				}],
+				where: {
+					id: eventId,
+					organizerId:targetId,
+				},
+				attributes: ["name"],
+			});
+
+			// console.log("<--->\n" + JSON.stringify(events, null, 2).toString());
+			return events.length !== 0
+		});
+	}
+
+
+	// add message to conversation(event)
+	async add_message({userId, eventId, content}) {
+		return this.sequelize.transaction( async t => {
+			if(! await this.message_is_possible({userId, eventId})) throw new Error("Ce message ne respecte pas les règles de coherence");
+			return EventMessage.create({
+				userId,
+				eventId,
+				content,
+			});
+		});
+	}
+
+
+
+	// get all messages d'un conversation
+	async get_all_messages_from_event(eventId) {
+		return this.sequelize.transaction(t=> {
+			return EventMessage.findAll({
+				where:{eventId},
+				attributes: {exclude: ['createdAt', 'updatedAt']},
+				include:[
+					{
+						model: User,
+						as: 'owner',
+						attributes: ["username"]
+					},
+					{
+						model: Event,
+						as: 'event',
+						attributes: ["name"]
+					}
+				],
+			})
+		})
+	};
+	
+	// check message is possible (participant ou organisateur)
+	async message_is_possible({userId, eventId}) {
+		return this.sequelize.transaction(async t=> {		
+			const events = await Event.findAll({
+				include: [{
+					model: User,
+					as: 'participants',
+					attributes: ["username"],
+					through: {attributes: []},
+				}],
+				where: [
+					{
+						id: eventId,
+					},
+					{
+						[Op.or]: [
+					  		{ '$participants.id$': userId },
+					  		{ organizerId: userId }
+						]
+					}
+				],
+				attributes: ["name"],
+			});
+			console.log("ICIIIIII\n" + JSON.stringify(events, null, 2).toString());
+			return events.length !== 0
+		});
+	}
+
 	/*----------------------------LESS USEFUL----------------------------*/
 
 
@@ -144,23 +385,54 @@ class DAO {
 		});
 	}
 
-
 	//modif d'un utilisateur
-	async  update_user_by_username(username, new_username, email, password_hash, score_host = null, score_participant = null) {
+	async  update_user_by_username({id, username, email, password_hash, bio, picture=null }) {
 		return this.sequelize.transaction( t => {
 			return User.update(
 				{
-					username: new_username,
-					email: email,
-					password_hash: password_hash,
-					score_host: score_host,
-					score_participant: score_participant,
+					username,
+					email,
+					password_hash,
+					bio,
+					picture,
+				},
+				{ where: { id: id } }
+			);
+		});
+	}
+
+
+	//modif d'un utilisateur
+	async  update_user_by_username({username, email, password_hash, bio, picture=null }) {
+		return this.sequelize.transaction( t => {
+			return User.update(
+				{
+					username,
+					email,
+					password_hash,
+					bio,
+					picture,
 				},
 				{ where: { username: username } }
 			);
 		});
 	}
 	
+	//modif d'un utilisateur
+	async  update_user_by_email({username, email, password_hash, bio, picture=null }) {
+		return this.sequelize.transaction( t => {
+			return User.update(
+				{
+					username,
+					email,
+					password_hash,
+					bio,
+					picture,
+				},
+				{ where: { email:email } }
+			);
+		});
+	}
 		
 	// get d'un utilisateur
 	async  get_user_by_username(username) {
@@ -200,36 +472,22 @@ class DAO {
 
 
 	//modif d'un event
-	async  update_event_by_name(name, new_name, category, address, description, image_url) {
+	async  update_event_by_id(id, name, category, description, image_url, AdressId, MainCategoryId, date) {
 		return this.sequelize.transaction( t => {
 			return Event.update(
 				{
-					name: new_name,
-					category: category,
-					address: address,
-					description: description,
-					image_url: image_url,
-				},
-				{ where: { name: name } }
-			);
-		});
-	}
-
-	async  update_event_by_id(id, name, category, address, description, image_url) {
-		return this.sequelize.transaction( t => {
-			return Event.update(
-				{
-					name: name,
-					category: category,
-					address: address,
-					description: description,
-					image_url: image_url,
+					name,
+					category,
+					description,
+					image_url,
+					AdressId,
+					MainCategoryId,
+					date,
 				},
 				{ where: { id: id } }
 			);
 		});
 	}
-	
 
 	// get d'un event par nom like
 	async  get_events_by_name_like(name) {
@@ -244,6 +502,7 @@ class DAO {
 		});
 	}
 
+
 	// get d'un event par nom 
 	async  get_event_by_name(name) {
 		return this.sequelize.transaction( t => {
@@ -252,34 +511,34 @@ class DAO {
 	}
 	
 
-	// get d'un event par note exact de son organisateur
-	async get_events_by_organizer_score(score) {
-		return this.sequelize.transaction( t => {
-			return Event.findAll({
-				include: [
-					{
-						model: User,
-						as: 'organizer',
-						where: { score_host: score }
-					}
-				]
-			});
-		});
-	}
+	// // get d'un event par note exact de son organisateur
+	// async get_events_by_organizer_score(score) {
+	// 	return this.sequelize.transaction( t => {
+	// 		return Event.findAll({
+	// 			include: [
+	// 				{
+	// 					model: User,
+	// 					as: 'organizer',
+	// 					where: { score_host: score }
+	// 				}
+	// 			]
+	// 		});
+	// 	});
+	// }
 
 
-	//get d'un event par note min de son organisateur
-	async get_events_by_organizer_score_min(score_min) {
-		return this.sequelize.transaction( t => {
-		return Event.findAll({
-			include: [{
-			model: User,
-			as: 'organizer',
-			where: { score_host: { [Op.gte]: score_min } }
-			}]
-		});
-		});
-	}
+	// //get d'un event par note min de son organisateur
+	// async get_events_by_organizer_score_min(score_min) {
+	// 	return this.sequelize.transaction( t => {
+	// 	return Event.findAll({
+	// 		include: [{
+	// 		model: User,
+	// 		as: 'organizer',
+	// 		where: { score_host: { [Op.gte]: score_min } }
+	// 		}]
+	// 	});
+	// 	});
+	// }
 
 
 	//get d'events par catégorie
@@ -352,4 +611,4 @@ export { DAO };
 
 // blabla
 // INFO: user.createEvent() , au lieu de passer par son id, on passe par son objet, c'est + ORM friendly
-// INFO: LIKE avec SQLite est case insensitive, donc le code ou on utilise lower() est overkill
+// INFO: Event.addParticpant(), pareil
