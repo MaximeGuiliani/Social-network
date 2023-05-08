@@ -11,22 +11,6 @@ class User extends Model {
           primaryKey: true,
           autoIncrement: true,
         },
-        score_host: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-          validate: {
-            min: 0,
-            max: 5,
-          },
-        },
-        score_participant: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-          validate: {
-            min: 0,
-            max: 5,
-          },
-        },
         username: {
           type: DataTypes.STRING,
           unique: true,
@@ -40,19 +24,33 @@ class User extends Model {
             isEmail: true,
           },
         },
+        creation_date: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+          validate: {
+            isDate: true,
+            isAfter: "2022-12-31", // only allow date strings after 31/12/2022
+          },
+        },
+        picture: {
+          type: DataTypes.STRING,
+          allowNull: true, // NULL AUTORISE
+          validate: {
+            isUrl: true,
+          },
+        },
+        bio: {
+          type: DataTypes.STRING(500),
+          allowNull: false,
+          defaultValue: "",
+        },
         password_hash: {
           type: DataTypes.STRING,
           allowNull: false,
-          password_hash: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-              isBcryptHash: function (value) {
-                if (!bcrypt.compareSync("password", value)) {
-                  throw new Error("Invalid password hash");
-                }
-              },
-            },
+          validate: {
+            //is: /^\$2[ayb]\$.{56}$/i,
+            //is: /^\$2[ayb]\$([0-9]{2})\$.{53}$/i
           },
         },
       },
