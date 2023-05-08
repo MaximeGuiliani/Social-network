@@ -24,13 +24,10 @@ class Event extends Model {
             len: [0, 100],
           },
         },
-        address: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
         description: {
           type: DataTypes.TEXT, //TEXT pour taille non définie, STRING pour taille max connue
           allowNull: false,
+          defaultValue: "",
         },
         image_url: {
           type: DataTypes.STRING,
@@ -40,7 +37,7 @@ class Event extends Model {
           },
         },
         name: {
-          type: DataTypes.STRING(200),
+          type: DataTypes.STRING(100),
           unique: true,
           allowNull: false,
           validate: {
@@ -52,7 +49,16 @@ class Event extends Model {
           allowNull: false,
           validate: {
             isDate: true,
-            isAfter: "2022-12-31",    // only allow date strings after 31/12/2022
+            isAfter: "2022-12-31", // only allow date strings after 31/12/2022
+          },
+        },
+        creation_date: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+          validate: {
+            isDate: true,
+            isAfter: "2022-12-31", // only allow date strings after 31/12/2022
           },
         },
       },
