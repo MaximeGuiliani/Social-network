@@ -256,6 +256,23 @@ export async function user_delete(req, res, next) {
     }
   });
 }
+// TODO ________________ SECTION TODO _________________________________
+
+export async function user_get_notes_by_username(){
+  // TODO : get notes 
+}
+export async function user_get_notes_by_noteId(){
+  // TODO : get notes 
+}
+export async function user_get_avis_by_avisId(){
+  // TODO : get notes 
+}
+export async function user_get_avis_by_username(){
+  // TODO : get notes 
+}
+
+
+
 
 // _________________  Section des fonctions utilitaires  ______________________
 
