@@ -11,6 +11,7 @@ import { hash, compare } from "bcrypt";
 import pkg from "jsonwebtoken";
 const { sign } = pkg;
 
+// NOTE : user_signup verifie que l'email et le username ne sont pas déjà utilisés avant de créer l'utilisateur
 export async function user_signup(req, res, next) {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
   if (validUser == null) {
@@ -48,6 +49,7 @@ export async function user_signup(req, res, next) {
     });
 }
 
+// NOTE : createUser crée l'utilisateur en utilisant le hash du mot de passe
 function createUser(req, res, validUser) {
   hash(req.body.password, 10, async (err, hash) => {
     if (err) {
@@ -77,6 +79,7 @@ function createUser(req, res, validUser) {
   });
 }
 
+// NOTE : user_login verifie que l'utilisateur existe et que le mot de passe est correct avant de créer un token
 export async function user_login(req, res, next) {
   const validLoginUser = validate(schemaLoginUser.validate(req.body), res);
   if (validLoginUser == null) {
@@ -84,22 +87,18 @@ export async function user_login(req, res, next) {
   }
   await myDAO.get_user_by_email(validLoginUser.email).then((user) => {
     if (user == null) {
-      return res.status(401).json({
-        code: 401,
-        message: "Auth failed",
-      });
+      return sendAuthFailed(res);
     }
     compare(validLoginUser.password, user.password_hash, (err, result) => {
       if (err) {
-        return res.status(401).json({
-          message: "Auth failed",
-        });
+        return sendAuthFailed(res);
       }
       if (result) {
         const token = sign(
           {
-            email: user.email,
             id: user.id,
+            username: user.username,
+            email: user.email,
           },
           process.env.JWT_KEY,
           {
@@ -113,10 +112,7 @@ export async function user_login(req, res, next) {
           token: token,
         });
       }
-      return res.status(401).json({
-        code: 401,
-        message: "Auth failed",
-      });
+      return sendAuthFailed(res);
     });
   });
 }
@@ -133,10 +129,7 @@ export async function user_get_all(req, res, next) {
       });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+      sendBadRequest(res, err);
     });
 }
 
@@ -164,10 +157,7 @@ export async function user_get_by_username(req, res, next) {
       });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+      sendBadRequest(res, err);
     });
 }
 
@@ -201,10 +191,7 @@ export async function user_update(req, res, next) {
       res.status(200).json({ updatedUser: user });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+      sendBadRequest(res, err);
     });
 }
 
@@ -236,10 +223,7 @@ export async function user_delete(req, res, next) {
       res.status(200).json({ deletedUser: validUsername });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+      sendBadRequest(res, err);
     });
 }
 
@@ -260,6 +244,21 @@ function sendServerError(res, err) {
   return res.status(500).json({
     code: 500,
     error: err,
+  });
+}
+
+function sendBadRequest(res, err) {
+  return res.status(400).json({
+    code: 400,
+    error: err,
+  });
+}
+
+
+function sendAuthFailed(res) {
+  return res.status(401).json({
+    code: 401,
+    message: "Auth failed",
   });
 }
 
