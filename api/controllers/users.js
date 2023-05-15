@@ -164,6 +164,9 @@ export async function user_get_by_username(req, res, next) {
     });
 }
 
+// TODO : définir les modifications possible pour un user
+// NOTE : user_update met à jour l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe On mets à jour que la bio pour le moment
+
 export async function user_update(req, res, next) {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
@@ -183,6 +186,7 @@ export async function user_update(req, res, next) {
       res.status(401).json({
         code: 401,
         message: "Unauthorized access",
+        error: "You can only update your own profile",
       });
       return;
     } else {
@@ -191,17 +195,14 @@ export async function user_update(req, res, next) {
         return;
       }
       myDAO
-        .update_user_by_id(
-          {
-            id: req.userData.id,
-            bio: validUser.bio,
-          },
-        )
+        .update_user_by_id({
+          id: req.userData.id,
+          bio: validUser.bio,
+        })
         .then(function (updatedUser) {
           res.status(200).json({
             code: 200,
-            // updatedUser: userPublicData(user),
-            updatedUser: updatedUser,
+            updatedUser: userPublicData(user),
           });
         })
         .catch(function (err) {
@@ -211,6 +212,7 @@ export async function user_update(req, res, next) {
   });
 }
 
+// NOTE : user_delete supprime l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe
 export async function user_delete(req, res, next) {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
@@ -220,27 +222,39 @@ export async function user_delete(req, res, next) {
   if (validUsername == null) {
     return;
   }
-  if (validUsername != (await myDAO.get_user_by_id(req.userData.id).userName)) {
-    res.status(401).json({
-      message: "Unauthorized access",
-    });
-    return;
-  }
-
-  await myDAO
-    .remove_user_by_username(validUsername)
-    .then(function (user) {
-      if (user == 0) {
-        res.status(404).json({
-          message: "User not found",
+  await myDAO.get_user_by_id(req.userData.id).then((user) => {
+    if (user == null) {
+      res.status(404).json({
+        code: 404,
+        message: "User not found",
+      });
+      return;
+    } else if (user.username != validUsername) {
+      res.status(401).json({
+        code: 401,
+        message: "Unauthorized access",
+      });
+      return;
+    } else {
+      myDAO
+        .remove_user_by_username(validUsername)
+        .then(function (deletedUser) {
+          if (deletedUser == 0) {
+            res.status(404).json({
+              message: "User not found",
+            });
+            return;
+          }
+          res.status(200).json({
+            code: 200,
+            deletedUser: userPublicData(user),
+          });
+        })
+        .catch(function (err) {
+          sendBadRequest(res, err);
         });
-        return;
-      }
-      res.status(200).json({ deletedUser: validUsername });
-    })
-    .catch(function (err) {
-      sendBadRequest(res, err);
-    });
+    }
+  });
 }
 
 // _________________  Section des fonctions utilitaires  ______________________
