@@ -39,7 +39,7 @@ class DAO {
 	}
 
 	// get d'une main cat par nom 
-	async  get_main_categoty_by_name(name) {
+	async  get_main_category_by_name(name) {
 		return this.sequelize.transaction( t => {
 			return MainCategory.findOne({where: {name: name}});
 		});
