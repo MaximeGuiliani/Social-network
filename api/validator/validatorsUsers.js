@@ -1,9 +1,11 @@
 import Joi from "joi";
 
 const schemaSignupUser = Joi.object().keys({
+  // TODO : voir pour les contraintes pour le username
   username: Joi.string().alphanum().min(3).max(30).required(),
   password: Joi.string().required(),
-  email: Joi.string().email().required(),
+  bio: Joi.string().required(),
+  email: Joi.string().email().required()
 });
 
 const schemaUpdateUser = Joi.object().keys({

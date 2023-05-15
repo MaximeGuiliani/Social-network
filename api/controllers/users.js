@@ -16,46 +16,78 @@ export async function user_signup(req, res, next) {
   if (validUser == null) {
     return;
   }
-  // TODO : verifier que l'email n'est pas déjà utilisé pareil que pour le username
-
+  // TODO : verifier que l'email n'est pas déjà utilisé en même temps que le username pour ne pas avoir a faire les deux 1 apres l'autre
   await myDAO
     .get_user_by_username(validUser.username)
     .then((result) => {
       if (result != null) {
         return res.status(409).json({
+          code: 409,
           message: "Username already exists",
         });
       } else {
-        hash(req.body.password, 10, async (err, hash) => {
-          if (err) {
-            return res.status(500).json({
-              error: err,
-            });
-          } else {
-            await myDAO
-              .add_user(validUser.username, validUser.email, hash)
-              .then((result) => {
-                console.log(result);
-                return res.status(201).json({
-                  message: "User created",
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-                return res.status(500).json({
-                  error: err,
-                });
+        myDAO
+          .get_user_by_email(validUser.email)
+          .then((result) => {
+            if (result != null) {
+              return res.status(409).json({
+                code: 409,
+                message: "Email already taken",
               });
-          }
-        });
+            } else {
+              return createUser(req, res, validUser);
+            }
+          })
+          .catch((err) => {
+            return sendServerError(res, err);
+          });
       }
     })
     .catch((err) => {
-      console.log(err);
+      return sendServerError(res, err);
+    });
+}
+
+function sendServerError(res, err) {
+  return res.status(500).json({
+    code: 500,
+    error: err,
+  });
+}
+
+function createUser(req, res, validUser) {
+  hash(req.body.password, 10, async (err, hash) => {
+    if (err) {
       return res.status(500).json({
+        code: 500,
         error: err,
       });
-    });
+    } else {
+      await myDAO
+        .add_user({
+          username: validUser.username,
+          email: validUser.email,
+          bio: validUser.bio,
+          password_hash: hash,
+        })
+        .then((result) => {
+          return res.status(201).json({
+            code: 201,
+            message: "User created",
+            // TODO : Voir les données a renvoyer
+            User: {
+              id: result.id,
+              username: result.username,
+              email: result.email,
+              bio: result.bio,
+            },
+          });
+        })
+        .catch((err) => {
+          return sendServerError(res, err);
+        });
+    }
+  });
 }
 
 export async function user_login(req, res, next) {
@@ -154,7 +186,7 @@ export async function user_update(req, res, next) {
   if (validUsername == null) {
     return;
   }
-  if (validUsername != await myDAO.get_user_by_id(req.userData.id).userName) {
+  if (validUsername != (await myDAO.get_user_by_id(req.userData.id).userName)) {
     res.status(401).json({
       message: "Unauthorized access",
     });
@@ -192,7 +224,7 @@ export async function user_delete(req, res, next) {
   if (validUsername == null) {
     return;
   }
-  if (validUsername != await myDAO.get_user_by_id(req.userData.id).userName) {
+  if (validUsername != (await myDAO.get_user_by_id(req.userData.id).userName)) {
     res.status(401).json({
       message: "Unauthorized access",
     });
