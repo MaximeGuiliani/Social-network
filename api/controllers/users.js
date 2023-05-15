@@ -117,13 +117,13 @@ export async function user_login(req, res, next) {
   });
 }
 
-
-
+// NOTE : user_get_all retourne tous les utilisateurs
 export async function user_get_all(req, res, next) {
   await myDAO
     .get_all_users()
     .then(function (users) {
       res.status(200).json({
+        code: 200,
         message: "Handling GET requests to /users : returning all users",
         users: users,
       });
@@ -133,6 +133,7 @@ export async function user_get_all(req, res, next) {
     });
 }
 
+// NOTE : user_get_by_id retourne l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe
 export async function user_get_by_username(req, res, next) {
   const validUsername = validate(
     schemaUsername.validate(req.params.userName),
@@ -147,13 +148,15 @@ export async function user_get_by_username(req, res, next) {
     .then(function (user) {
       if (user == null) {
         res.status(404).json({
+          code: 404,
           message: "User not found",
         });
         return;
       }
       res.status(200).json({
+        code: 200,
         message: "Handling GET requests to /users/:userName : returning user",
-        user: user,
+        user: userPublicData(user),
       });
     })
     .catch(function (err) {
@@ -169,30 +172,43 @@ export async function user_update(req, res, next) {
   if (validUsername == null) {
     return;
   }
-  if (validUsername != (await myDAO.get_user_by_id(req.userData.id).userName)) {
-    res.status(401).json({
-      message: "Unauthorized access",
-    });
-    return;
-  }
-
-  const validUser = validate(schemaUpdateUser.validate(req.body), res);
-  if (validUser == null) {
-    return;
-  }
-  await myDAO
-    .update_user_by_username(
-      validUsername,
-      validUser.username,
-      validUser.email,
-      validUser.password_hash
-    )
-    .then(function (user) {
-      res.status(200).json({ updatedUser: user });
-    })
-    .catch(function (err) {
-      sendBadRequest(res, err);
-    });
+  await myDAO.get_user_by_id(req.userData.id).then((user) => {
+    if (user == null) {
+      res.status(404).json({
+        code: 404,
+        message: "User not found",
+      });
+      return;
+    } else if (user.username != validUsername) {
+      res.status(401).json({
+        code: 401,
+        message: "Unauthorized access",
+      });
+      return;
+    } else {
+      const validUser = validate(schemaUpdateUser.validate(req.body), res);
+      if (validUser == null) {
+        return;
+      }
+      myDAO
+        .update_user_by_id(
+          {
+            id: req.userData.id,
+            bio: validUser.bio,
+          },
+        )
+        .then(function (updatedUser) {
+          res.status(200).json({
+            code: 200,
+            // updatedUser: userPublicData(user),
+            updatedUser: updatedUser,
+          });
+        })
+        .catch(function (err) {
+          sendBadRequest(res, err);
+        });
+    }
+  });
 }
 
 export async function user_delete(req, res, next) {
@@ -238,8 +254,6 @@ function userPublicData(user) {
   };
 }
 
-
-
 function sendServerError(res, err) {
   return res.status(500).json({
     code: 500,
@@ -254,11 +268,9 @@ function sendBadRequest(res, err) {
   });
 }
 
-
 function sendAuthFailed(res) {
   return res.status(401).json({
     code: 401,
     message: "Auth failed",
   });
 }
-

@@ -400,6 +400,20 @@ class DAO {
 			);
 		});
 	}
+	// TODO :
+	// WARNING  :  Voir pour le update les valeurs que l'on peut changer et utilisation de find One pour retourner l'objet modifié et non le nombre de ligne modifié 
+	async update_user_by_id({id, bio, picture=null }) {
+		return this.sequelize.transaction( t => {
+			return User.findOne({ where: { id: id } }).then(user => {
+				if (user) {
+					return user.update({ bio, picture }, { transaction: t });
+				} else {
+					throw new Error('User not found');
+				}
+			});
+		});
+	}
+	
 
 
 	//modif d'un utilisateur
