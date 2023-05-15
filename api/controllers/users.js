@@ -48,13 +48,6 @@ export async function user_signup(req, res, next) {
     });
 }
 
-function sendServerError(res, err) {
-  return res.status(500).json({
-    code: 500,
-    error: err,
-  });
-}
-
 function createUser(req, res, validUser) {
   hash(req.body.password, 10, async (err, hash) => {
     if (err) {
@@ -70,17 +63,11 @@ function createUser(req, res, validUser) {
           bio: validUser.bio,
           password_hash: hash,
         })
-        .then((result) => {
+        .then((user) => {
           return res.status(201).json({
             code: 201,
             message: "User created",
-            // TODO : Voir les données a renvoyer
-            User: {
-              id: result.id,
-              username: result.username,
-              email: result.email,
-              bio: result.bio,
-            },
+            User: userPublicData(user),
           });
         })
         .catch((err) => {
@@ -98,6 +85,7 @@ export async function user_login(req, res, next) {
   await myDAO.get_user_by_email(validLoginUser.email).then((user) => {
     if (user == null) {
       return res.status(401).json({
+        code: 401,
         message: "Auth failed",
       });
     }
@@ -119,16 +107,21 @@ export async function user_login(req, res, next) {
           }
         );
         return res.status(200).json({
+          code: 200,
           message: "Auth successful",
+          user: userPublicData(user),
           token: token,
         });
       }
       return res.status(401).json({
+        code: 401,
         message: "Auth failed",
       });
     });
   });
 }
+
+
 
 export async function user_get_all(req, res, next) {
   await myDAO
@@ -249,3 +242,24 @@ export async function user_delete(req, res, next) {
       });
     });
 }
+
+// _________________  Section des fonctions utilitaires  ______________________
+
+function userPublicData(user) {
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    bio: user.bio,
+  };
+}
+
+
+
+function sendServerError(res, err) {
+  return res.status(500).json({
+    code: 500,
+    error: err,
+  });
+}
+
