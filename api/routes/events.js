@@ -11,13 +11,11 @@ import {
   event_apply,
   event_unapply,
   event_get_candidates,
-  // event_uncandidate,
-  // event_get_candidates,
-  // event_accept_participant,
-  // event_refuse_participant,
-  // event_unparticipate,
-  // event_remove_participant,
-  // event_get_participants,
+  event_accept_candidate,
+  event_refuse_candidate,
+  event_unparticipate,
+  event_remove_participant,
+  event_get_participants,
 } from "../controllers/events.js";
 
 // (GET) /events
@@ -54,34 +52,34 @@ router.get(
   event_get_candidates
 );
 
-// // (POST) /events/:eventId/accept/:username
-// router.post(
-//   "/:eventId/accept/:username",
-//   checkAuth,
-//   checkOwner,
-//   event_accept_participant
-// );
+// (POST) /events/:eventId/accept/:userId
+router.post(
+  "/:eventId/accept/:userId",
+  checkAuth,
+  checkEventOwner,
+  event_accept_candidate
+);
 
-// // (POST) /events/:eventId/refuse/:username
-// router.post(
-//   "/:eventId/refuse/:username",
-//   checkAuth,
-//   checkOwner,
-//   event_refuse_participant
-// );
+// (POST) /events/:eventId/refuse/:userId
+router.post(
+  "/:eventId/refuse/:userId",
+  checkAuth,
+  checkEventOwner,
+  event_refuse_candidate
+);
 
-// // (POST) /events/:eventId/unparticipate
-// router.post("/:eventId/unparticipate", checkAuth, event_unparticipate);
+// (POST) /events/:eventId/unparticipate
+router.post("/:eventId/unparticipate", checkAuth, event_unparticipate);
 
-// // (POST) /events/:eventId/remove/:username
-// router.post(
-//   "/:eventId/remove/:username",
-//   checkAuth,
-//   checkOwner,
-//   event_remove_participant
-// );
+// (POST) /events/:eventId/remove/:username
+router.post(
+  "/:eventId/remove/:username",
+  checkAuth,
+  checkEventOwner,
+  event_remove_participant
+);
 
-// // (GET) /events/:eventId/participants
-// router.get("/:eventId/participants", event_get_participants);
+// (GET) /events/:eventId/participants
+router.get("/:eventId/participants", event_get_participants);
 
 export default router;

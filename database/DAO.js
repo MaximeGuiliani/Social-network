@@ -10,8 +10,7 @@ import { Op } from "sequelize";
 
 class DAO {
   constructor(sequelize) {
-	this.sequelize = sequelize;
-
+    this.sequelize = sequelize;
   }
 
   /*----------------------------VERY USEFUL----------------------------*/
@@ -874,6 +873,27 @@ class DAO {
     });
   }
 
+  // get all participants d'un event
+
+  async get_all_participants_from_event(eventId) {
+    return this.sequelize.transaction((t) => {
+      return Event.findAll({
+        where: { id: eventId },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: [
+          {
+            model: User,
+            as: "participants",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "password_hash"],
+            },
+            through: { attributes: [] },
+          },
+        ],
+      });
+    });
+  }
+
   //faire candidater avec name
   async apply_by_name(username, event_name) {
     return this.sequelize.transaction(async (t) => {
@@ -884,8 +904,19 @@ class DAO {
     });
   }
 
-  //faire participer
+  // Pour faire participer on enleve la candidature et on ajoute le participant
   async participate(userId, eventId) {
+    return this.sequelize.transaction(async (t) => {
+      const user = await User.findByPk(userId);
+      const event = await Event.findByPk(eventId);
+      if (!user || !event) throw new Error("User or event not found");
+      await event.removeCandidate(user);
+      return event.addParticipant(user);
+    });
+  }
+
+  // remove participant
+  async unparticipate(userId, eventId) {
     return this.sequelize.transaction(async (t) => {
       const user = await User.findByPk(userId);
       const event = await Event.findByPk(eventId);
