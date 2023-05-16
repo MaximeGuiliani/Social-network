@@ -6,6 +6,13 @@ import {
 } from "../validator/validatorsEvents.js";
 import { myDAO } from "../../app.js";
 
+import {
+  sendBadRequest,
+  sendServerError,
+  sendAuthFailed,
+  sendNotFound,
+} from "../controllers/errors.js";
+
 export async function event_get_all(req, res, next) {
   myDAO
     .get_all_events()
@@ -20,7 +27,6 @@ export async function event_get_all(req, res, next) {
       sendBadRequest(res, err);
     });
 }
-
 
 export async function event_create(req, res, next) {
   // req.body.organizerId = req.userData.id;
@@ -60,8 +66,6 @@ export async function event_create(req, res, next) {
     });
 }
 
-
-
 export async function event_get_by_id(req, res, next) {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
@@ -71,9 +75,7 @@ export async function event_get_by_id(req, res, next) {
     .get_event_by_id(validId)
     .then(function (event) {
       if (event == null) {
-        res.status(404).json({
-          message: "Event not found",
-        });
+        sendNotFound(res, "Event not found");
         return;
       }
       res.status(200).json({
@@ -82,10 +84,7 @@ export async function event_get_by_id(req, res, next) {
       });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+     sendBadRequest(res, err);
     });
 }
 
@@ -95,10 +94,8 @@ export async function event_update(req, res, next) {
     return;
   }
 
-  if (req.userData.id != (await myDAO).get_event_by_id(validId).organizerId) {
-    res.status(401).json({
-      message: "Unauthorized access",
-    });
+  if (req.userData.id != (myDAO).get_event_by_id(validId).organizerId) {
+    sendAuthFailed(res, "Unauthorized access");
     return;
   }
 
@@ -123,10 +120,7 @@ export async function event_update(req, res, next) {
       });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+      sendBadRequest(res, err);
     });
 }
 
@@ -137,9 +131,7 @@ export async function event_delete(req, res, next) {
   }
 
   if (req.userData.id != (await myDAO.get_event_by_id(validId).organizerId)) {
-    res.status(401).json({
-      message: "Unauthorized access",
-    });
+    sendAuthFailed(res, "Unauthorized access");
     return;
   }
 
@@ -147,9 +139,7 @@ export async function event_delete(req, res, next) {
     .remove_event_by_id(validId)
     .then(function (result) {
       if (result == 0) {
-        res.status(404).json({
-          message: "Event not found",
-        });
+        sendNotFound(res, "Event not found");
         return;
       }
       res.status(200).json({
@@ -157,12 +147,163 @@ export async function event_delete(req, res, next) {
       });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err,
-      });
+      sendBadRequest(res, err);
     });
 }
+
+
+// ___________________      C A N D I D A T E S      _________________________
+//#region 
+export async function event_apply(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+  await myDAO
+  .apply(validId, req.userData.id)
+  .then(function (result) {
+    if (result == 0) {
+      sendNotFound(res, "Event or User not found");
+      return;
+    }
+    res.status(200).json({
+      code: 200,
+      eventId: validId,
+      UserId: req.userData.id,
+      message: "Your applications to event with id : " + validId+ " has been taken into account",
+    });
+  })
+  .catch(function (err) {
+    sendBadRequest(res, err);
+  });
+}
+
+
+export async function event_unapply(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+  
+  await myDAO
+  .unapply(validId, req.userData.id)
+  .then(function (result) {
+    if (result == 0) {
+      sendNotFound(res, "Event or User not found");
+      return;
+    }
+    res.status(200).json({
+      code: 200,
+      eventId: validId,
+      UserId: req.userData.id,
+      message: "Your unapplications to event with id : " + validId+ " has been taken into account",
+    });
+  })
+  .catch(function (err) {
+    sendBadRequest(res, err);
+  });
+}
+//#endregion
+
+export async function event_get_candidates(req ,res,next ){
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+
+  await myDAO
+    .get_all_candidates_from_event(req.params.eventId)
+    .then(function (event) {
+      if (event == 0) {
+        sendNotFound(res, "Event not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        message: "Candidates for event with id : " + validId,
+        event: event,
+        candidates: event.candidates,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
+
+export async function event_accept_candidate(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+
+  await myDAO
+    .accept_candidate(validId, req.userData.id)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        message: "Accepted candidate for event with id : " + validId,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
+
+export async function event_refuse_candidate(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+
+  await myDAO
+    .refuse_candidate(validId, req.userData.id)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        message: "Refused candidate for event with id : " + validId,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
+
+export async function event_get_participants(req ,res,next ){
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+
+  await myDAO
+    .get_participants(validId)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        message: "Participants for event with id : " + validId,
+        participants: result,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
+
+
+
+// event_unparticipate;
+// event_remove_participant;
 
 // _________________  Section des fonctions utilitaires  ______________________
 
@@ -175,23 +316,6 @@ function eventPublicData(user) {
   };
 }
 
-function sendServerError(res, err) {
-  return res.status(500).json({
-    code: 500,
-    error: err,
-  });
-}
 
-function sendBadRequest(res, err) {
-  return res.status(400).json({
-    code: 400,
-    error: err,
-  });
-}
 
-function sendAuthFailed(res) {
-  return res.status(401).json({
-    code: 401,
-    message: "Auth failed",
-  });
-}
+

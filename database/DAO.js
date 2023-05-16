@@ -806,6 +806,65 @@ class DAO {
     });
   }
 
+  // enlever une candidature
+  async unapply(userId, eventId) {
+    return this.sequelize.transaction(async (t) => {
+      const user = await User.findByPk(userId);
+      const event = await Event.findByPk(eventId);
+      if (!user || !event) throw new Error("User or event not found");
+      return event.removeCandidate(user);
+    });
+  }
+
+  // get all candidatures d'un utilisateur
+  async get_all_candidatures_from_user(userId) {
+    return this.sequelize.transaction((t) => {
+      return User.findAll({
+        where: { id: userId },
+        attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+        include: [
+          {
+            model: Event,
+            as: "candidateEvents",
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            through: { attributes: [] },
+            include: [
+              {
+                model: MainCategory,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+              {
+                model: Address,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+            ],
+          },
+        ],
+      });
+    });
+  }
+
+  // get all candidat d'un event
+
+  async get_all_candidates_from_event(eventId) {
+    return this.sequelize.transaction((t) => {
+      return Event.findAll({
+        where: { id: eventId },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: [
+          {
+            model: User,
+            as: "candidates",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "password_hash"],
+            },
+            through: { attributes: [] },
+          },
+        ],
+      });
+    });
+  }
+
   //faire candidater avec name
   async apply_by_name(username, event_name) {
     return this.sequelize.transaction(async (t) => {
@@ -822,7 +881,7 @@ class DAO {
       const user = await User.findByPk(userId);
       const event = await Event.findByPk(eventId);
       if (!user || !event) throw new Error("User or event not found");
-      return event.addParticipant(user);
+      return event.removeParticipant(user);
     });
   }
 
@@ -852,16 +911,16 @@ class DAO {
   }
 
   async get_mean_and_count_all_notes_by_eventId(eventId) {
-	return this.sequelize.transaction(async (t) => {
-	  const event = await Event.findOne({ where: { id: eventId } });
-	  if (!event) throw new Error("Event not found");
-	  const notes = await Note.findAll({ where: { event_id: event.id } });
-	  let sum = 0;
-	  for (let i = 0; i < notes.length; i++) {
-		sum += notes[i].value;
-	  }
-	  return { mean: sum / notes.length, count: notes.length };
-	});
+    return this.sequelize.transaction(async (t) => {
+      const event = await Event.findOne({ where: { id: eventId } });
+      if (!event) throw new Error("Event not found");
+      const notes = await Note.findAll({ where: { event_id: event.id } });
+      let sum = 0;
+      for (let i = 0; i < notes.length; i++) {
+        sum += notes[i].value;
+      }
+      return { mean: sum / notes.length, count: notes.length };
+    });
   }
 }
 
