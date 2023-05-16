@@ -38,6 +38,13 @@ app.use((req, res, next) => {
   next();
 });
 
+myDAO.add_main_category("Sport");
+myDAO.add_main_category("Culture");
+myDAO.add_main_category("Music");
+myDAO.add_main_category("Food");
+myDAO.add_main_category("Other");
+
+
 app.use("/users", usersRoutes);
 app.use("/events", eventRoutes);
 app.use("/categories", categoriesRoutes);
