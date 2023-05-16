@@ -160,7 +160,7 @@ export async function event_apply(req, res, next) {
     return;
   }
   await myDAO
-  .apply(validId, req.userData.id)
+  .apply( req.userData.id,validId)
   .then(function (result) {
     if (result == 0) {
       sendNotFound(res, "Event or User not found");
@@ -203,41 +203,45 @@ export async function event_unapply(req, res, next) {
     sendBadRequest(res, err);
   });
 }
-//#endregion
 
 export async function event_get_candidates(req ,res,next ){
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
-
+  
   await myDAO
-    .get_all_candidates_from_event(req.params.eventId)
-    .then(function (event) {
-      if (event == 0) {
-        sendNotFound(res, "Event not found");
-        return;
-      }
-      res.status(200).json({
-        code: 200,
-        message: "Candidates for event with id : " + validId,
-        event: event,
-        candidates: event.candidates,
+  .get_all_candidates_from_event(req.params.eventId)
+  .then(function (event) {
+    if (event == 0) {
+      sendNotFound(res, "Event not found");
+      return;
+    }
+    console.log("event : ");
+    console.log(event);
+    res.status(200).json({
+      code: 200,
+      message: "Candidates for event with id : " + validId,
+      candidates: event[0].candidates,
       });
     })
     .catch(function (err) {
       sendBadRequest(res, err);
     });
-}
-
-export async function event_accept_candidate(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
   }
-
-  await myDAO
-    .accept_candidate(validId, req.userData.id)
+  
+  export async function event_accept_candidate(req, res, next) {
+    const validId = validate(schemaId.validate(req.params.eventId), res);
+    if (validId == null) {
+      return;
+    }
+    const validUserId = validate(schemaId.validate(req.params.userId), res);
+    if (validUserId == null) {
+      return;
+    }
+    
+    await myDAO
+    .participate(req.params.userId,req.params.eventId)
     .then(function (result) {
       if (result == 0) {
         sendNotFound(res, "Event not found");
@@ -246,24 +250,32 @@ export async function event_accept_candidate(req, res, next) {
       res.status(200).json({
         code: 200,
         message: "Accepted candidate for event with id : " + validId,
+        accept_candidate: result,
       });
     })
     .catch(function (err) {
       sendBadRequest(res, err);
     });
-}
+  }
+  
+  //#endregion
 
-export async function event_refuse_candidate(req, res, next) {
+  export async function event_refuse_candidate(req, res, next) {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
 
+  const validUserId = validate(schemaId.validate(req.params.userId), res);
+  if (validUserId == null) {
+    return;
+  }
+
   await myDAO
-    .refuse_candidate(validId, req.userData.id)
+    .unapply(req.params.userId , req.params.eventId )
     .then(function (result) {
       if (result == 0) {
-        sendNotFound(res, "Event not found");
+        sendNotFound(res, "Event or user not found");
         return;
       }
       res.status(200).json({
@@ -283,7 +295,7 @@ export async function event_get_participants(req ,res,next ){
   }
 
   await myDAO
-    .get_participants(validId)
+    .get_all_participants_from_event(validId)
     .then(function (result) {
       if (result == 0) {
         sendNotFound(res, "Event not found");
@@ -292,7 +304,31 @@ export async function event_get_participants(req ,res,next ){
       res.status(200).json({
         code: 200,
         message: "Participants for event with id : " + validId,
-        participants: result,
+        participants: result[0].participants,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
+
+export async function event_unparticipate(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
+
+  await myDAO
+    .unparticipate(req.userData.id, validId)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        message: "Unparticipated to event with id : " + validId,
+        unparticipateInfo: result,
       });
     })
     .catch(function (err) {
@@ -301,9 +337,34 @@ export async function event_get_participants(req ,res,next ){
 }
 
 
+export async function event_remove_participant(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
+  }
 
-// event_unparticipate;
-// event_remove_participant;
+  const validUsername = validate(schemaId.validate(req.params.username), res);
+  if (validUsername == null) {
+    return;
+  }
+
+  await myDAO
+    .remove_participant(req.params.username, validId)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        message: "Removed participant " + req.params.username + " from event with id : " + validId,
+        removeParticipantInfo: result,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
 
 // _________________  Section des fonctions utilitaires  ______________________
 
