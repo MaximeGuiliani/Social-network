@@ -24,6 +24,8 @@ const myDAO = await async function test() {
 }();
 export {myDAO};
 
+myDAO.initCategories();
+
 // handling CORS errors
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -38,11 +40,7 @@ app.use((req, res, next) => {
   next();
 });
 
-myDAO.add_main_category("Sport");
-myDAO.add_main_category("Culture");
-myDAO.add_main_category("Music");
-myDAO.add_main_category("Food");
-myDAO.add_main_category("Other");
+
 
 
 app.use("/users", usersRoutes);
