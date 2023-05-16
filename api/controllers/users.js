@@ -7,6 +7,12 @@ import {
   schemaLoginUser,
 } from "../validator/validatorsUsers.js";
 
+import {
+  sendBadRequest,
+  sendServerError,
+  sendAuthFailed,
+} from "../controllers/errors.js";
+
 import { hash, compare } from "bcrypt";
 import pkg from "jsonwebtoken";
 const { sign } = pkg;
@@ -87,11 +93,11 @@ export async function user_login(req, res, next) {
   }
   await myDAO.get_user_by_email(validLoginUser.email).then((user) => {
     if (user == null) {
-      return sendAuthFailed(res);
+      return sendAuthFailed(res, "Auth failed");
     }
     compare(validLoginUser.password, user.password_hash, (err, result) => {
       if (err) {
-        return sendAuthFailed(res);
+        return sendAuthFailed(res, "Auth failed");
       }
       if (result) {
         const token = sign(
@@ -112,7 +118,7 @@ export async function user_login(req, res, next) {
           token: token,
         });
       }
-      return sendAuthFailed(res);
+      return sendAuthFailed(res, "Auth failed");
     });
   });
 }
@@ -283,25 +289,4 @@ function userPublicData(user) {
     email: user.email,
     bio: user.bio,
   };
-}
-
-function sendServerError(res, err) {
-  return res.status(500).json({
-    code: 500,
-    error: err,
-  });
-}
-
-function sendBadRequest(res, err) {
-  return res.status(400).json({
-    code: 400,
-    error: err,
-  });
-}
-
-function sendAuthFailed(res) {
-  return res.status(401).json({
-    code: 401,
-    message: "Auth failed",
-  });
 }
