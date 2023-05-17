@@ -13,6 +13,8 @@ import {
   user_get_notes_by_noteId,
   user_get_avis_by_avisId,
   user_get_avis_by_username,
+  user_get_candidates_by_username,
+  user_get_participations_from_user,
 } from "../controllers/users.js";
 
 // (POST) /users/signup
@@ -39,22 +41,31 @@ router.patch("/:userName", checkAuth, user_update);
 
 router.delete("/:userName", checkAuth, user_delete);
 
+// (GET) /users/:username/candidates
+
+router.get("/:username/candidates", user_get_candidates_by_username);
+
+// (GET) /users/:username/participations
+
+router.get("/:username/participations", user_get_participations_from_user);
+
 // TODO ________________ SECTION TODO _________________________________
 
-// (GET) /users/:userName/notes
+// (GET) /users/:username/notes
 
-router.get("/:userName/notes", user_get_notes_by_username);
+router.get("/:username/notes", user_get_notes_by_username);
 
-// (GET) /users/:userName/notes/:noteId
+// (GET) /users/:username/notes/:noteId
 
-router.get("/:userName/notes/:noteId", user_get_notes_by_noteId);
+router.get("/:username/notes/:noteId", user_get_notes_by_noteId);
 
-// (GET) /users/:userName/avis
+// (GET) /users/:username/avis
 
-router.get("/:userName/avis", user_get_avis_by_username);
+router.get("/:username/avis", user_get_avis_by_username);
 
-// (GET) /users/:userName/avis/:avisId
+// (GET) /users/:username/avis/:avisId
 
-router.get("/:userName/avis/:avisId", user_get_avis_by_avisId);
+router.get("/:username/avis/:avisId", user_get_avis_by_avisId);
+
 
 export default router;
