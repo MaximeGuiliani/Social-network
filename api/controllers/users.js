@@ -264,21 +264,86 @@ export async function user_delete(req, res, next) {
 }
 // TODO ________________ SECTION TODO _________________________________
 
-export async function user_get_notes_by_username(){
-  // TODO : get notes 
+export async function user_get_notes_by_username() {
+  // TODO : get notes
 }
-export async function user_get_notes_by_noteId(){
-  // TODO : get notes 
+export async function user_get_notes_by_noteId() {
+  // TODO : get notes
 }
-export async function user_get_avis_by_avisId(){
-  // TODO : get notes 
+export async function user_get_avis_by_avisId() {
+  // TODO : get notes
 }
-export async function user_get_avis_by_username(){
-  // TODO : get notes 
+export async function user_get_avis_by_username() {
+  // TODO : get notes
 }
 
+export async function user_get_candidates_by_username(req, res, next) {
+  const validUsername = validate(
+    schemaUsername.validate(req.params.username),
+    res
+  );
+  if (validUsername == null) {
+    return;
+  }
 
+  await myDAO.get_user_by_username(validUsername).then((user) => {
+    if (user == null) {
+      res.status(404).json({
+        code: 404,
+        message: "User not found",
+      });
+      return;
+    } else {
+      myDAO
+        .get_all_candidatures_from_user(user.id)
+        .then(function (candidates) {
+          res.status(200).json({
+            code: 200,
+            message:
+              "Handling GET requests to /users/:username/candidates : returning candidates",
+            candidateEvents: candidates[0].candidateEvents,
+          });
+        })
+        .catch(function (err) {
+          sendBadRequest(res, err);
+        });
+    }
+  });
+}
 
+export async function user_get_participations_from_user(req, res, next) {
+  const validUsername = validate(
+    schemaUsername.validate(req.params.username),
+    res
+  );
+  if (validUsername == null) {
+    return;
+  }
+
+  await myDAO.get_user_by_username(validUsername).then((user) => {
+    if (user == null) {
+      res.status(404).json({
+        code: 404,
+        message: "User not found",
+      });
+      return;
+    } else {
+      myDAO
+        .get_all_participations_from_user(user.id)
+        .then(function (participations) {
+          res.status(200).json({
+            code: 200,
+            message:
+              "Handling GET requests to /users/:username/candidates : returning candidates",
+            participantEvents: participations[0].participantEvents,
+          });
+        })
+        .catch(function (err) {
+          sendBadRequest(res, err);
+        });
+    }
+  });
+}
 
 // _________________  Section des fonctions utilitaires  ______________________
 

@@ -852,6 +852,34 @@ class DAO {
     });
   }
 
+    // get all particiapation d'un utilisateur
+    async get_all_participations_from_user(userId) {
+      return this.sequelize.transaction((t) => {
+        return User.findAll({
+          where: { id: userId },
+          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+          include: [
+            {
+              model: Event,
+              as: "participantEvents",
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              through: { attributes: [] },
+              include: [
+                {
+                  model: MainCategory,
+                  attributes: { exclude: ["createdAt", "updatedAt"] },
+                },
+                {
+                  model: Address,
+                  attributes: { exclude: ["createdAt", "updatedAt"] },
+                },
+              ],
+            },
+          ],
+        });
+      });
+    }
+
   // get all candidat d'un event
 
   async get_all_candidates_from_event(eventId) {

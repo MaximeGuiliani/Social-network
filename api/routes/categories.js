@@ -7,8 +7,8 @@ import {
 } from "../controllers/categories.js";
 
 // (POST) /events/createcategory
-
-router.post("/create/:categoryname", checkAuth, create_main_category);
+// NOTE : route non utile pour le moment 
+// router.post("/create/:categoryname", checkAuth, create_main_category);
 
 // (GET) /events/categories
 
