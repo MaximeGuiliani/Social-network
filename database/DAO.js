@@ -59,15 +59,24 @@ class DAO {
     });
   }
 
-  //ajout d'un utilisateur
+  //ajout d'un utilisateur et verification que le username ou que l'email n'est pas déjà utilisé
   async add_user({ username, email, password_hash, bio, picture = null }) {
-    return this.sequelize.transaction((t) => {
-      return User.create({
-        username: username,
-        email: email,
-        password_hash: password_hash,
-        bio: bio,
-        picture: picture,
+    return this.sequelize.transaction(async (t) => {
+      const user = await User.findOne({
+        where: { [Op.or]: [{ username }, { email }] },
+      });
+      if (user) {
+        console.log("Username or email already taken");
+        throw new Error("Username or email already taken");
+      }
+      return this.sequelize.transaction((t) => {
+        return User.create({
+          username: username,
+          email: email,
+          password_hash: password_hash,
+          bio: bio,
+          picture: picture,
+        });
       });
     });
   }
