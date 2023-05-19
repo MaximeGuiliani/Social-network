@@ -23,7 +23,7 @@ export async function create_main_category(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -39,6 +39,6 @@ export async function get_all_main_categories(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }

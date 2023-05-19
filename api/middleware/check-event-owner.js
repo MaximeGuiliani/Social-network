@@ -17,6 +17,6 @@ export default async (req, res, next) => {
       next();
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 };

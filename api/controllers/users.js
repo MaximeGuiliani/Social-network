@@ -18,44 +18,18 @@ import pkg from "jsonwebtoken";
 const { sign } = pkg;
 
 // NOTE : user_signup verifie que l'email et le username ne sont pas déjà utilisés avant de créer l'utilisateur
+
 export async function user_signup(req, res, next) {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
   if (validUser == null) {
     return;
   }
-  // TODO : verifier que l'email n'est pas déjà utilisé en même temps que le username pour ne pas avoir a faire les deux 1 apres l'autre
-  await myDAO
-    .get_user_by_username(validUser.username)
-    .then((result) => {
-      if (result != null) {
-        return res.status(409).json({
-          code: 409,
-          message: "Username already exists",
-        });
-      } else {
-        myDAO
-          .get_user_by_email(validUser.email)
-          .then((result) => {
-            if (result != null) {
-              return res.status(409).json({
-                code: 409,
-                message: "Email already taken",
-              });
-            } else {
-              return createUser(req, res, validUser);
-            }
-          })
-          .catch((err) => {
-            return sendServerError(res, err);
-          });
-      }
-    })
-    .catch((err) => {
-      return sendServerError(res, err);
-    });
+
+  return createUser(req, res, validUser);
 }
 
 // NOTE : createUser crée l'utilisateur en utilisant le hash du mot de passe
+
 function createUser(req, res, validUser) {
   hash(req.body.password, 10, async (err, hash) => {
     if (err) {
@@ -79,13 +53,14 @@ function createUser(req, res, validUser) {
           });
         })
         .catch((err) => {
-          return sendServerError(res, err);
+          return sendServerError(res, err.message);
         });
     }
   });
 }
 
 // NOTE : user_login verifie que l'utilisateur existe et que le mot de passe est correct avant de créer un token
+
 export async function user_login(req, res, next) {
   const validLoginUser = validate(schemaLoginUser.validate(req.body), res);
   if (validLoginUser == null) {
@@ -124,6 +99,7 @@ export async function user_login(req, res, next) {
 }
 
 // NOTE : user_get_all retourne tous les utilisateurs
+
 export async function user_get_all(req, res, next) {
   await myDAO
     .get_all_users()
@@ -135,7 +111,7 @@ export async function user_get_all(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -166,7 +142,7 @@ export async function user_get_by_username(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -212,7 +188,7 @@ export async function user_update(req, res, next) {
           });
         })
         .catch(function (err) {
-          sendBadRequest(res, err);
+          sendBadRequest(res, err.message);
         });
     }
   });
@@ -257,7 +233,7 @@ export async function user_delete(req, res, next) {
           });
         })
         .catch(function (err) {
-          sendBadRequest(res, err);
+          sendBadRequest(res, err.message);
         });
     }
   });
@@ -305,7 +281,7 @@ export async function user_get_candidates_by_username(req, res, next) {
           });
         })
         .catch(function (err) {
-          sendBadRequest(res, err);
+          sendBadRequest(res, err.message);
         });
     }
   });
@@ -339,7 +315,7 @@ export async function user_get_participations_from_user(req, res, next) {
           });
         })
         .catch(function (err) {
-          sendBadRequest(res, err);
+          sendBadRequest(res, err.message);
         });
     }
   });

@@ -25,7 +25,7 @@ export async function event_get_all(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -61,7 +61,7 @@ export async function event_create(req, res, next) {
             });
           })
           .catch(function (err) {
-            sendBadRequest(res, err);
+            sendBadRequest(res, err.message);
           });
       }
     });
@@ -85,7 +85,7 @@ export async function event_get_by_id(req, res, next) {
       });
     })
     .catch(function (err) {
-     sendBadRequest(res, err);
+     sendBadRequest(res, err.message);
     });
 }
 
@@ -117,7 +117,7 @@ export async function event_update(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -144,7 +144,7 @@ export async function event_delete(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -171,7 +171,7 @@ export async function event_apply(req, res, next) {
     });
   })
   .catch(function (err) {
-    sendBadRequest(res, err);
+    sendBadRequest(res, err.message);
   });
 }
 
@@ -197,7 +197,7 @@ export async function event_unapply(req, res, next) {
     });
   })
   .catch(function (err) {
-    sendBadRequest(res, err);
+    sendBadRequest(res, err.message);
   });
 }
 
@@ -223,7 +223,7 @@ export async function event_get_candidates(req ,res,next ){
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
   }
   
@@ -251,7 +251,7 @@ export async function event_get_candidates(req ,res,next ){
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
   }
   
@@ -281,7 +281,7 @@ export async function event_get_candidates(req ,res,next ){
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -305,7 +305,7 @@ export async function event_get_participants(req ,res,next ){
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -329,7 +329,7 @@ export async function event_unparticipate(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -359,7 +359,7 @@ export async function event_remove_participant(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
@@ -379,7 +379,7 @@ export async function event_get_by_filters(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err);
+      sendBadRequest(res, err.message);
     });
 }
 
