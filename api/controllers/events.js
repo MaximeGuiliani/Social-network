@@ -3,6 +3,7 @@ import {
   schemaCreateEvent,
   schemaId,
   schemaUpdateEvent,
+  schemaFilters,
 } from "../validator/validatorsEvents.js";
 import { myDAO } from "../../app.js";
 
@@ -103,15 +104,11 @@ export async function event_update(req, res, next) {
   if (validUpdate == null) {
     return;
   }
+  validUpdate.validId = validId;
 
   await myDAO
     .update_event_by_id(
-      validId,
-      validUpdate.name,
-      validUpdate.category,
-      validUpdate.address,
-      validUpdate.description,
-      validUpdate.image_url
+      validUpdate
     )
     .then(function (modifiedEvent) {
       res.status(200).json({
@@ -365,6 +362,27 @@ export async function event_remove_participant(req, res, next) {
       sendBadRequest(res, err);
     });
 }
+
+// search events by filters
+export async function event_get_by_filters(req, res, next) {
+  const validFilters = validate(schemaFilters.validate(req.query), res);
+  if (validFilters == null) {
+    return;
+  }
+  await myDAO
+    .get_events_by_filters(validFilters)
+    .then(function (result) {
+      res.status(200).json({
+        code: 200,
+        message: "Handling GET requests to /events : returning all events",
+        events: result,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err);
+    });
+}
+
 
 // _________________  Section des fonctions utilitaires  ______________________
 
