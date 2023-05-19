@@ -7,6 +7,7 @@ import eventRoutes from "./api/routes/events.js";
 import usersRoutes from "./api/routes/users.js";
 import categoriesRoutes from "./api/routes/categories.js";
 import notesRoutes from "./api/routes/notes.js";
+import searchRoutes from "./api/routes/search.js";
 
 import { setup_db } from './database/setup_db.js';
 import { DAO } from './database/DAO.js';
@@ -47,6 +48,7 @@ app.use("/users", usersRoutes);
 app.use("/events", eventRoutes);
 app.use("/categories", categoriesRoutes);
 app.use("/notes", notesRoutes);
+app.use("/search", searchRoutes);
 
 
 

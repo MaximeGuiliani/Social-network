@@ -16,6 +16,7 @@ import {
   event_unparticipate,
   event_remove_participant,
   event_get_participants,
+  event_get_by_filters,
 } from "../controllers/events.js";
 
 // (GET) /events
@@ -81,5 +82,9 @@ router.post(
 
 // (GET) /events/:eventId/participants
 router.get("/:eventId/participants", event_get_participants);
+
+// (GET) /events/search
+
+router.get("/search", event_get_by_filters );
 
 export default router;
