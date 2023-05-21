@@ -60,7 +60,7 @@ class DAO {
   }
 
   //ajout d'un utilisateur et verification que le username ou que l'email n'est pas déjà utilisé
-  async add_user({ username, email, password_hash, bio, picture = null }) {
+  async add_user({ username, email, password_hash, bio = "", picture = null }) {
     return this.sequelize.transaction(async (t) => {
       const user = await User.findOne({
         where: { [Op.or]: [{ username }, { email }] },
@@ -168,10 +168,10 @@ class DAO {
             },
           ],
         },
-        // {
-        // 	model: MainCategory,
-        // 	attributes: { exclude: ['createdAt', 'updatedAt'] }
-        // },
+        {
+          model: MainCategory,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
         {
           model: Address,
           attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -606,7 +606,7 @@ class DAO {
   }
 
   //modif d'un utilisateur
-  async update_user_by_username({
+  async update_user_by_id({
     id,
     username,
     email,
@@ -614,26 +614,18 @@ class DAO {
     bio,
     picture = null,
   }) {
-    return this.sequelize.transaction((t) => {
-      return User.update(
-        {
-          username,
-          email,
-          password_hash,
-          bio,
-          picture,
-        },
-        { where: { id: id } }
-      );
-    });
-  }
-  // TODO :
-  // WARNING  :  Voir pour le update les valeurs que l'on peut changer et utilisation de find One pour retourner l'objet modifié et non le nombre de ligne modifié
-  async update_user_by_id({ id, bio, picture = null }) {
+    if (id === undefined) throw new Error("id cannot be undefined");
+
+    const obj = { id, username, email, password_hash, bio, picture };
+    const filteredObj = { ...obj };
+    Object.keys(filteredObj).forEach(
+      (key) => filteredObj[key] === undefined && delete filteredObj[key]
+    );
+
     return this.sequelize.transaction((t) => {
       return User.findOne({ where: { id: id } }).then((user) => {
         if (user) {
-          return user.update({ bio, picture }, { transaction: t });
+          return user.update(filteredObj, { transaction: t });
         } else {
           throw new Error("User not found");
         }
@@ -830,104 +822,6 @@ class DAO {
       const event = await Event.findByPk(eventId);
       if (!user || !event) throw new Error("User or event not found");
       return event.removeCandidate(user);
-    });
-  }
-
-  // get all candidatures d'un utilisateur
-  async get_all_candidatures_from_user(userId) {
-    return this.sequelize.transaction((t) => {
-      return User.findAll({
-        where: { id: userId },
-        attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-        include: [
-          {
-            model: Event,
-            as: "candidateEvents",
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            through: { attributes: [] },
-            include: [
-              {
-                model: MainCategory,
-                attributes: { exclude: ["createdAt", "updatedAt"] },
-              },
-              {
-                model: Address,
-                attributes: { exclude: ["createdAt", "updatedAt"] },
-              },
-            ],
-          },
-        ],
-      });
-    });
-  }
-
-    // get all particiapation d'un utilisateur
-    async get_all_participations_from_user(userId) {
-      return this.sequelize.transaction((t) => {
-        return User.findAll({
-          where: { id: userId },
-          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-          include: [
-            {
-              model: Event,
-              as: "participantEvents",
-              attributes: { exclude: ["createdAt", "updatedAt"] },
-              through: { attributes: [] },
-              include: [
-                {
-                  model: MainCategory,
-                  attributes: { exclude: ["createdAt", "updatedAt"] },
-                },
-                {
-                  model: Address,
-                  attributes: { exclude: ["createdAt", "updatedAt"] },
-                },
-              ],
-            },
-          ],
-        });
-      });
-    }
-
-  // get all candidat d'un event
-
-  async get_all_candidates_from_event(eventId) {
-    return this.sequelize.transaction((t) => {
-      return Event.findAll({
-        where: { id: eventId },
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: [
-          {
-            model: User,
-            as: "candidates",
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "password_hash"],
-            },
-            through: { attributes: [] },
-          },
-        ],
-      });
-    });
-  }
-
-  // get all participants d'un event
-
-  async get_all_participants_from_event(eventId) {
-    return this.sequelize.transaction((t) => {
-      return Event.findAll({
-        where: { id: eventId },
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: [
-          {
-            model: User,
-            as: "participants",
-            attributes: {
-              exclude: ["createdAt", "updatedAt", "password_hash"],
-            },
-            through: { attributes: [] },
-          },
-        ],
-      });
     });
   }
 

@@ -5,6 +5,7 @@ import {
   schemaSignupUser,
   validate,
   schemaLoginUser,
+  schemaUserWithRelatedEvents
 } from "../validator/validatorsUsers.js";
 
 import {
@@ -17,25 +18,22 @@ import { hash, compare } from "bcrypt";
 import pkg from "jsonwebtoken";
 const { sign } = pkg;
 
-// NOTE : user_signup verifie que l'email et le username ne sont pas déjà utilisés avant de créer l'utilisateur
+// NOTE : user_signup crée l'utilisateur en utilisant le hash du mot de passe
 
 export async function user_signup(req, res, next) {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
   if (validUser == null) {
     return;
   }
-
   return createUser(req, res, validUser);
 }
-
-// NOTE : createUser crée l'utilisateur en utilisant le hash du mot de passe
 
 function createUser(req, res, validUser) {
   hash(req.body.password, 10, async (err, hash) => {
     if (err) {
       return res.status(500).json({
         code: 500,
-        error: err,
+        error: err.message,
       });
     } else {
       await myDAO
@@ -98,6 +96,47 @@ export async function user_login(req, res, next) {
   });
 }
 
+export async function user_get(req, res, next) {
+  if (req.query.id == null) {
+    await myDAO
+      .get_all_users()
+      .then(function (users) {
+        res.status(200).json({
+          code: 200,
+          message: "Handling GET requests to /users : returning all users",
+          users: users,
+        });
+      })
+      .catch(function (err) {
+        sendBadRequest(res, err.message);
+      });
+  }else{
+    const validParams = validate(schemaUserWithRelatedEvents.validate(req.query), res);
+    if (validParams == null) {
+      return;
+    }
+    await myDAO
+      .get_user_with_related_events(validParams)
+      .then(function (user) {
+        if (user == null) {
+          res.status(404).json({
+            code: 404,
+            message: "User not found",
+          });
+          return;
+        }
+        res.status(200).json({
+          code: 200,
+          message: "Handling GET requests to /users/:id : returning user",
+          user: user,
+        });
+      })
+      .catch(function (err) {
+        sendBadRequest(res, err.message);
+      });
+  }
+}
+
 // NOTE : user_get_all retourne tous les utilisateurs
 
 export async function user_get_all(req, res, next) {
@@ -115,36 +154,6 @@ export async function user_get_all(req, res, next) {
     });
 }
 
-// NOTE : user_get_by_id retourne l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe
-export async function user_get_by_username(req, res, next) {
-  const validUsername = validate(
-    schemaUsername.validate(req.params.userName),
-    res
-  );
-  if (validUsername == null) {
-    return;
-  }
-
-  await myDAO
-    .get_user_by_username(validUsername)
-    .then(function (user) {
-      if (user == null) {
-        res.status(404).json({
-          code: 404,
-          message: "User not found",
-        });
-        return;
-      }
-      res.status(200).json({
-        code: 200,
-        message: "Handling GET requests to /users/:userName : returning user",
-        user: userPublicData(user),
-      });
-    })
-    .catch(function (err) {
-      sendBadRequest(res, err.message);
-    });
-}
 
 // TODO : définir les modifications possible pour un user
 // NOTE : user_update met à jour l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe On mets à jour que la bio pour le moment
@@ -172,19 +181,21 @@ export async function user_update(req, res, next) {
       });
       return;
     } else {
+      req.body.id = req.userData.id;
+      console.log("-----------------" ,req.body.id)
       const validUser = validate(schemaUpdateUser.validate(req.body), res);
       if (validUser == null) {
         return;
       }
+      console.log("-----------------" ,validUser)
       myDAO
-        .update_user_by_id({
-          id: req.userData.id,
-          bio: validUser.bio,
-        })
+        .update_user_by_id(
+          validUser
+        )
         .then(function (updatedUser) {
           res.status(200).json({
             code: 200,
-            updatedUser: userPublicData(user),
+            updatedUser: updatedUser,
           });
         })
         .catch(function (err) {
@@ -230,88 +241,6 @@ export async function user_delete(req, res, next) {
           res.status(200).json({
             code: 200,
             deletedUser: userPublicData(user),
-          });
-        })
-        .catch(function (err) {
-          sendBadRequest(res, err.message);
-        });
-    }
-  });
-}
-// TODO ________________ SECTION TODO _________________________________
-
-export async function user_get_notes_by_username() {
-  // TODO : get notes
-}
-export async function user_get_notes_by_noteId() {
-  // TODO : get notes
-}
-export async function user_get_avis_by_avisId() {
-  // TODO : get notes
-}
-export async function user_get_avis_by_username() {
-  // TODO : get notes
-}
-
-export async function user_get_candidates_by_username(req, res, next) {
-  const validUsername = validate(
-    schemaUsername.validate(req.params.username),
-    res
-  );
-  if (validUsername == null) {
-    return;
-  }
-
-  await myDAO.get_user_by_username(validUsername).then((user) => {
-    if (user == null) {
-      res.status(404).json({
-        code: 404,
-        message: "User not found",
-      });
-      return;
-    } else {
-      myDAO
-        .get_all_candidatures_from_user(user.id)
-        .then(function (candidates) {
-          res.status(200).json({
-            code: 200,
-            message:
-              "Handling GET requests to /users/:username/candidates : returning candidates",
-            candidateEvents: candidates[0].candidateEvents,
-          });
-        })
-        .catch(function (err) {
-          sendBadRequest(res, err.message);
-        });
-    }
-  });
-}
-
-export async function user_get_participations_from_user(req, res, next) {
-  const validUsername = validate(
-    schemaUsername.validate(req.params.username),
-    res
-  );
-  if (validUsername == null) {
-    return;
-  }
-
-  await myDAO.get_user_by_username(validUsername).then((user) => {
-    if (user == null) {
-      res.status(404).json({
-        code: 404,
-        message: "User not found",
-      });
-      return;
-    } else {
-      myDAO
-        .get_all_participations_from_user(user.id)
-        .then(function (participations) {
-          res.status(200).json({
-            code: 200,
-            message:
-              "Handling GET requests to /users/:username/candidates : returning candidates",
-            participantEvents: participations[0].participantEvents,
           });
         })
         .catch(function (err) {
