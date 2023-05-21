@@ -5,7 +5,7 @@ import {
   schemaUpdateEvent,
   schemaFilters,
   schemaUserIdANDEventId,
-  schemaEventRelatedToUser
+  schemaEventRelatedToUser,
 } from "../validator/validatorsEvents.js";
 import { myDAO } from "../../app.js";
 
@@ -32,7 +32,10 @@ export async function event_get(req, res, next) {
         sendBadRequest(res, err.message);
       });
   } else {
-    const validParams = validate(schemaEventRelatedToUser.validate(req.query), res);
+    const validParams = validate(
+      schemaEventRelatedToUser.validate(req.query),
+      res
+    );
     if (validParams == null) {
       return;
     }
@@ -92,23 +95,18 @@ export async function event_create(req, res, next) {
 
 // update an event
 export async function event_update(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
-  }
-
+  req.body.eventId = req.params.eventId;
+  req.body.organizerId = req.userData.id;
   const validUpdate = validate(schemaUpdateEvent.validate(req.body), res);
   if (validUpdate == null) {
     return;
   }
-  validUpdate.validId = validId;
-
   await myDAO
     .update_event_by_id(validUpdate)
     .then(function (modifiedEvent) {
       res.status(200).json({
-        message: "Updated event with id " + validId,
-        modifiedEvent: validUpdate,
+        message: "Updated event with id " + req.body.eventId,
+        modifiedEvent: modifiedEvent,
       });
     })
     .catch(function (err) {
@@ -197,7 +195,10 @@ export async function event_unapply(req, res, next) {
 
 // accept candidate for event
 export async function event_accept_candidate(req, res, next) {
-  const validUserIdANDEventId = validate(schemaUserIdANDEventId.validate(req.params.eventId), res);
+  const validUserIdANDEventId = validate(
+    schemaUserIdANDEventId.validate(req.params.eventId),
+    res
+  );
   if (validUserIdANDEventId == null) {
     return;
   }
@@ -210,7 +211,9 @@ export async function event_accept_candidate(req, res, next) {
       }
       res.status(200).json({
         code: 200,
-        message: "Accepted candidate for event with id : " + validUserIdANDEventId.eventId,
+        message:
+          "Accepted candidate for event with id : " +
+          validUserIdANDEventId.eventId,
         accept_candidate: result,
       });
     })
@@ -235,7 +238,9 @@ export async function event_refuse_candidate(req, res, next) {
       }
       res.status(200).json({
         code: 200,
-        message: "Refused candidate for event with id : " + validUserIdANDEventId.userId,
+        message:
+          "Refused candidate for event with id : " +
+          validUserIdANDEventId.userId,
       });
     })
     .catch(function (err) {
@@ -270,7 +275,10 @@ export async function event_unparticipate(req, res, next) {
 
 // remove participant from event
 export async function event_remove_participant(req, res, next) {
-  const validUserIdANDEventId = validate(schemaUserIdANDEventId.validate(req.body), res);
+  const validUserIdANDEventId = validate(
+    schemaUserIdANDEventId.validate(req.body),
+    res
+  );
   if (validUserIdANDEventId == null) {
     return;
   }

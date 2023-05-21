@@ -29,11 +29,11 @@ router.patch("/:eventId", checkAuth, checkEventOwner, event_update);
 
 router.delete("/:eventId", checkAuth, checkEventOwner, event_delete);
 
-// (POST) /events/:eventId/candidate
+// (POST) /events/:eventId/apply
 router.post("/:eventId/apply", checkAuth, event_apply);
 
 // (POST) /events/:eventId/unapply
-router.post("/:eventId/uncandidate", checkAuth, event_unapply);
+router.post("/:eventId/unapply", checkAuth, event_unapply);
 
 // (POST) /events/:eventId/accept/:userId
 router.post(

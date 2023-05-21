@@ -17,7 +17,8 @@ const schemaCreateEvent = Joi.object().keys({
 });
 
 const schemaUpdateEvent = Joi.object().keys({
-  participants_number: Joi.number().integer().min(1).max(100).required(),
+  eventId: Joi.number().integer().required(),
+  participants_number: Joi.number().integer(),
   category: Joi.string().alphanum().min(3).max(30),
   address: {
     street: Joi.string().required(),
@@ -29,6 +30,8 @@ const schemaUpdateEvent = Joi.object().keys({
   image_url: Joi.string().min(3),
   date: Joi.date().required(),
   name: Joi.string().min(3).max(30).required(),
+  organizerId:Joi.number().integer(),
+  MainCategoryId: Joi.number().integer(),
 });
 
 // verify that an objetc is an id

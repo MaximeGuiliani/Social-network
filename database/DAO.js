@@ -710,30 +710,49 @@ class DAO {
     });
   }
 
-  //modif d'un event
-  async update_event_by_id(
-    id,
-    name,
+  async update_event_by_id({
+    eventId,
+    participants_number,
     category,
     description,
-    image_url,
-    AdressId,
+    name,
+    date,
+    organizerId,
     MainCategoryId,
-    date
-  ) {
-    return this.sequelize.transaction((t) => {
-      return Event.update(
-        {
-          name,
-          category,
-          description,
-          image_url,
-          AdressId,
-          MainCategoryId,
-          date,
-        },
-        { where: { id: id } }
+    image_url = null,
+    address: { street, city, country, zip },
+  }) {
+    return this.sequelize.transaction(async (t) => {
+      const address = await Address.create({
+        street,
+        city,
+        country,
+        zip,
+      });
+
+      const filteredParams = {
+        participants_number,
+        category,
+        description,
+        name,
+        date,
+        organizerId,
+        MainCategoryId,
+        image_url,
+        AdressId: address.id,
+      };
+
+      Object.keys(filteredParams).forEach(
+        (key) => filteredParams[key] === undefined && delete filteredParams[key]
       );
+
+      return Event.findOne({ where: { id: eventId } }).then((event) => {
+        if (event) {
+          return event.update(filteredParams, { transaction: t });
+        } else {
+          throw new Error("Event not found");
+        }
+      });
     });
   }
 
