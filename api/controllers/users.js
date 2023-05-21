@@ -71,13 +71,19 @@ export async function user_login(req, res, next) {
         return sendAuthFailed(res, "Auth failed");
       }
       if (result) {
+        let privateKey = "PrivateKeyForTestOnly"
+
+        if ( process.env.JWT_KEY != null) {
+          privateKey = process.env.JWT_KEY;
+        }
+
         const token = sign(
           {
             id: user.id,
             username: user.username,
             email: user.email,
           },
-          process.env.JWT_KEY,
+          privateKey,
           {
             expiresIn: "1h",
           }
