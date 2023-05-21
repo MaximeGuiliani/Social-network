@@ -4,6 +4,8 @@ import {
   schemaId,
   schemaUpdateEvent,
   schemaFilters,
+  schemaUserIdANDEventId,
+  schemaEventRelatedToUser
 } from "../validator/validatorsEvents.js";
 import { myDAO } from "../../app.js";
 
@@ -14,23 +16,44 @@ import {
   sendNotFound,
 } from "../controllers/errors.js";
 
-export async function event_get_all(req, res, next) {
-  myDAO
-    .get_all_events()
-    .then(function (result) {
-      res.status(200).json({
-        code: 200,
-        message: "Handling GET requests to /events : returning all events",
-        events: result,
+// get all events or get event related to user
+export async function event_get(req, res, next) {
+  if (req.query.eventId == null) {
+    await myDAO
+      .get_all_events()
+      .then(function (result) {
+        res.status(200).json({
+          code: 200,
+          message: "Handling GET requests to /events : returning all events",
+          events: result,
+        });
+      })
+      .catch(function (err) {
+        sendBadRequest(res, err.message);
       });
-    })
-    .catch(function (err) {
-      sendBadRequest(res, err.message);
-    });
+  } else {
+    const validParams = validate(schemaEventRelatedToUser.validate(req.query), res);
+    if (validParams == null) {
+      return;
+    }
+    await myDAO
+      .get_event_with_related_users(validParams)
+      .then(function (result) {
+        res.status(200).json({
+          code: 200,
+          message:
+            "Handling GET requests to /events : returning events with related users",
+          events: result,
+        });
+      })
+      .catch(function (err) {
+        sendBadRequest(res, err.message);
+      });
+  }
 }
 
+// create an event
 export async function event_create(req, res, next) {
-  // req.body.organizerId = req.userData.id;
   const validatedEvent = validate(schemaCreateEvent.validate(req.body), res);
   if (validatedEvent == null) {
     return;
@@ -67,36 +90,10 @@ export async function event_create(req, res, next) {
     });
 }
 
-export async function event_get_by_id(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
-  }
-  await myDAO
-    .get_event_by_id(validId)
-    .then(function (event) {
-      if (event == null) {
-        sendNotFound(res, "Event not found");
-        return;
-      }
-      res.status(200).json({
-        message: "Handling GET requests to /events/" + req.params.eventId,
-        event: event,
-      });
-    })
-    .catch(function (err) {
-     sendBadRequest(res, err.message);
-    });
-}
-
+// update an event
 export async function event_update(req, res, next) {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
-    return;
-  }
-
-  if (req.userData.id != (myDAO).get_event_by_id(validId).organizerId) {
-    sendAuthFailed(res, "Unauthorized access");
     return;
   }
 
@@ -107,9 +104,7 @@ export async function event_update(req, res, next) {
   validUpdate.validId = validId;
 
   await myDAO
-    .update_event_by_id(
-      validUpdate
-    )
+    .update_event_by_id(validUpdate)
     .then(function (modifiedEvent) {
       res.status(200).json({
         message: "Updated event with id " + validId,
@@ -121,17 +116,12 @@ export async function event_update(req, res, next) {
     });
 }
 
+// delete an event
 export async function event_delete(req, res, next) {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
-
-  if (req.userData.id != (await myDAO.get_event_by_id(validId).organizerId)) {
-    sendAuthFailed(res, "Unauthorized access");
-    return;
-  }
-
   await myDAO
     .remove_event_by_id(validId)
     .then(function (result) {
@@ -148,97 +138,71 @@ export async function event_delete(req, res, next) {
     });
 }
 
-
-// ___________________      C A N D I D A T E S      _________________________
-//#region 
+// apply to event
 export async function event_apply(req, res, next) {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
   await myDAO
-  .apply( req.userData.id,validId)
-  .then(function (result) {
-    if (result == 0) {
-      sendNotFound(res, "Event or User not found");
-      return;
-    }
-    res.status(200).json({
-      code: 200,
-      eventId: validId,
-      UserId: req.userData.id,
-      message: "Your applications to event with id : " + validId+ " has been taken into account",
-    });
-  })
-  .catch(function (err) {
-    sendBadRequest(res, err.message);
-  });
-}
-
-
-export async function event_unapply(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
-  }
-  
-  await myDAO
-  .unapply(validId, req.userData.id)
-  .then(function (result) {
-    if (result == 0) {
-      sendNotFound(res, "Event or User not found");
-      return;
-    }
-    res.status(200).json({
-      code: 200,
-      eventId: validId,
-      UserId: req.userData.id,
-      message: "Your unapplications to event with id : " + validId+ " has been taken into account",
-    });
-  })
-  .catch(function (err) {
-    sendBadRequest(res, err.message);
-  });
-}
-
-export async function event_get_candidates(req ,res,next ){
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
-  }
-  
-  await myDAO
-  .get_all_candidates_from_event(req.params.eventId)
-  .then(function (event) {
-    if (event == 0) {
-      sendNotFound(res, "Event not found");
-      return;
-    }
-    console.log("event : ");
-    console.log(event);
-    res.status(200).json({
-      code: 200,
-      message: "Candidates for event with id : " + validId,
-      candidates: event[0].candidates,
+    .apply(req.userData.id, validId)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event or User not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        eventId: validId,
+        UserId: req.userData.id,
+        message:
+          "Your applications to event with id : " +
+          validId +
+          " has been taken into account",
       });
     })
     .catch(function (err) {
       sendBadRequest(res, err.message);
     });
+}
+
+// unapply to event
+export async function event_unapply(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.eventId), res);
+  if (validId == null) {
+    return;
   }
-  
-  export async function event_accept_candidate(req, res, next) {
-    const validId = validate(schemaId.validate(req.params.eventId), res);
-    if (validId == null) {
-      return;
-    }
-    const validUserId = validate(schemaId.validate(req.params.userId), res);
-    if (validUserId == null) {
-      return;
-    }
-    
-    await myDAO
-    .participate(req.params.userId,req.params.eventId)
+
+  await myDAO
+    .unapply(validId, req.userData.id)
+    .then(function (result) {
+      if (result == 0) {
+        sendNotFound(res, "Event or User not found");
+        return;
+      }
+      res.status(200).json({
+        code: 200,
+        eventId: validId,
+        UserId: req.userData.id,
+        message:
+          "Your unapplications to event with id : " +
+          validId +
+          " has been taken into account",
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err.message);
+    });
+}
+
+// accept candidate for event
+export async function event_accept_candidate(req, res, next) {
+  const validUserIdANDEventId = validate(schemaUserIdANDEventId.validate(req.params.eventId), res);
+  if (validUserIdANDEventId == null) {
+    return;
+  }
+  await myDAO
+    .participate(validUserIdANDEventId.userId, validUserIdANDEventId.eventId)
     .then(function (result) {
       if (result == 0) {
         sendNotFound(res, "Event not found");
@@ -246,30 +210,24 @@ export async function event_get_candidates(req ,res,next ){
       }
       res.status(200).json({
         code: 200,
-        message: "Accepted candidate for event with id : " + validId,
+        message: "Accepted candidate for event with id : " + validUserIdANDEventId.eventId,
         accept_candidate: result,
       });
     })
     .catch(function (err) {
       sendBadRequest(res, err.message);
     });
-  }
-  
-  //#endregion
+}
 
-  export async function event_refuse_candidate(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
-  }
-
-  const validUserId = validate(schemaId.validate(req.params.userId), res);
-  if (validUserId == null) {
+// refuse candidate for event
+export async function event_refuse_candidate(req, res, next) {
+  const validUserIdANDEventId = validate(schemaId.validate(req.params), res);
+  if (validUserIdANDEventId == null) {
     return;
   }
 
   await myDAO
-    .unapply(req.params.userId , req.params.eventId )
+    .unapply(validUserIdANDEventId.userId, validUserIdANDEventId.eventId)
     .then(function (result) {
       if (result == 0) {
         sendNotFound(res, "Event or user not found");
@@ -277,7 +235,7 @@ export async function event_get_candidates(req ,res,next ){
       }
       res.status(200).json({
         code: 200,
-        message: "Refused candidate for event with id : " + validId,
+        message: "Refused candidate for event with id : " + validUserIdANDEventId.userId,
       });
     })
     .catch(function (err) {
@@ -285,30 +243,7 @@ export async function event_get_candidates(req ,res,next ){
     });
 }
 
-export async function event_get_participants(req ,res,next ){
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
-    return;
-  }
-
-  await myDAO
-    .get_all_participants_from_event(validId)
-    .then(function (result) {
-      if (result == 0) {
-        sendNotFound(res, "Event not found");
-        return;
-      }
-      res.status(200).json({
-        code: 200,
-        message: "Participants for event with id : " + validId,
-        participants: result[0].participants,
-      });
-    })
-    .catch(function (err) {
-      sendBadRequest(res, err.message);
-    });
-}
-
+// unparticipate to event
 export async function event_unparticipate(req, res, next) {
   const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
@@ -333,20 +268,14 @@ export async function event_unparticipate(req, res, next) {
     });
 }
 
-
+// remove participant from event
 export async function event_remove_participant(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
+  const validUserIdANDEventId = validate(schemaUserIdANDEventId.validate(req.body), res);
+  if (validUserIdANDEventId == null) {
     return;
   }
-
-  const validUsername = validate(schemaId.validate(req.params.username), res);
-  if (validUsername == null) {
-    return;
-  }
-
   await myDAO
-    .remove_participant(req.params.username, validId)
+    .unparticipate(validUserIdANDEventId.userId, validUserIdANDEventId.eventId)
     .then(function (result) {
       if (result == 0) {
         sendNotFound(res, "Event not found");
@@ -354,7 +283,11 @@ export async function event_remove_participant(req, res, next) {
       }
       res.status(200).json({
         code: 200,
-        message: "Removed participant " + req.params.username + " from event with id : " + validId,
+        message:
+          "Removed participant " +
+          validUserIdANDEventId.userId +
+          " from event with id : " +
+          validUserIdANDEventId.eventId,
         removeParticipantInfo: result,
       });
     })
@@ -382,19 +315,3 @@ export async function event_get_by_filters(req, res, next) {
       sendBadRequest(res, err.message);
     });
 }
-
-
-// _________________  Section des fonctions utilitaires  ______________________
-
-function eventPublicData(user) {
-  return {
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    bio: user.bio,
-  };
-}
-
-
-
-
