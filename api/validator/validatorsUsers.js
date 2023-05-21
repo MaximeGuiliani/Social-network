@@ -3,7 +3,7 @@ import Joi from "joi";
 const schemaSignupUser = Joi.object().keys({
   username: Joi.string().alphanum().min(3).max(30).required(),
   password: Joi.string().required(),
-  bio: Joi.string().required(),
+  bio: Joi.string(),
   email: Joi.string().email().required(),
   picture: Joi.string().uri(),
 });

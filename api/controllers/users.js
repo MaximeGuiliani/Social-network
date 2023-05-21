@@ -36,13 +36,11 @@ function createUser(req, res, validUser) {
         error: err.message,
       });
     } else {
+      validUser.password_hash = hash;
       await myDAO
-        .add_user({
-          username: validUser.username,
-          email: validUser.email,
-          bio: validUser.bio,
-          password_hash: hash,
-        })
+        .add_user(
+          validUser
+        )
         .then((user) => {
           return res.status(201).json({
             code: 201,
