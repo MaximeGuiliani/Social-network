@@ -66,7 +66,6 @@ class DAO {
         where: { [Op.or]: [{ username }, { email }] },
       });
       if (user) {
-        console.log("Username or email already taken");
         throw new Error("Username or email already taken");
       }
       return this.sequelize.transaction((t) => {
@@ -501,7 +500,6 @@ class DAO {
         attributes: ["name"],
       });
 
-      // console.log("<--->\n" + JSON.stringify(events, null, 2).toString());
       return events.length !== 0;
     });
   }
@@ -527,7 +525,6 @@ class DAO {
         attributes: ["name"],
       });
 
-      // console.log("<--->\n" + JSON.stringify(events, null, 2).toString());
       return events.length !== 0;
     });
   }
@@ -589,7 +586,6 @@ class DAO {
         ],
         attributes: ["name"],
       });
-      console.log("ICIIIIII\n" + JSON.stringify(events, null, 2).toString());
       return events.length !== 0;
     });
   }
@@ -887,31 +883,7 @@ class DAO {
 
   // _____________________   N O T E S  ______________________________________________
 
-  async get_mean_and_count_all_notes_by_username(username) {
-    return this.sequelize.transaction(async (t) => {
-      const user = await User.findOne({ where: { username: username } });
-      if (!user) throw new Error("User not found");
-      const notes = await Note.findAll({ where: { owner_id: user.id } });
-      let sum = 0;
-      for (let i = 0; i < notes.length; i++) {
-        sum += notes[i].value;
-      }
-      return { mean: sum / notes.length, count: notes.length };
-    });
-  }
 
-  async get_mean_and_count_all_notes_by_eventId(eventId) {
-    return this.sequelize.transaction(async (t) => {
-      const event = await Event.findOne({ where: { id: eventId } });
-      if (!event) throw new Error("Event not found");
-      const notes = await Note.findAll({ where: { event_id: event.id } });
-      let sum = 0;
-      for (let i = 0; i < notes.length; i++) {
-        sum += notes[i].value;
-      }
-      return { mean: sum / notes.length, count: notes.length };
-    });
-  }
 }
 
 export { DAO };

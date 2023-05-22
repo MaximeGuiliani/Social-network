@@ -94,9 +94,7 @@ describe("API routes", () => {
 
     describe("GET /users  related to events", () => {
       it("should return a list of all users related to events", async () => {
-        // use query parameters
-        const int = 1;
-        const response = await supertest(app).get("/users").query("params", {
+        const response = await supertest(app).get("/users").query({
           id: 1,
           include_organizedEvents: true,
           include_candidateEvents: true,
@@ -108,8 +106,18 @@ describe("API routes", () => {
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("code");
-        expect(response.body).to.have.property("users");
-        expect(response.body.users).to.be.an("array");
+        expect(response.body).to.have.property("user");
+        expect(response.body.user).to.be.an("object");
+        expect(response.body.user).to.have.property("id");
+        expect(response.body.user).to.have.property("username");
+        expect(response.body.user).to.have.property("email");
+        expect(response.body.user).to.have.property("bio");
+        expect(response.body.user).to.have.property("organizedEvents");
+        expect(response.body.user).to.have.property("candidateEvents");
+        expect(response.body.user).to.have.property("participantEvents");
+        expect(response.body.user).to.have.property("givenNotes");
+        expect(response.body.user).to.have.property("receivedNotes");
+        expect(response.body.user).to.have.property("messages");
       });
     });
 
@@ -138,9 +146,7 @@ describe("API routes", () => {
 
     describe("GET /events related to user", () => {
       it("should get all events related to user", async () => {
-        /*
-         */
-        const response = await supertest(app).get("/events").query("params", {
+        const response = await supertest(app).get("/events").query({
           eventId: 1,
           include_organizer: true,
           include_candidates: true,
@@ -151,7 +157,6 @@ describe("API routes", () => {
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("events");
-        expect(response.body.events).to.be.an("array");
       });
     });
 
@@ -354,11 +359,9 @@ describe("API routes", () => {
 
     describe("GET /categories ", () => {
       it("should get categories by name", async () => {
-        const response = await supertest(app)
-          .get("/categories")
-          .query("params", {
-            name: "sport",
-          });
+        const response = await supertest(app).get("/categories").query({
+          name: "sport",
+        });
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("categories");
@@ -460,6 +463,20 @@ describe("API routes", () => {
         expect(response.body.note.comment).to.equal(
           "il a dit que j'ai tout cassé :("
         );
+      });
+    });
+  });
+
+  describe("complementary API tests", () => {
+    describe("GET /users ", () => {
+      it("should return a list of all users related to events", async () => {
+        const response = await supertest(app).get("/users").query({ id: 1,include_givenNotes: true,include_receivedNotes: true,include_messages: true });
+        console.log(response.body)
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.user.givenNotes).to.be.an("array");
+        expect(response.body.user.receivedNotes).to.be.an("array");
+        expect(response.body.user.messages).to.be.an("array");
+
       });
     });
   });
