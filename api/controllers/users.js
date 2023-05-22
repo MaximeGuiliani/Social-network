@@ -134,10 +134,6 @@ export async function user_get(req, res, next) {
           code: 200,
           message: "Handling GET requests to /users/:id : returning user",
           user: user,
-
-          givenNotes: user.givenNotes,
-          receivedNotes: user.receivedNotes,
-          messages: user.messages,
         });
       })
       .catch(function (err) {

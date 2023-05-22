@@ -50,7 +50,7 @@ class User extends Model {
           allowNull: false,
           validate: {
             // regex of bcrypt hash
-            is: /^\$2[ayb]\$([0-9]{2})\$.{53}$/i
+            is: /^\$2[ayb]\$([0-9]{2})\$.{53}$/i,
           },
         },
       },
