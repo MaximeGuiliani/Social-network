@@ -201,7 +201,6 @@ describe("API routes", () => {
             MainCategoryId: 1,
           });
         expect(response.statusCode).to.equal(200);
-        console.log(response.body);
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("modifiedEvent");
         expect(response.body.modifiedEvent).to.be.an("object");
@@ -292,7 +291,6 @@ describe("API routes", () => {
             const response = await supertest(app)
               .post("/events/1/refuse/1")
               .set("Authorization", `Bearer ${token}`);
-            console.log(response.body);
             expect(response.statusCode).to.equal(200);
             expect(response.body.message).to.equal(
               "Refused candidate for event with id : 1"
@@ -307,7 +305,6 @@ describe("API routes", () => {
         const response = await supertest(app)
           .post("/events/1/unparticipate")
           .set("Authorization", `Bearer ${token}`);
-        console.log(response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body.message).to.equal(
           "Unparticipated to event with id : 1"
@@ -325,7 +322,6 @@ describe("API routes", () => {
             const response = await supertest(app)
               .post("/events/1/remove/1")
               .set("Authorization", `Bearer ${token}`);
-            console.log(response.body);
             expect(response.statusCode).to.equal(200);
             expect(response.body.message).to.equal(
               "Removed participant 1 from event with id : 1"
@@ -367,6 +363,33 @@ describe("API routes", () => {
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("categories");
         expect(response.body.categories).to.be.an("array");
+      });
+    });
+  });
+
+  describe("Messages API routes", () => {
+    describe("POST /messages ", () => {
+      it("should create a new message", async () => {
+        const response = await supertest(app).post("/messages").send({
+          content: "test message",
+          userId: 1,
+          eventId: 1,
+        });
+        console.log("bodyyyyyyyyyyy", response.body);
+        expect(response.statusCode).to.equal(201);
+        expect(response.body.message).to.equal("Message posted");
+        expect(response.body.result.id).to.equal(1);
+        expect(response.body.result.userId).to.equal(1);
+        expect(response.body.result.eventId).to.equal(1);
+      });
+    });
+
+    describe("GET /messages/:eventId ", () => {
+      it("should get all messages", async () => {
+        const response = await supertest(app).get("/messages/1");
+        console.log("bodyyyyyyyyyyy", response.body);
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.messages).to.be.an("array");
       });
     });
   });

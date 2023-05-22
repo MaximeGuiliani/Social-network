@@ -11,8 +11,8 @@ export async function add_messages_to_event(req, res, next) {
   myDAO
     .add_message(validMessage)
     .then(function (result) {
-      res.status(200).json({
-        code: 200,
+      res.status(201).json({
+        code: 201,
         message: "Message posted",
         result: result,
       });
@@ -23,7 +23,7 @@ export async function add_messages_to_event(req, res, next) {
 }
 
 export async function get_all_messages_from_event(req, res, next) {
-  const validId = validate(schemaId.validate(req.body), res);
+  const validId = validate(schemaId.validate(req.params.eventId), res);
   if (validId == null) {
     return;
   }
