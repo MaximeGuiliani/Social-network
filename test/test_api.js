@@ -71,29 +71,6 @@ describe("API routes", () => {
     describe("GET /users", () => {
       it("should return a list of all users", async () => {
         const response = await supertest(app).get("/users");
-        console.log("on est ici", response.body);
-        // {
-        //   code: 200,
-        //   message: 'Handling GET requests to /users : returning all users',
-        //   users: [
-        //     {
-        //       id: 1,
-        //       username: 'testuser',
-        //       email: 'test@mail.com',
-        //       creation_date: '2023-05-22T11:36:21.000Z',
-        //       picture: null,
-        //       bio: 'ceci est une bio'
-        //     },
-        //     {
-        //       id: 2,
-        //       username: 'maxime',
-        //       email: 'maxime@mail.com',
-        //       creation_date: '2023-05-22T11:36:21.000Z',
-        //       picture: null,
-        //       bio: ''
-        //     }
-        //   ]
-        // }
         expect(response.statusCode).to.equal(200);
         expect(response.body.message).to.be.equal("Handling GET requests to /users : returning all users");
         expect(response.body.users).to.be.an("array");
