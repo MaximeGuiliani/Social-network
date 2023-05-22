@@ -375,7 +375,6 @@ describe("API routes", () => {
           userId: 1,
           eventId: 1,
         });
-        console.log("bodyyyyyyyyyyy", response.body);
         expect(response.statusCode).to.equal(201);
         expect(response.body.message).to.equal("Message posted");
         expect(response.body.result.id).to.equal(1);
@@ -387,9 +386,80 @@ describe("API routes", () => {
     describe("GET /messages/:eventId ", () => {
       it("should get all messages", async () => {
         const response = await supertest(app).get("/messages/1");
-        console.log("bodyyyyyyyyyyy", response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body.messages).to.be.an("array");
+      });
+    });
+  });
+
+  describe("Notes API routes", () => {
+    beforeEach(async () => {
+      await supertest(app)
+        .post("/users/signup")
+        .send({
+          username: "testevenetparticipant",
+          email: "testevenetparticipant@mail.com",
+          bio: "ceci est une bio",
+          password: "mdp",
+        })
+        .then(async () => {
+          await supertest(app)
+            .post("/events/1/accept/2")
+            .set("Authorization", `Bearer ${token}`);
+        });
+    });
+
+    describe("POST /notes ", () => {
+      it("should create a new note  from host", async () => {
+        const response = await supertest(app)
+          .post("/notes/addnotefromhost")
+          .set("Authorization", `Bearer ${token}`)
+          .send({
+            creationDate: "2023-04-26T19:11:16.471Z",
+            ownerId: 1,
+            eventId: 1,
+            targetId: 2,
+            value: 2,
+            title: "il a tout cassé :(",
+            comment: "il a tout cassé :(",
+          });
+        expect(response.statusCode).to.equal(201);
+        expect(response.body.message).to.equal("Note posted");
+        expect(response.body.message).to.equal("Note posted");
+        expect(response.body.note.id).to.equal(1);
+        expect(response.body.note.eventId).to.equal(1);
+        expect(response.body.note.ownerId).to.equal(1);
+        expect(response.body.note.type).to.equal(1);
+        expect(response.body.note.targetId).to.equal(2);
+        expect(response.body.note.title).to.equal("il a tout cassé :(");
+        expect(response.body.note.comment).to.equal("il a tout cassé :(");
+      });
+    });
+
+    describe("POST /notes ", () => {
+      it("should create a new note from participant", async () => {
+        const response = await supertest(app)
+          .post("/notes/addnotefromparticipant")
+          .set("Authorization", `Bearer ${token}`)
+          .send({
+            creationDate: "2023-04-26T19:11:16.471Z",
+            ownerId: 2,
+            eventId: 1,
+            value: 2,
+            title: "bad host",
+            comment: "il a dit que j'ai tout cassé :(",
+          });
+        expect(response.statusCode).to.equal(201);
+        expect(response.body.message).to.equal("Note posted");
+        expect(response.body.note.id).to.equal(2);
+        expect(response.body.note.eventId).to.equal(1);
+        expect(response.body.note.ownerId).to.equal(2);
+        expect(response.body.note.type).to.equal(0);
+        expect(response.body.note.targetId).to.equal(1);
+        expect(response.body.note.title).to.equal("bad host");
+        expect(response.body.note.comment).to.equal(
+          "il a dit que j'ai tout cassé :("
+        );
       });
     });
   });

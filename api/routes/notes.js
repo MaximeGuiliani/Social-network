@@ -13,17 +13,12 @@ import {
 router.get("/:noteId", get_note_by_noteId);
 
 
-// (GET) /notes/user/:username/mean
-router.get("/user/:username/mean",get_mean_and_count_all_notes_by_username );
-
-// (GET) /notes/event/:eventId/mean
-router.get("/event/:eventId/mean", get_mean_and_count_all_notes_by_eventId);
 
 // (POST) /notes/addnotefromhost
-router.post("/", checkAuth, post_note_from_host);
+router.post("/addnotefromhost", checkAuth, post_note_from_host);
 
 // (POST) /notes/addnotefromparticipant
-router.post("/", checkAuth, post_note_from_participant);
+router.post("/addnotefromparticipant", checkAuth, post_note_from_participant);
 
 
 export default router;
