@@ -7,7 +7,7 @@
   "scripts": {
     "test": "mocha --require @babel/register --timeout 5000 --reporter spec --recursive test/**/*.js",
     "one": "mocha --require @babel/register --timeout 5000 --reporter spec test/test_only_one.js",
-    "user": "mocha --require @babel/register --timeout 5000 --reporter spec test/api/test_user.js",
+    "user": "mocha --require @babel/register --timeout 5000 --reporter spec test/test_api.js",
     "jest":"jest",
     "start": "nodemon server.js",
     "index": "node index.js"
