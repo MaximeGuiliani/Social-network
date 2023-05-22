@@ -54,9 +54,9 @@ router.post(
 // (POST) /events/:eventId/unparticipate
 router.post("/:eventId/unparticipate", checkAuth, event_unparticipate);
 
-// (POST) /events/:eventId/remove/:username
+// (POST) /events/:eventId/remove/:userId
 router.post(
-  "/:eventId/remove/:username",
+  "/:eventId/remove/:userId",
   checkAuth,
   checkEventOwner,
   event_remove_participant

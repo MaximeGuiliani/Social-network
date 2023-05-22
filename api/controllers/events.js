@@ -196,7 +196,7 @@ export async function event_unapply(req, res, next) {
 // accept candidate for event
 export async function event_accept_candidate(req, res, next) {
   const validUserIdANDEventId = validate(
-    schemaUserIdANDEventId.validate(req.params.eventId),
+    schemaUserIdANDEventId.validate(req.params),
     res
   );
   if (validUserIdANDEventId == null) {
@@ -224,7 +224,7 @@ export async function event_accept_candidate(req, res, next) {
 
 // refuse candidate for event
 export async function event_refuse_candidate(req, res, next) {
-  const validUserIdANDEventId = validate(schemaId.validate(req.params), res);
+  const validUserIdANDEventId = validate(schemaUserIdANDEventId.validate(req.params), res);
   if (validUserIdANDEventId == null) {
     return;
   }
@@ -276,7 +276,7 @@ export async function event_unparticipate(req, res, next) {
 // remove participant from event
 export async function event_remove_participant(req, res, next) {
   const validUserIdANDEventId = validate(
-    schemaUserIdANDEventId.validate(req.body),
+    schemaUserIdANDEventId.validate(req.params),
     res
   );
   if (validUserIdANDEventId == null) {
