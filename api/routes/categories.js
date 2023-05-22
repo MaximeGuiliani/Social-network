@@ -8,6 +8,4 @@ import {
 // (GET) /events/categories
 router.get("/", get_main_categories);
 
-
-
 export default router;

@@ -5,7 +5,7 @@ import {
   schemaSignupUser,
   validate,
   schemaLoginUser,
-  schemaUserWithRelatedEvents
+  schemaUserWithRelatedEvents,
 } from "../validator/validatorsUsers.js";
 
 import {
@@ -38,9 +38,7 @@ function createUser(req, res, validUser) {
     } else {
       validUser.password_hash = hash;
       await myDAO
-        .add_user(
-          validUser
-        )
+        .add_user(validUser)
         .then((user) => {
           return res.status(201).json({
             code: 201,
@@ -71,9 +69,9 @@ export async function user_login(req, res, next) {
         return sendAuthFailed(res, "Auth failed");
       }
       if (result) {
-        let privateKey = "PrivateKeyForTestOnly"
+        let privateKey = "PrivateKeyForTestOnly";
 
-        if ( process.env.JWT_KEY != null) {
+        if (process.env.JWT_KEY != null) {
           privateKey = process.env.JWT_KEY;
         }
 
@@ -114,8 +112,11 @@ export async function user_get(req, res, next) {
       .catch(function (err) {
         sendBadRequest(res, err.message);
       });
-  }else{
-    const validParams = validate(schemaUserWithRelatedEvents.validate(req.query), res);
+  } else {
+    const validParams = validate(
+      schemaUserWithRelatedEvents.validate(req.query),
+      res
+    );
     if (validParams == null) {
       return;
     }
@@ -133,6 +134,10 @@ export async function user_get(req, res, next) {
           code: 200,
           message: "Handling GET requests to /users/:id : returning user",
           user: user,
+
+          givenNotes: user.givenNotes,
+          receivedNotes: user.receivedNotes,
+          messages: user.messages,
         });
       })
       .catch(function (err) {
@@ -157,7 +162,6 @@ export async function user_get_all(req, res, next) {
       sendBadRequest(res, err.message);
     });
 }
-
 
 // TODO : définir les modifications possible pour un user
 // NOTE : user_update met à jour l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe On mets à jour que la bio pour le moment
@@ -186,16 +190,12 @@ export async function user_update(req, res, next) {
       return;
     } else {
       req.body.id = req.userData.id;
-      console.log("-----------------" ,req.body.id)
       const validUser = validate(schemaUpdateUser.validate(req.body), res);
       if (validUser == null) {
         return;
       }
-      console.log("-----------------" ,validUser)
       myDAO
-        .update_user_by_id(
-          validUser
-        )
+        .update_user_by_id(validUser)
         .then(function (updatedUser) {
           res.status(200).json({
             code: 200,
