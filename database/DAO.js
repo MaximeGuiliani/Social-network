@@ -323,12 +323,15 @@ class DAO {
         as: "messages",
         attributes: { exclude: ["createdAt", "updatedAt"] },
         include: [{ model: Event, as: "event", attributes: ["name"] }],
+     
       });
 
     return this.sequelize.transaction(async (t) => {
       return await User.findOne({
         attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
         where: { id: id },
+        raw: true,
+        nest: true,
         include: include,
       });
     });
@@ -392,6 +395,8 @@ class DAO {
       return Event.findOne({
         attributes: { exclude: ["createdAt", "updatedAt"] },
         where: { id: eventId },
+        raw: true,
+        nest: true,
         include: include,
       });
     });
@@ -547,6 +552,8 @@ class DAO {
     return this.sequelize.transaction((t) => {
       return EventMessage.findAll({
         where: { eventId },
+        raw: true,
+        nest: true,
         attributes: { exclude: ["createdAt", "updatedAt"] },
         include: [
           {
@@ -584,6 +591,8 @@ class DAO {
             [Op.or]: [{ "$participants.id$": userId }, { organizerId: userId }],
           },
         ],
+        raw: true,
+        nest: true,
         attributes: ["name"],
       });
       return events.length !== 0;
