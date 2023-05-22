@@ -24,13 +24,12 @@ describe("API routes", () => {
           bio: "ceci est une bio",
           password: "password",
         });
-
         expect(response.statusCode).to.equal(201);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("code");
-        expect(response.body).to.have.property("message");
-        expect(response.body.message).to.equal("User created");
-        expect(response.body).to.have.property("User");
+        expect(response.body.message).to.be.equal("User created");
+        expect(response.body.User.id).to.be.equal(1);
+        expect(response.body.User.username).to.be.equal("testuser");
+        expect(response.body.User.email).to.be.equal("test@mail.com");
+        expect(response.body.User.bio).to.be.equal("ceci est une bio");
       });
     });
 
@@ -41,13 +40,13 @@ describe("API routes", () => {
           email: "maxime@mail.com",
           password: "maxime",
         });
-
         expect(response.statusCode).to.equal(201);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("code");
-        expect(response.body).to.have.property("message");
-        expect(response.body.message).to.equal("User created");
-        expect(response.body).to.have.property("User");
+        expect(response.body.message).to.be.equal("User created");
+        expect(response.body.User.id).to.be.equal(2);
+        expect(response.body.User.username).to.be.equal("maxime");
+        expect(response.body.User.email).to.be.equal("maxime@mail.com");
+        expect(response.body.User.bio).to.be.equal("");
+
       });
     });
 
@@ -58,23 +57,49 @@ describe("API routes", () => {
           password: "password",
         });
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("code");
-        expect(response.body).to.have.property("message");
-        expect(response.body.message).to.equal("Auth successful");
-        expect(response.body).to.have.property("token");
-        expect(response.body).to.have.property("user");
+        expect(response.body.message).to.be.equal("Auth successful");
+        expect(response.body.user.id).to.be.equal(1);
+        expect(response.body.user.username).to.be.equal("testuser");
+        expect(response.body.user.email).to.be.equal("test@mail.com");
+        expect(response.body.user.bio).to.be.equal("ceci est une bio");
+        expect(response.body.token).to.be.a("string");
+
+
       });
     });
 
     describe("GET /users", () => {
       it("should return a list of all users", async () => {
         const response = await supertest(app).get("/users");
+        console.log("on est ici", response.body);
+        // {
+        //   code: 200,
+        //   message: 'Handling GET requests to /users : returning all users',
+        //   users: [
+        //     {
+        //       id: 1,
+        //       username: 'testuser',
+        //       email: 'test@mail.com',
+        //       creation_date: '2023-05-22T11:36:21.000Z',
+        //       picture: null,
+        //       bio: 'ceci est une bio'
+        //     },
+        //     {
+        //       id: 2,
+        //       username: 'maxime',
+        //       email: 'maxime@mail.com',
+        //       creation_date: '2023-05-22T11:36:21.000Z',
+        //       picture: null,
+        //       bio: ''
+        //     }
+        //   ]
+        // }
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.be.an("object");
-        expect(response.body).to.have.property("code");
-        expect(response.body).to.have.property("users");
+        expect(response.body.message).to.be.equal("Handling GET requests to /users : returning all users");
         expect(response.body.users).to.be.an("array");
+        expect(response.body.users[0].id).to.be.equal(1);
+        expect(response.body.users[1].id).to.be.equal(2);
+
       });
     });
 
@@ -103,8 +128,6 @@ describe("API routes", () => {
           include_receivedNotes: true,
           include_messages: true,
         });
-
-        console.log("pennis", response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.be.an("object");
         expect(response.body).to.have.property("code");
@@ -156,7 +179,6 @@ describe("API routes", () => {
           include_notes: true,
           include_messages: true,
         });
-        console.log(response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("events");
@@ -473,15 +495,12 @@ describe("API routes", () => {
   describe("complementary API tests", () => {
     describe("GET /users ", () => {
       it("should return a list of all users related to events", async () => {
-        const response = await supertest(app)
-          .get("/users")
-          .query({
-            id: 1,
-            include_givenNotes: true,
-            include_receivedNotes: true,
-            include_messages: true,
-          });
-        console.log(response.body);
+        const response = await supertest(app).get("/users").query({
+          id: 1,
+          include_givenNotes: true,
+          include_receivedNotes: true,
+          include_messages: true,
+        });
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.be.an("object");
       });
