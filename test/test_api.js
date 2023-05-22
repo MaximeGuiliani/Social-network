@@ -257,13 +257,80 @@ describe("API routes", () => {
         const response = await supertest(app)
           .post("/events/1/unapply")
           .set("Authorization", `Bearer ${token}`);
-          console.log(response.body)
         expect(response.statusCode).to.equal(200);
         expect(response.body.eventId).to.equal(1);
         expect(response.body.UserId).to.equal(1);
         expect(response.body.message).to.equal(
           "Your unapplications to event with id : 1 has been taken into account"
         );
+      });
+    });
+
+    // (POST) /events/:eventId/accept/:userId
+
+    describe("POST /events/:eventId/accept/:userId ", () => {
+      it("should accept a candidate for an events with eventId as id", async () => {
+        const response = await supertest(app)
+          .post("/events/1/accept/1")
+          .set("Authorization", `Bearer ${token}`);
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.message).to.equal(
+          "Accepted candidate for event with id : 1"
+        );
+        expect(response.body.accept_candidate[0].EventId).to.equal(1);
+        expect(response.body.accept_candidate[0].UserId).to.equal(1);
+      });
+    });
+
+    // (POST) /events/:eventId/refuse/:userId
+    describe("POST /events/:eventId/refuse/:userId ", () => {
+      it("should refuse a candidate for an events with eventId as id", async () => {
+        await supertest(app)
+          .post("/events/1/apply")
+          .set("Authorization", `Bearer ${token}`)
+          .then(async () => {
+            const response = await supertest(app)
+              .post("/events/1/refuse/1")
+              .set("Authorization", `Bearer ${token}`);
+            console.log(response.body);
+            expect(response.statusCode).to.equal(200);
+            expect(response.body.message).to.equal(
+              "Refused candidate for event with id : 1"
+            );
+          });
+      });
+    });
+
+    // (POST) /events/:eventId/unparticipate
+    describe("POST /events/:eventId/unparticipate ", () => {
+      it("should unparticipate for an events with eventId as id", async () => {
+        const response = await supertest(app)
+          .post("/events/1/unparticipate")
+          .set("Authorization", `Bearer ${token}`);
+        console.log(response.body);
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.message).to.equal(
+          "Unparticipated to event with id : 1"
+        );
+      });
+    });
+
+    // (POST) /events/:eventId/remove/:1
+    describe("POST /events/:eventId/remove/:1 ", () => {
+      it("should remove a participant for an events with eventId as id", async () => {
+        await supertest(app)
+          .post("/events/1/accept/1")
+          .set("Authorization", `Bearer ${token}`)
+          .then(async () => {
+            const response = await supertest(app)
+              .post("/events/1/remove/1")
+              .set("Authorization", `Bearer ${token}`);
+            console.log(response.body);
+            expect(response.statusCode).to.equal(200);
+            expect(response.body.message).to.equal(
+              "Removed participant 1 from event with id : 1"
+            );
+          });
       });
     });
 
@@ -276,7 +343,31 @@ describe("API routes", () => {
     //     expect(response.body.message).to.equal("Deleted event with id : 1");
     //   });
     // });
+  });
 
-    
+  describe("Categories API routes", () => {
+    describe("GET /categories ", () => {
+      it("should get all categories", async () => {
+        const response = await supertest(app).get("/categories");
+        expect(response.statusCode).to.equal(200);
+        expect(response.body).to.have.property("message");
+        expect(response.body).to.have.property("categories");
+        expect(response.body.categories).to.be.an("array");
+      });
+    });
+
+    describe("GET /categories ", () => {
+      it("should get categories by name", async () => {
+        const response = await supertest(app)
+          .get("/categories")
+          .query("params", {
+            name: "sport",
+          });
+        expect(response.statusCode).to.equal(200);
+        expect(response.body).to.have.property("message");
+        expect(response.body).to.have.property("categories");
+        expect(response.body.categories).to.be.an("array");
+      });
+    });
   });
 });
