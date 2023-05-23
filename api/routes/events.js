@@ -14,6 +14,7 @@ import {
   event_unparticipate,
   event_remove_participant,
   event_get_by_filters,
+  event_get_upcoming,
 } from "../controllers/events.js";
 
 // (GET) /events
@@ -65,5 +66,9 @@ router.post(
 // (GET) /events/search
 
 router.get("/search", event_get_by_filters);
+
+// (GET) /events/upcoming
+
+router.get("/upcoming", event_get_upcoming);
 
 export default router;

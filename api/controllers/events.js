@@ -224,7 +224,10 @@ export async function event_accept_candidate(req, res, next) {
 
 // refuse candidate for event
 export async function event_refuse_candidate(req, res, next) {
-  const validUserIdANDEventId = validate(schemaUserIdANDEventId.validate(req.params), res);
+  const validUserIdANDEventId = validate(
+    schemaUserIdANDEventId.validate(req.params),
+    res
+  );
   if (validUserIdANDEventId == null) {
     return;
   }
@@ -316,6 +319,22 @@ export async function event_get_by_filters(req, res, next) {
       res.status(200).json({
         code: 200,
         message: "Handling GET requests to /events : returning all events",
+        events: result,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err.message);
+    });
+}
+
+export async function event_get_upcoming(req, res, next) {
+  await myDAO
+    .get_upcoming_events(req.query)
+    .then(function (result) {
+      res.status(200).json({
+        code: 200,
+        message:
+          "Handling GET requests to /events/upcoming : returning all upcoming events",
         events: result,
       });
     })

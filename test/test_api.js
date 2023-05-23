@@ -46,7 +46,6 @@ describe("API routes", () => {
         expect(response.body.User.username).to.be.equal("maxime");
         expect(response.body.User.email).to.be.equal("maxime@mail.com");
         expect(response.body.User.bio).to.be.equal("");
-
       });
     });
 
@@ -63,8 +62,6 @@ describe("API routes", () => {
         expect(response.body.user.email).to.be.equal("test@mail.com");
         expect(response.body.user.bio).to.be.equal("ceci est une bio");
         expect(response.body.token).to.be.a("string");
-
-
       });
     });
 
@@ -72,11 +69,12 @@ describe("API routes", () => {
       it("should return a list of all users", async () => {
         const response = await supertest(app).get("/users");
         expect(response.statusCode).to.equal(200);
-        expect(response.body.message).to.be.equal("Handling GET requests to /users : returning all users");
+        expect(response.body.message).to.be.equal(
+          "Handling GET requests to /users : returning all users"
+        );
         expect(response.body.users).to.be.an("array");
         expect(response.body.users[0].id).to.be.equal(1);
         expect(response.body.users[1].id).to.be.equal(2);
-
       });
     });
 
@@ -175,7 +173,8 @@ describe("API routes", () => {
               country: "France",
               zip: "05000",
             },
-            date: "2023-04-26T19:11:16.471Z",
+            image_url:"https://img.freepik.com/premium-vector/basketball_319667-191.jpg",
+            date: "2024-04-26T19:11:16.471Z",
             name: "Basket 1V1",
             description: "1v1 basket ball tournament",
             category: "basket",
@@ -201,7 +200,8 @@ describe("API routes", () => {
               country: "France",
               zip: "05000",
             },
-            date: "2023-01-26T19:11:16.471Z",
+            image_url:"https://img.freepik.com/premium-vector/basketball_319667-191.jpg",
+            date: "2025-01-26T19:11:16.471Z",
             name: "Basket",
             description: "1v1",
             category: "dada",
@@ -222,7 +222,7 @@ describe("API routes", () => {
         // expect(response.body.modifiedEvent.address.country).to.equal("France");
         // expect(response.body.modifiedEvent.address.zip).to.equal("05000");
         expect(response.body.modifiedEvent.date).to.equal(
-          "2023-01-26T19:11:16.471Z"
+          "2025-01-26T19:11:16.471Z"
         );
         expect(response.body.modifiedEvent.name).to.equal("Basket");
         expect(response.body.modifiedEvent.description).to.equal("1v1");
@@ -478,6 +478,20 @@ describe("API routes", () => {
           include_receivedNotes: true,
           include_messages: true,
         });
+        expect(response.statusCode).to.equal(200);
+        expect(response.body).to.be.an("object");
+      });
+    });
+
+    describe("GET /events/upcoming ", () => {
+      it("should return a list of all upcoming events", async () => {
+        const res = await supertest(app).get("/events");
+        console.log("---------------", res.body);
+
+        const response = await supertest(app)
+          .get("/events/upcoming")
+          .query({ limit: 2 });
+        console.log("---------------", response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.be.an("object");
       });
