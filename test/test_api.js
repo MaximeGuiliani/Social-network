@@ -486,12 +486,10 @@ describe("API routes", () => {
     describe("GET /events/upcoming ", () => {
       it("should return a list of all upcoming events", async () => {
         const res = await supertest(app).get("/events");
-        console.log("---------------", res.body);
 
         const response = await supertest(app)
           .get("/events/upcoming")
           .query({ limit: 2 });
-        console.log("---------------", response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.be.an("object");
       });

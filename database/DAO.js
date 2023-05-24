@@ -882,16 +882,15 @@ class DAO {
   }
 
   // get_upcoming_events with a limit of returned values if not undefined and only event after today
-  async get_upcoming_events({limit}) {
-
-    if(limit === undefined) limit = 25;
+  async get_upcoming_events({ limit }) {
+    if (limit === undefined) limit = 25;
     let where = {
       date: { [Op.gte]: new Date() },
     };
     return this.sequelize.transaction((t) => {
       return Event.findAll({
         where: where,
-        limit: parseInt(limit)
+        limit: parseInt(limit),
       });
     });
   }

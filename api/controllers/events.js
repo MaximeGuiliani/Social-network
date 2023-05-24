@@ -166,13 +166,13 @@ export async function event_apply(req, res, next) {
 
 // unapply to event
 export async function event_unapply(req, res, next) {
-  const validId = validate(schemaId.validate(req.params.eventId), res);
-  if (validId == null) {
+  const validEventId = validate(schemaId.validate(req.params.eventId), res);
+  if (validEventId == null) {
     return;
   }
 
   await myDAO
-    .unapply(validId, req.userData.id)
+    .unapply(req.userData.id, validEventId)
     .then(function (result) {
       if (result == 0) {
         sendNotFound(res, "Event or User not found");
@@ -180,11 +180,11 @@ export async function event_unapply(req, res, next) {
       }
       res.status(200).json({
         code: 200,
-        eventId: validId,
+        eventId: validEventId,
         UserId: req.userData.id,
         message:
           "Your unapplications to event with id : " +
-          validId +
+          validEventId +
           " has been taken into account",
       });
     })
