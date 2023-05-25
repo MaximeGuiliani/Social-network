@@ -14,7 +14,8 @@ const schemaUpdateUser = Joi.object().keys({
   email: Joi.string().email(),
   bio: Joi.string().required(),
   picture: Joi.string().uri(),
-  
+  password: Joi.string().pattern(new RegExp("^[0-9a-f]{64,}$")),
+  confirmpassword: Joi.string().valid(Joi.ref("password")),
 });
 
 const schemaLoginUser = Joi.object().keys({
