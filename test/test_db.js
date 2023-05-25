@@ -324,6 +324,53 @@ describe("TEST DB", () => {
       expect(user_with_events.organizedEvents).to.equal(undefined);
     });
 
+    it("test search - maxime 2", async () => {
+      const maxime = await myDAO.add_user({
+        username: "maxime",
+        email: "maxime@mail.com",
+        password_hash:
+        "$2b$10$3uDKF58gsus/Bd/0Z.ZI5elFdfr.emhTRVs6U3924qm59Spuaojbm",
+        bio: "la bio de maxime",
+      });
+      const maxime_get = await myDAO.get_user_by_username("maxime");
+      console.log(">>>>>>>\n" + JSON.stringify(maxime_get, null, 2).toString());
+      
+      const cat_musique = await myDAO.get_main_category_by_name("Musique");
+      const event = await myDAO.save_event({
+        participants_number: 100,
+        category: "Basket",
+        description: "un event basket",
+        image_url: "https://example.com/image_basket.jpg",
+        name: "Basket",
+        organizerId: maxime_get.id,
+        date: "2023-12-31T20:30:00.000Z",
+        MainCategoryId: cat_musique.id,
+        address: {
+          street: "345 avnue du basket",
+          city: "Basket city",
+          country: "CountryTest",
+          zip: "13900",
+        },
+      });
+      console.log(">>>>>>>--\n" + JSON.stringify(event, null, 2).toString());
+
+      const events = await myDAO.get_events_by_filters({
+        event_name: "Basket",
+      });
+      console.log(">>>>>>>\n" + JSON.stringify(events, null, 2).toString());
+      // expect(events.length).to.equal(1);
+    });
+
+    it("test search - maxime", async () => {
+      const events = await myDAO.get_events_by_filters({
+        event_name: "karting",
+        username: "maxime",
+      });
+      console.log(">>>>>>>\n" + JSON.stringify(events, null, 2).toString());
+      // expect(events.length).to.equal(1);
+    });
+
+
     it("test search 1", async () => {
       const events = await myDAO.get_events_by_filters({
         nb_places_wanted: 48,
@@ -891,6 +938,13 @@ describe("TEST DB", () => {
         })
       ).to.be.rejectedWith(Error);
     });
+
+    it("test score_avg", async () => {
+
+    });
+
+
+ 
 
     // await myDAO.participate(franck.id, jazz.id);
     // await myDAO.participate(hugo.id, jazz.id);
