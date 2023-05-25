@@ -118,6 +118,23 @@ async function populate() {
     },
   });
 
+  const volley = await myDAO.save_event({
+    participants_number: 50,
+    category: "Volley ball",
+    description: "Beach volley a la Ciotat",
+    image_url: "https://example.com/image_volley.jpg",
+    name: "Volley Ball !",
+    organizerId: leopaul.id,
+    date: "2023-07-21T12:30:00.000Z",
+    MainCategoryId: cat_sport.id,
+    address: {
+      street: "plage Lumiere",
+      city: "La Ciotat",
+      country: "France",
+      zip: "13600",
+    },
+  });
+
   const rando = await myDAO.save_event({
     participants_number: 50,
     category: "Randonnee",
@@ -141,7 +158,7 @@ async function populate() {
     image_url: "https://example.com/image.jpg",
     name: "Concert de rock",
     organizerId: hugo.id,
-    date: "2025-04-21T12:30:00.000Z",
+    date: "2023-04-21T12:30:00.000Z",
     MainCategoryId: cat_musique.id,
     address: {
       street: "123 rue de la musique",
@@ -157,7 +174,7 @@ async function populate() {
     image_url: "https://example.com/image_karting.jpg",
     name: "Mario Kart",
     organizerId: charles.id,
-    date: "2025-04-21T12:30:00.000Z",
+    date: "2023-04-21T12:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "rue du karting",
@@ -173,7 +190,7 @@ async function populate() {
     image_url: "https://example.com/image_ssbu.jpg",
     name: "Giga Contest Smash",
     organizerId: charles.id,
-    date: "2025-04-21T13:30:00.000Z",
+    date: "2023-04-21T13:30:00.000Z",
     MainCategoryId: cat_jeux_videos.id,
     address: {
       street: "rue de smash bros",
@@ -185,6 +202,7 @@ async function populate() {
   
   await myDAO.apply(leopaul.id, smash.id)
   
+  await myDAO.participate(hugo.id, volley.id);
   await myDAO.participate(leopaul.id, jazz.id);
   await myDAO.participate(hugo.id, jazz.id);
   await myDAO.participate(paul.id, jazz.id);
@@ -193,26 +211,42 @@ async function populate() {
   await myDAO.participate(paul.id, concert.id);
 
   await myDAO.add_note_from_participant({
-    creationDate: "2023-04-22T12:30:00.000Z",
+    ownerId: leopaul.id,
+    eventId: jazz.id,
+    value: 4,
+    title: "super organisateur franck de jazz ",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: hugo.id,
+    eventId: volley.id,
+    value: 4,
+    title: "super volley ",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId : franck.id,
+    eventId : jazz.id,
+    targetId : leopaul.id,
+    value : 3,
+    title : "super lp",
+    comment : "ouiiii",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId : leopaul.id,
+    eventId : volley.id,
+    targetId : hugo.id,
+    value : 3,
+    title : "Hugoo",
+    comment : "hugooooo",
+  });
+
+  await myDAO.add_note_from_participant({
     ownerId: franck.id,
     eventId: rando.id,
     value: 4,
     title: "avis1",
-  });
-
-  await myDAO.add_note_from_participant({
-    creationDate: "2023-04-22T12:30:00.000Z",
-    ownerId: leopaul.id,
-    eventId: jazz.id,
-    value: 3,
-    title: "avis1",
-  });
-  await myDAO.add_note_from_participant({
-    creationDate: "2023-04-22T12:30:00.000Z",
-    ownerId: hugo.id,
-    eventId: jazz.id,
-    value: 5,
-    title: "avis2",
   });
 
 
