@@ -190,17 +190,42 @@ export async function user_update(req, res, next) {
       if (validUser == null) {
         return;
       }
-      myDAO
-        .update_user_by_id(validUser)
-        .then(function (updatedUser) {
-          res.status(200).json({
-            code: 200,
-            updatedUser: updatedUser,
-          });
-        })
-        .catch(function (err) {
-          sendBadRequest(res, err.message);
+      if (validUser.password != null) {
+        hash(req.body.password.password, 10, async (err, hash) => {
+          if (err) {
+            return res.status(500).json({
+              code: 500,
+              error: err.message,
+            });
+          } else {
+            validUser.password_hash = hash;
+            await myDAO
+              .update_user_by_id(validUser)
+              .then((user) => {
+                return res.status(201).json({
+                  code: 201,
+                  message: "User created",
+                  User: userPublicData(user),
+                });
+              })
+              .catch((err) => {
+                return sendServerError(res, err.message);
+              });
+          }
         });
+      } else {
+        myDAO
+          .update_user_by_id(validUser)
+          .then(function (updatedUser) {
+            res.status(200).json({
+              code: 200,
+              updatedUser: updatedUser,
+            });
+          })
+          .catch(function (err) {
+            sendBadRequest(res, err.message);
+          });
+      }
     }
   });
 }

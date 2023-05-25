@@ -423,11 +423,10 @@ class DAO {
         where: { id: eventId },
         include: include,
       });
-        // Json add score_avg to obj2
-        obj2.dataValues["score_avg"] = score_avg;
-        return obj2;
-      })
-
+      // Json add score_avg to obj2
+      obj2.dataValues["score_avg"] = score_avg;
+      return obj2;
+    });
   }
 
   // get all the event
@@ -641,7 +640,7 @@ class DAO {
     email,
     password_hash,
     bio,
-    picture = null,
+    picture,
   }) {
     if (id === undefined) throw new Error("id cannot be undefined");
 

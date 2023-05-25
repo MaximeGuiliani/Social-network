@@ -8,14 +8,15 @@ const schemaSignupUser = Joi.object().keys({
   picture: Joi.string().uri(),
 });
 
-
 const schemaUpdateUser = Joi.object().keys({
-  id:Joi.number().integer().required(),
+  id: Joi.number().integer().required(),
   email: Joi.string().email(),
   bio: Joi.string().required(),
   picture: Joi.string().uri(),
-  password: Joi.string().pattern(new RegExp("^[0-9a-f]{64,}$")),
-  confirmpassword: Joi.string().valid(Joi.ref("password")),
+  password: Joi.object().keys({
+    password: Joi.string().required(),
+    confirmpassword: Joi.string().valid(Joi.ref("password")).required(),
+  }),
 });
 
 const schemaLoginUser = Joi.object().keys({
@@ -51,7 +52,6 @@ const schemaUsername = Joi.string()
       "Username can only contain letters, numbers, and underscores",
     "any.required": "Username is required",
   });
-
 
 const schemaUserWithRelatedEvents = Joi.object().keys({
   id: Joi.number().integer().required(),
