@@ -141,7 +141,7 @@ async function populate() {
     image_url: "https://example.com/image.jpg",
     name: "Concert de rock",
     organizerId: hugo.id,
-    date: "2023-04-21T12:30:00.000Z",
+    date: "2025-04-21T12:30:00.000Z",
     MainCategoryId: cat_musique.id,
     address: {
       street: "123 rue de la musique",
@@ -157,7 +157,7 @@ async function populate() {
     image_url: "https://example.com/image_karting.jpg",
     name: "Mario Kart",
     organizerId: charles.id,
-    date: "2023-04-21T12:30:00.000Z",
+    date: "2025-04-21T12:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "rue du karting",
@@ -173,7 +173,7 @@ async function populate() {
     image_url: "https://example.com/image_ssbu.jpg",
     name: "Giga Contest Smash",
     organizerId: charles.id,
-    date: "2023-04-21T13:30:00.000Z",
+    date: "2025-04-21T13:30:00.000Z",
     MainCategoryId: cat_jeux_videos.id,
     address: {
       street: "rue de smash bros",
@@ -198,6 +198,21 @@ async function populate() {
     eventId: rando.id,
     value: 4,
     title: "avis1",
+  });
+
+  await myDAO.add_note_from_participant({
+    creationDate: "2023-04-22T12:30:00.000Z",
+    ownerId: leopaul.id,
+    eventId: jazz.id,
+    value: 3,
+    title: "avis1",
+  });
+  await myDAO.add_note_from_participant({
+    creationDate: "2023-04-22T12:30:00.000Z",
+    ownerId: hugo.id,
+    eventId: jazz.id,
+    value: 5,
+    title: "avis2",
   });
 
 

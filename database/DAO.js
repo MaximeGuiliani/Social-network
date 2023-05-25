@@ -343,58 +343,91 @@ class DAO {
     include_notes = false,
     include_messages = false /*, include_Address=false, include_MainCategory=false*/,
   }) {
-    const include = [
-      {
-        model: MainCategory,
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-      },
-      { model: Address, attributes: { exclude: ["createdAt", "updatedAt"] } },
-    ];
+    return this.sequelize.transaction(async (t) => {
+      let obj;
+      if (include_notes === true) {
+        obj = await Event.findOne({
+          attributes: [[this.sequelize.literal("AVG(value)"), "score_avg"]],
+          where: { id: eventId },
+          include: [
+            {
+              model: Note,
+              as: "notes",
+              where: { type: 0 },
+            },
+          ],
+        });
+      }
+      let score_avg = obj.dataValues.score_avg;
+      console.log("SCORRRRRRRRE", score_avg);
 
-    if (eventId === undefined) throw new Error("eventId cannot be undefined");
-    if (include_organizer === true)
-      include.push({
-        model: User,
-        as: "organizer",
-        attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-      });
-    if (include_candidates === true)
-      include.push({
-        model: User,
-        as: "candidates",
-        attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-        through: { attributes: [] },
-      });
-    if (include_participants === true)
-      include.push({
-        model: User,
-        as: "participants",
-        attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-        through: { attributes: [] },
-      });
-    if (include_notes === true)
-      include.push({
-        model: Note,
-        as: "notes",
-        attributes: { exclude: ["createdAt", "updatedAt", "type"] },
-      });
-    if (include_messages === true)
-      include.push({
-        model: EventMessage,
-        as: "messages",
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: [{ model: User, as: "owner", attributes: ["username"] }],
-      });
-    // if(include_Address===true)      include.push({ model: Address,      attributes: {exclude: ['createdAt', 'updatedAt']}, });
-    // if(include_MainCategory===true) include.push({ model: MainCategory, attributes: {exclude: ['createdAt', 'updatedAt']}, });
+      const include = [
+        {
+          model: MainCategory,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+        { model: Address, attributes: { exclude: ["createdAt", "updatedAt"] } },
+      ];
 
-    return this.sequelize.transaction((t) => {
-      return Event.findOne({
+      if (eventId === undefined) throw new Error("eventId cannot be undefined");
+      if (include_organizer === true)
+        include.push({
+          model: User,
+          as: "organizer",
+          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+        });
+      if (include_candidates === true)
+        include.push({
+          model: User,
+          as: "candidates",
+          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+          through: { attributes: [] },
+        });
+      if (include_participants === true)
+        include.push({
+          model: User,
+          as: "participants",
+          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+          through: { attributes: [] },
+        });
+      if (include_notes === true) {
+        include.push({
+          model: Note,
+          as: "notes",
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        });
+
+        // include.push({
+        //     model: Note,
+        //     as: "notes",
+        //     attributes: [
+        //       //'value',
+        //       //'type',
+        //       [this.sequelize.literal("AVG(value)"), "score_avg"],
+        //     ],
+        //     where: { type: 0 },
+        // });
+      }
+      if (include_messages === true)
+        include.push({
+          model: EventMessage,
+          as: "messages",
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          include: [{ model: User, as: "owner", attributes: ["username"] }],
+        });
+      // if(include_Address===true)      include.push({ model: Address,      attributes: {exclude: ['createdAt', 'updatedAt']}, });
+      // if(include_MainCategory===true) include.push({ model: MainCategory, attributes: {exclude: ['createdAt', 'updatedAt']}, });
+
+      let obj2 = await Event.findOne({
         attributes: { exclude: ["createdAt", "updatedAt"] },
         where: { id: eventId },
         include: include,
       });
-    });
+        // Json add score_avg to obj2
+        obj2.dataValues["score_avg"] = score_avg;
+        return obj2;
+      })
+
   }
 
   // get all the event
