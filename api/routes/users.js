@@ -20,11 +20,11 @@ router.post("/login", user_login);
 // (GET) /users
 router.get("/", user_get);
 
-// (PATCH) /users/:userName
-router.patch("/:userName", checkAuth, user_update);
+// (PATCH) /users/:id
+router.patch("/:id", checkAuth, user_update);
 
-// (DELETE) /users/:userName
-router.delete("/:userName", checkAuth, user_delete);
+// (DELETE) /users/:id
+router.delete("/:id", checkAuth, user_delete);
 
 
 

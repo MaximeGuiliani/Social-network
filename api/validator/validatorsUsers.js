@@ -10,14 +10,17 @@ const schemaSignupUser = Joi.object().keys({
 
 const schemaUpdateUser = Joi.object().keys({
   id: Joi.number().integer().required(),
+  username: Joi.string(),
   email: Joi.string().email(),
-  bio: Joi.string().required(),
-  picture: Joi.string().uri(),
   password: Joi.object().keys({
     password: Joi.string().required(),
     confirmpassword: Joi.string().valid(Joi.ref("password")).required(),
   }),
+  bio: Joi.string().required(),
+  picture: Joi.string().uri(),
 });
+
+const schemaId = Joi.number().integer().required();
 
 const schemaLoginUser = Joi.object().keys({
   email: Joi.string().email().required(),
@@ -42,16 +45,6 @@ function validate(validation, res) {
   return validation.value;
 }
 
-const schemaUsername = Joi.string()
-  .regex(/^[a-zA-Z0-9_]+$/)
-  .required()
-  .messages({
-    "string.base": "Username should be a string",
-    "string.empty": "Username cannot be empty",
-    "string.pattern.base":
-      "Username can only contain letters, numbers, and underscores",
-    "any.required": "Username is required",
-  });
 
 const schemaUserWithRelatedEvents = Joi.object().keys({
   id: Joi.number().integer().required(),
@@ -68,7 +61,7 @@ export {
   schemaUpdatePassword,
   schemaSignupUser,
   validate,
-  schemaUsername,
+  schemaId,
   schemaUpdateUser,
   schemaLoginUser,
 };
