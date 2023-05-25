@@ -29,3 +29,7 @@ brew services start mysql
 # mysql> connect sn_test_db;
 # mysql> show tables;
 # mysql> select * from users;
+
+
+# SET SQL MODE FROM CLI
+# mysql> SET sql_mode = '';
