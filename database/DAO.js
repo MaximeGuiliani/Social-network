@@ -153,7 +153,11 @@ class DAO {
         {
           model: User,
           as: "organizer",
-          attributes: ['id', 'username', [this.sequelize.literal('AVG(value)'), 'score_host'] ],
+          attributes: [
+            "id",
+            "username",
+            [this.sequelize.literal("AVG(value)"), "score_host"],
+          ],
           include: [
             {
               required: false,
@@ -177,34 +181,75 @@ class DAO {
           attributes: { exclude: ["createdAt", "updatedAt"] },
         },
       ],
-      group: ['Event.id', 'Event.name', 'Event.participants_number', 'Event.category', 'Event.description', 'Event.image_url', 'Event.date', 'Event.MainCategoryId', ],
+      group: [
+        "Event.id",
+        "Event.name",
+        "Event.participants_number",
+        "Event.category",
+        "Event.description",
+        "Event.image_url",
+        "Event.date",
+        "Event.MainCategoryId",
+      ],
       having: {
         [Op.and]: [],
       },
     };
 
-    if(nb_places_wanted !== undefined) info.having[Op.and].push(   {'nb_places_left': {[Op.gte]: nb_places_wanted}}                                                                                    );
-		if(category !== undefined) info.having[Op.and].push(           {'category' : {[Op.like] : `%${category}%`}}      );
-		if(MainCategoryId !== undefined) info.having[Op.and].push(     {'MainCategoryId': {[Op.eq] : MainCategoryId }}      );
-		if(description !== undefined) info.having[Op.and].push(        {'description': {[Op.like] : `%${description}%`}}      );
-		if(event_name !== undefined) info.having[Op.and].push(         {'name': {[Op.like] : `%${event_name}%`}}      );
-		if(username !== undefined) info.having[Op.and].push(           {'organizer.username': {[Op.like] : `%${username}%`}}      );
-		if(score_host_min !== undefined) info.having[Op.and].push(     { 'organizer.score_host': {[Op.or]: {[Op.gte]: score_host_min, [Op.eq]: null} } }                                                   ); //ici on fait le choix d'inclure les event d'organisateurs qui n'ont pas de score
-		if(range_date){
-			const {min=new Date(), max=new Date(Date.now()+100*24*60*60*1000)} = range_date
-			info.having[Op.and].push(         { date : {[Op.lte]: max, [Op.gte]: min} }                                                                     );
-		}
-		if(range_places){
-			const {min=0, max=Number.MAX_SAFE_INTEGER} = range_places
-			info.having[Op.and].push(       { participants_number: {[Op.between]: [min, max]} }                                                       );
-		}
-		if(address){
-			const {street, city, country, zip} = address
-			if(street !== undefined) info.having[Op.and].push(             {'Address.street' : {[Op.like] : `%${street}%`}}      );
-			if(city !== undefined) info.having[Op.and].push(               {'Address.city'   : {[Op.like] : `%${city}%`}}        );
-			if(country !== undefined) info.having[Op.and].push(            {'Address.country': {[Op.like] : `%${country}%`}}     );
-			if(zip !== undefined) info.having[Op.and].push(                {'Address.zip'    : {[Op.like] : `%${zip}%`}}         );
-		}
+    if (nb_places_wanted !== undefined)
+      info.having[Op.and].push({
+        nb_places_left: { [Op.gte]: nb_places_wanted },
+      });
+    if (category !== undefined)
+      info.having[Op.and].push({ category: { [Op.like]: `%${category}%` } });
+    if (MainCategoryId !== undefined)
+      info.having[Op.and].push({ MainCategoryId: { [Op.eq]: MainCategoryId } });
+    if (description !== undefined)
+      info.having[Op.and].push({
+        description: { [Op.like]: `%${description}%` },
+      });
+    if (event_name !== undefined)
+      info.having[Op.and].push({ name: { [Op.like]: `%${event_name}%` } });
+    if (username !== undefined)
+      info.having[Op.and].push({
+        "organizer.username": { [Op.like]: `%${username}%` },
+      });
+    if (score_host_min !== undefined)
+      info.having[Op.and].push({
+        "organizer.score_host": {
+          [Op.or]: { [Op.gte]: score_host_min, [Op.eq]: null },
+        },
+      }); //ici on fait le choix d'inclure les event d'organisateurs qui n'ont pas de score
+    if (range_date) {
+      const {
+        min = new Date(),
+        max = new Date(Date.now() + 100 * 24 * 60 * 60 * 1000),
+      } = range_date;
+      info.having[Op.and].push({ date: { [Op.lte]: max, [Op.gte]: min } });
+    }
+    if (range_places) {
+      const { min = 0, max = Number.MAX_SAFE_INTEGER } = range_places;
+      info.having[Op.and].push({
+        participants_number: { [Op.between]: [min, max] },
+      });
+    }
+    if (address) {
+      const { street, city, country, zip } = address;
+      if (street !== undefined)
+        info.having[Op.and].push({
+          "Address.street": { [Op.like]: `%${street}%` },
+        });
+      if (city !== undefined)
+        info.having[Op.and].push({
+          "Address.city": { [Op.like]: `%${city}%` },
+        });
+      if (country !== undefined)
+        info.having[Op.and].push({
+          "Address.country": { [Op.like]: `%${country}%` },
+        });
+      if (zip !== undefined)
+        info.having[Op.and].push({ "Address.zip": { [Op.like]: `%${zip}%` } });
+    }
 
     return this.sequelize.transaction((t) => {
       return Event.findAll(info);
@@ -273,17 +318,27 @@ class DAO {
           },
         ],
       });
-      if (include_givenNotes === true)
+    if (include_givenNotes === true)
       include.push({
         model: Note,
         as: "givenNotes",
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-        include:[{model: User,  as: "target", attributes: { exclude: ['createdAt', 'updatedAt', "password_hash"] }},
-        {model: Event, as:"event", attributes: { exclude: ['createdAt', 'updatedAt'] }}
-      ],
-      
+        include: [
+          {
+            model: User,
+            as: "target",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "password_hash"],
+            },
+          },
+          {
+            model: Event,
+            as: "event",
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+        ],
       });
     if (include_receivedNotes === true)
       include.push({
@@ -292,9 +347,20 @@ class DAO {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
-        include:[{model: User,  as: "owner", attributes: { exclude: ['createdAt', 'updatedAt', "password_hash"] }},
-        {model: Event, as:"event", attributes: { exclude: ['createdAt', 'updatedAt'] }}
-      ]
+        include: [
+          {
+            model: User,
+            as: "owner",
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "password_hash"],
+            },
+          },
+          {
+            model: Event,
+            as: "event",
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+        ],
       });
     if (include_messages === true)
       include.push({
@@ -346,6 +412,19 @@ class DAO {
           attributes: { exclude: ["createdAt", "updatedAt"] },
         },
         { model: Address, attributes: { exclude: ["createdAt", "updatedAt"] } },
+        {
+          model: User,
+          as: "participants",
+          attributes: [
+            [
+              this.sequelize.literal(
+                " COUNT( DISTINCT UserId)"
+              ),
+              "nb_places_taken",
+            ],
+          ],
+          through: { attributes: [] },
+        },
       ];
 
       if (eventId === undefined) throw new Error("eventId cannot be undefined");

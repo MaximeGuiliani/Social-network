@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "mocha --require @babel/register --timeout 5000 --reporter spec --recursive test/**/*.js",
+    "daotest": "mocha --require @babel/register --timeout 5000 --reporter spec test/test_db.js",
     "apitest": "mocha --require @babel/register --timeout 5000 --reporter spec test/test_api.js",
     "start": "nodemon server.js",
     "index": "node index.js"
