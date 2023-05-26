@@ -412,20 +412,18 @@ class DAO {
           attributes: { exclude: ["createdAt", "updatedAt"] },
         },
         { model: Address, attributes: { exclude: ["createdAt", "updatedAt"] } },
-        {
-          model: User,
-          as: "participants",
-          attributes: [
-            [
-              this.sequelize.literal(
-                " COUNT( DISTINCT UserId)"
-              ),
-              "nb_places_taken",
-            ],
-          ],
-          through: { attributes: [] },
-        },
       ];
+      include.push({
+        model: User,
+        as: "participants",
+        attributes: [
+          [
+            this.sequelize.literal(" COUNT( DISTINCT UserId)"),
+            "nb_places_taken",
+          ],
+        ],
+        through: { attributes: [] },
+      });
 
       if (eventId === undefined) throw new Error("eventId cannot be undefined");
       if (include_organizer === true)
@@ -466,6 +464,7 @@ class DAO {
         //     where: { type: 0 },
         // });
       }
+
       if (include_messages === true)
         include.push({
           model: EventMessage,
