@@ -201,7 +201,6 @@ async function populate() {
   });
   
   await myDAO.apply(leopaul.id, smash.id)
-  await myDAO.apply(paul.id, volley.id)
   
   await myDAO.participate(hugo.id, volley.id);
   await myDAO.participate(leopaul.id, jazz.id);

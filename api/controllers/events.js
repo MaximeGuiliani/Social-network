@@ -62,14 +62,14 @@ export async function event_create(req, res, next) {
     return;
   }
   await myDAO
-    .get_main_category_by_id(validatedEvent.mainCategoryId)
-    .then(function (mainCategory) {
-      if (mainCategory == null) {
+    .get_main_category_by_name(validatedEvent.MainCategory)
+    .then(function (mainCategoryId) {
+      if (mainCategoryId == null) {
         sendBadRequest(res, "Error this main category does not exist");
       } else {
         myDAO
           .save_event({
-            MainCategoryId: mainCategory.id,
+            MainCategoryId: mainCategoryId.id,
             participants_number: validatedEvent.participants_number,
             category: validatedEvent.category,
             description: validatedEvent.description,

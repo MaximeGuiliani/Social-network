@@ -3,21 +3,23 @@ import Joi from "joi";
 
 
 const schemaPostNoteFromHost = Joi.object({
+    creationDate: Joi.date().required(),
     ownerId: Joi.number().required(),
     eventId: Joi.number().required(),
     targetId: Joi.number().required(),
     value: Joi.number().required(),
-    title: Joi.string().min(0) ,
-    comment: Joi.string().min(0),
+    title: Joi.string().required(),
+    comment: Joi.string().required(),
 });
 
 
 const schemaPostNoteFromParticipant = Joi.object({
+  creationDate: Joi.date().required(),
   ownerId: Joi.number().required(),
   eventId: Joi.number().required(),
   value: Joi.number().required(),
-  title: Joi.string().min(0),
-  comment: Joi.string().min(0),
+  title: Joi.string().required(),
+  comment: Joi.string().required(),
 });
 
 

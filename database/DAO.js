@@ -59,13 +59,6 @@ class DAO {
     });
   }
 
-  // get d'une main cat par nom
-  async get_main_category_by_id(id) {
-    return this.sequelize.transaction((t) => {
-      return MainCategory.findOne({ where: { id: id } });
-    });
-  }
-
   //ajout d'un utilisateur et verification que le username ou que l'email n'est pas déjà utilisé
   async add_user({ username, email, password_hash, bio = "", picture = null }) {
     return this.sequelize.transaction(async (t) => {
@@ -218,8 +211,6 @@ class DAO {
     });
   }
 
-
-
   // get user avec ses event associés
   async get_user_with_related_events({
     id,
@@ -236,7 +227,7 @@ class DAO {
       include.push({
         model: Event,
         as: "organizedEvents",
-        attributes: ["id", "participants_number", "category", "description", "image_url", "name", "date", "creation_date", "organizerId", "MainCategoryId", "AddressId" /*[this.sequelize.literal("COUNT( DISTINCT UserId)"),"taken_places"]*/ ],
+        attributes: { exclude: ["createdAt", "updatedAt"] },
         include: [
           {
             model: MainCategory,
@@ -245,18 +236,6 @@ class DAO {
           {
             model: Address,
             attributes: { exclude: ["createdAt", "updatedAt"] },
-          },
-          {
-            model: User,
-            as: "participants",
-            attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-            through: { attributes: [] },
-          },
-          {
-            model: User,
-            as: "candidates",
-            attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-            through: { attributes: [] },            
           },
         ],
       }); // Otherway, can be false or undefined
