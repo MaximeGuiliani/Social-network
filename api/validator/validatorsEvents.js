@@ -11,9 +11,9 @@ const schemaCreateEvent = Joi.object().keys({
     street: Joi.string().required(),
     city: Joi.string().required(),
     country: Joi.string().required(),
-    zip: Joi.number().integer().required(),
+    zip: Joi.string().required(),
   },
-  MainCategory: Joi.string().required(),
+  mainCategoryId: Joi.number().required(),
 });
 
 const schemaUpdateEvent = Joi.object().keys({
