@@ -424,7 +424,6 @@ class DAO {
             through: { attributes: [] },
           }
       ];
-      // include.push();
 
       if (eventId === undefined) throw new Error("eventId cannot be undefined");
       if (include_organizer === true)
@@ -970,17 +969,18 @@ class DAO {
   // get_upcoming_events with a limit of returned values if not undefined and only event after today
   async get_upcoming_events({ limit }) {
     if (limit === undefined) limit = 25;
-    let where = {
+    const where = {
       date: { [Op.gte]: new Date() },
     };
     return this.sequelize.transaction((t) => {
       return Event.findAll({
-        where: where,
+        where,
         limit: parseInt(limit),
+        order: [['date', 'ASC']],
       });
     });
   }
-}
+}  
 
 export { DAO };
 
