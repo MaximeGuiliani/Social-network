@@ -154,13 +154,13 @@ class DAO {
         {
           model: User,
           as: "participants",
-          through: { attributes: ["UserId"] },
+          through: { attributes: [] },
           attributes: [],
         },
         {
           model: User,
           as: "organizer",
-          attributes: ['id', 'username', [this.sequelize.literal('AVG(value)'), 'score_host'] ],
+          attributes: ['id', 'username', 'picture', 'bio', 'creation_date', [this.sequelize.literal('AVG(value)'), 'score_host'] ],
           include: [
             {
               required: false,
@@ -922,7 +922,50 @@ class DAO {
       });
     });
   }
+
+
+
+
+  async get_filling_event(eventId) {
+    return this.sequelize.transaction((t) => {
+      
+      return Event.findByPk(eventId, {
+        include: [
+          {
+            model: User,
+            as: "participants",
+            attributes: [],
+            through: { attributes: [] },
+          },
+          {
+            model: User,
+            as: "candidates",
+            attributes: [],
+            through: { attributes: [] },
+          }
+        ],
+        attributes: { include:[
+          // [this.sequelize.fn('COUNT', this.sequelize.col('`participants.EventParticipants.UserId`')), 'nb_participants'],
+          // [this.sequelize.fn('COUNT', this.sequelize.col('`candidates.EventCandidates.UserId`')), 'nb_candidats']
+          [this.sequelize.literal('COUNT( DISTINCT `Participants->EventParticipants`.`UserId`)'), 'nb_participants'],
+          [this.sequelize.literal('COUNT( DISTINCT `candidates->EventCandidates`.`UserId`)'), 'nb_candidats']
+        ], exclude: ["createdAt", "updatedAt"] },
+        raw:true,
+        nested:true
+      });
+
+    });
+  }
+
+
+
+
+
+
+
+
 }
+
 
 export { DAO };
 
