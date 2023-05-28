@@ -313,8 +313,53 @@ export async function event_get_by_filters(req, res, next) {
   if (validFilters == null) {
     return;
   }
-  await myDAO
-    .get_events_by_filters(validFilters)
+    let nestedObj = {...validFilters};
+    if(nestedObj["range_date_min"] || nestedObj["range_date_max"]){
+      nestedObj.range_date = {};
+    }
+    if(nestedObj["range_date_min"]){
+      nestedObj.range_date.min = nestedObj["range_date_min"];
+      delete nestedObj["range_date_min"];
+    }
+    if(nestedObj["range_date_max"]){
+      nestedObj.range_date.max = nestedObj["range_date_max"];
+      delete nestedObj["range_date_max"];
+    }
+
+    if(nestedObj["range_places_min"] || nestedObj["range_places_max"]){
+      nestedObj.range_places = {};
+    }
+    if(nestedObj["range_places_min"]){
+      nestedObj.range_places.min = nestedObj["range_places_min"];
+      delete nestedObj["range_places_min"];
+    }
+    if(nestedObj["range_places_max"]){
+      nestedObj.range_places.max = nestedObj["range_places_max"];
+      delete nestedObj["range_places_max"];
+    }
+    
+    if(nestedObj["street"] || nestedObj["city"] || nestedObj["country"] || nestedObj["zip"]){
+      nestedObj.address = {};
+    }
+    if(nestedObj["street"]){
+      nestedObj.address.street = nestedObj["street"];
+      delete nestedObj["street"];
+    }
+    if(nestedObj["city"]){
+      nestedObj.address.city = nestedObj["city"];
+      delete nestedObj["city"];
+    }
+    if(nestedObj["country"]){
+      nestedObj.address.country = nestedObj["country"];
+      delete nestedObj["country"];
+    }
+    if(nestedObj["zip"]){
+      nestedObj.address.zip = nestedObj["zip"];
+      delete nestedObj["zip"];
+    }
+    
+    await myDAO
+    .get_events_by_filters(nestedObj)
     .then(function (result) {
       res.status(200).json({
         code: 200,

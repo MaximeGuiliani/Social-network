@@ -43,25 +43,25 @@ const schemaUserIdANDEventId = Joi.object().keys({
 });
 
 const schemaFilters = Joi.object().keys({
-  nb_places_wanted: Joi.number().integer().min(1),
-  category: Joi.string().alphanum().min(3).max(30),
-  range_places: Joi.object().keys({
-    min: Joi.number().integer().required(),
-    max: Joi.number().integer().required(),
-  }),
-  address: Joi.object().keys({
-    street: Joi.string(),
-    city: Joi.string(),
-    country: Joi.string(),
-    zip: Joi.number().integer(),
-  }),
-  description: Joi.string().min(0).max(300),
-  event_name: Joi.string().min(3).max(30),
-  username: Joi.string().min(3).max(30),
-  range_date: Joi.date(),
-  date: Joi.date(),
-  score_host_min: Joi.number().integer().min(1).max(5),
-  MainCategoryId: Joi.string().min(3).max(30),
+  event_name: Joi.string().max(40).optional(),
+  description: Joi.string().max(300).optional(),
+  category: Joi.string().max(40).optional(),
+  MainCategoryId: Joi.number().integer().optional(),
+  
+    range_date_min: Joi.date().optional(),
+    range_date_max: Joi.date().optional(),
+  
+    range_places_min: Joi.number().integer().optional(),
+    range_places_max: Joi.number().integer().optional(),
+
+    street: Joi.string().optional(),
+    city: Joi.string().optional(),
+    country: Joi.string().optional(),
+    zip: Joi.string().optional(),
+
+  username: Joi.string().max(30).optional(),
+  nb_places_wanted: Joi.number().integer().optional(),
+  score_host_min: Joi.number().integer().optional(),
 });
 
 const schemaEventRelatedToUser = Joi.object().keys({
