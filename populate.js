@@ -108,7 +108,7 @@ async function populate() {
     image_url: "https://example.com/image_jazz.jpg",
     name: "Jazz Convergence",
     organizerId: franck.id,
-    date: "2023-04-21T12:30:00.000Z",
+    date: "2024-04-21T12:30:00.000Z",
     MainCategoryId: cat_musique.id,
     address: {
       street: "200 avenue du concert",
@@ -125,7 +125,7 @@ async function populate() {
     image_url: "https://example.com/image_volley.jpg",
     name: "Volley Ball !",
     organizerId: leopaul.id,
-    date: "2023-07-21T12:30:00.000Z",
+    date: "2024-07-21T12:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "plage Lumiere",
@@ -142,7 +142,7 @@ async function populate() {
     image_url: "https://example.com/image_rando.jpg",
     name: "Sortie Luminy",
     organizerId: paul.id,
-    date: "2023-04-21T12:30:00.000Z",
+    date: "2024-04-21T12:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "333 avenue de la rando",
@@ -158,7 +158,7 @@ async function populate() {
     image_url: "https://example.com/image.jpg",
     name: "Concert de rock",
     organizerId: hugo.id,
-    date: "2023-04-21T12:30:00.000Z",
+    date: "2024-04-21T12:30:00.000Z",
     MainCategoryId: cat_musique.id,
     address: {
       street: "123 rue de la musique",
@@ -174,7 +174,7 @@ async function populate() {
     image_url: "https://example.com/image_karting.jpg",
     name: "Mario Kart",
     organizerId: charles.id,
-    date: "2023-04-21T12:30:00.000Z",
+    date: "2024-04-21T12:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "rue du karting",
@@ -190,7 +190,7 @@ async function populate() {
     image_url: "https://example.com/image_ssbu.jpg",
     name: "Giga Contest Smash",
     organizerId: charles.id,
-    date: "2023-04-21T13:30:00.000Z",
+    date: "2024-04-21T13:30:00.000Z",
     MainCategoryId: cat_jeux_videos.id,
     address: {
       street: "rue de smash bros",
@@ -252,14 +252,14 @@ async function populate() {
 
 
   // await myDAO.add_note_from_participant({
-  //   creationDate: "2023-04-22T12:30:00.000Z",
+  //   creationDate: "2024-04-22T12:30:00.000Z",
   //   ownerId: hugo.id,
   //   eventId: jazz.id,
   //   value: 3,
   //   title: "avis2",
   // });
   // await myDAO.add_note_from_participant({
-  //   creationDate: "2023-04-22T12:30:00.000Z",
+  //   creationDate: "2024-04-22T12:30:00.000Z",
   //   ownerId: paul.id,
   //   eventId: jazz.id,
   //   value: 2,
@@ -267,21 +267,21 @@ async function populate() {
   // });
 
   // await myDAO.add_note_from_participant({
-  //   creationDate: "2023-04-22T12:30:00.000Z",
+  //   creationDate: "2024-04-22T12:30:00.000Z",
   //   ownerId: franck.id,
   //   eventId: rando.id,
   //   value: 5,
   //   title: "avis4",
   // });
   // await myDAO.add_note_from_participant({
-  //   creationDate: "2023-04-22T12:30:00.000Z",
+  //   creationDate: "2024-04-22T12:30:00.000Z",
   //   ownerId: hugo.id,
   //   eventId: rando.id,
   //   value: 4,
   //   title: "avis5",
   // });
   // await myDAO.add_note_from_participant({
-  //   creationDate: "2023-04-22T12:30:00.000Z",
+  //   creationDate: "2024-04-22T12:30:00.000Z",
   //   ownerId: paul.id,
   //   eventId: concert.id,
   //   value: 5,
