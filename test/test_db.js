@@ -939,10 +939,47 @@ describe("TEST DB", () => {
       ).to.be.rejectedWith(Error);
     });
 
-    it("test score_avg", async () => {
-
+    it("test filling: 0p 0c", async () => {
+      const franck = await myDAO.get_user_by_username("franck");
+      const hugo = await myDAO.get_user_by_username("hugo");
+      const paul = await myDAO.get_user_by_username("paul");
+      const smash = await myDAO.get_event_by_name("Giga Contest Smash");
+      const filling_smash = await myDAO.get_filling_event(smash.id);
+      expect(filling_smash.nb_participants).to.equal(0);
+      expect(filling_smash.nb_candidats).to.equal(0);
     });
 
+
+    it("test filling: 3p 0c", async () => {
+      const franck = await myDAO.get_user_by_username("franck");
+      const hugo = await myDAO.get_user_by_username("hugo");
+      const paul = await myDAO.get_user_by_username("paul");
+      const smash = await myDAO.get_event_by_name("Giga Contest Smash");
+      await myDAO.participate(franck.id, smash.id);
+      await myDAO.participate(hugo.id, smash.id);
+      await myDAO.participate(paul.id, smash.id);
+      const filling_smash = await myDAO.get_filling_event(smash.id);
+
+      expect(filling_smash.nb_participants).to.equal(3);
+      expect(filling_smash.nb_candidats).to.equal(0);
+    });
+    
+    it("test filling =3p 2c", async () => {
+      const smash = await myDAO.get_event_by_name("Giga Contest Smash");
+      const franck = await myDAO.get_user_by_username("franck");
+      const hugo = await myDAO.get_user_by_username("hugo");
+      const paul = await myDAO.get_user_by_username("paul");
+      const heba = await myDAO.get_user_by_username("heba");
+      const damien = await myDAO.get_user_by_username("damien");
+      await myDAO.apply(heba.id, smash.id);
+      await myDAO.apply(damien.id, smash.id);
+      await myDAO.participate(franck.id, smash.id);
+      await myDAO.participate(hugo.id, smash.id);
+      await myDAO.participate(paul.id, smash.id);
+      const filling_smash = await myDAO.get_filling_event(smash.id);
+      expect(filling_smash.nb_participants).to.equal(3);
+      expect(filling_smash.nb_candidats).to.equal(2);
+    });
 
  
 
