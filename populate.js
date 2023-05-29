@@ -48,7 +48,9 @@ async function populate() {
   const cat_sport = await myDAO.add_main_category("Sports");
   const cat_art_et_culture = await myDAO.add_main_category("Art & Culture");
   const cat_musique = await myDAO.add_main_category("Music");
-  const cat_cinema = await myDAO.add_main_category("Cinema"); //AJOUTER cat bonne causes
+  const cat_cinema = await myDAO.add_main_category("Cinema");
+  const cat_good_causes = await myDAO.add_main_category("Good causes");
+  
 
   const leopaul = await myDAO.add_user({
     username: "leopaul",
