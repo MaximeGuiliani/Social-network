@@ -35,6 +35,13 @@ async function populate() {
   await Note.destroy({ where: {} });
   await EventMessage.destroy({ where: {} });
 
+
+// Sport
+// Culture
+// Music
+// Food
+// Other
+
   const cat_gastronomie = await myDAO.add_main_category("Gastronomie");
   const cat_jeux_videos = await myDAO.add_main_category("Jeux-Vidéos");
   const cat_sciences = await myDAO.add_main_category("Sciences");
