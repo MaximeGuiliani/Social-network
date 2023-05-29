@@ -101,6 +101,14 @@ async function populate() {
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "la bio de heba",
   });
+
+  const yacine = await myDAO.add_user({
+    username: "yacine",
+    email: "yacine@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "la bio de Yacine",
+  });
   const jazz = await myDAO.save_event({
     participants_number: 50,
     category: "Concert",
@@ -183,6 +191,40 @@ async function populate() {
       zip: "75001",
     },
   });
+  const fast_10 = await myDAO.save_event({
+    participants_number: 4,
+    category: "Film Cinéma",
+    description: "Je cherche des personnes qui veulent voir Fast and Furious 10 afin de passer un bon moment au cinéma.",
+    image_url: "https://fr.web.img5.acsta.net/pictures/23/05/10/10/55/5129031.jpg",
+    name: "Séance de Cinéma Fast and Furious 10",
+    organizerId: damien.id,
+    date: "2024-08-15T13:30:00.000Z",
+    MainCategoryId: cat_cinema.id,
+    address: {
+      street: "12 avenue du prado",
+      city: "Marseille",
+      country: "France",
+      zip: "13009",
+    },
+  });
+
+  const foot = await myDAO.save_event({
+    participants_number: 21,
+    category: "Football",
+    description: "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
+    image_url:"https://www.capital.fr/imgre/fit/https.3A.2F.2Fi.2Epmdstatic.2Enet.2Fcap.2F2021.2F08.2F05.2Fbf32f5c6-6c54-4a45-8659-d8d61e1b5637.2Ejpeg/373x187/background-color/ffffff/focus-point/340%2C400/quality/70/s-il-s-agissait-d-un-business-normal-le-foot-francais-serait-en-faillite.jpg",
+    name: "Match de foot 11 vs 11",
+    organizerId: yacine.id,
+    date: "2024-06-21T13:30:00.000Z",
+    MainCategoryId: cat_sport.id,
+    address: {
+      street: "Stade de Luminy",
+      city: "Marseille",
+      country: "France",
+      zip: "13009",
+    },
+  });
+
   const smash = await myDAO.save_event({
     participants_number: 6,
     category: "Super Smash Bros Ultimate",
@@ -197,6 +239,40 @@ async function populate() {
       city: "Paris",
       country: "France",
       zip: "75001",
+    },
+  });
+
+  const forum_science = await myDAO.save_event({
+    participants_number: 10,
+    category: "Forum",
+    description: "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
+    image_url: "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
+    name: "Forum de la santé",
+    organizerId: charles.id,
+    date: "2024-09-27T13:30:00.000Z",
+    MainCategoryId: cat_sciences.id,
+    address: {
+      street: "rue des aigles",
+      city: "Poitiers",
+      country: "France",
+      zip: "86000",
+    },
+  });
+
+  const club_pro = await myDAO.save_event({
+    participants_number: 10,
+    category: "Fifa 23",
+    description: "Recrute des joueurs club pro pour une coupe EA, tout poste recherché.",
+    image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgLRnYhXijgjIxbPOeDVt6o8oX9I5tJRDx-w&usqp=CAU",
+    name: "Club pro fifa 23 ps4 ps5",
+    organizerId: yacine.id,
+    date: "2024-07-21T13:30:00.000Z",
+    MainCategoryId: cat_jeux_videos.id,
+    address: {
+      street: "rue de club pro",
+      city: "Marseille",
+      country: "France",
+      zip: "13005",
     },
   });
   
