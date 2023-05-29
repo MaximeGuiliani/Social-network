@@ -15,13 +15,13 @@ class DAO {
 
   /*----------------------------VERY USEFUL----------------------------*/
 
-  async initCategories() {
-    this.add_main_category("Sport");
-    this.add_main_category("Culture");
-    this.add_main_category("Music");
-    this.add_main_category("Food");
-    this.add_main_category("Other");
-  }
+  // async initCategories() {
+  //   this.add_main_category("Sport");
+  //   this.add_main_category("Culture");
+  //   this.add_main_category("Music");
+  //   this.add_main_category("Food");
+  //   this.add_main_category("Other");
+  // }
 
   //ajout d'une main categoty
   async add_main_category(name) {

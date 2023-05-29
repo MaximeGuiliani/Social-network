@@ -35,13 +35,20 @@ async function populate() {
   await Note.destroy({ where: {} });
   await EventMessage.destroy({ where: {} });
 
-  const cat_gastronomie = await myDAO.add_main_category("Gastronomie");
-  const cat_jeux_videos = await myDAO.add_main_category("Jeux-Vidéos");
+
+// Sport
+// Culture
+// Music
+// Food
+// Other
+
+  const cat_gastronomie = await myDAO.add_main_category("Food");
+  const cat_jeux_videos = await myDAO.add_main_category("Video games");
   const cat_sciences = await myDAO.add_main_category("Sciences");
   const cat_sport = await myDAO.add_main_category("Sports");
   const cat_art_et_culture = await myDAO.add_main_category("Art & Culture");
-  const cat_musique = await myDAO.add_main_category("Musique");
-  const cat_cinema = await myDAO.add_main_category("Cinéma"); //AJOUTER cat bonne causes
+  const cat_musique = await myDAO.add_main_category("Music");
+  const cat_cinema = await myDAO.add_main_category("Cinema"); //AJOUTER cat bonne causes
 
   const leopaul = await myDAO.add_user({
     username: "leopaul",
