@@ -198,6 +198,7 @@ async function populate() {
       zip: "75001",
     },
   });
+  
   const fast_10 = await myDAO.save_event({
     participants_number: 4,
     category: "Film Cinéma",
