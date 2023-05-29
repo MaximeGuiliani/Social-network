@@ -220,7 +220,7 @@ async function populate() {
     participants_number: 21,
     category: "Football",
     description: "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
-    image_url:"https://www.capital.fr/imgre/fit/https.3A.2F.2Fi.2Epmdstatic.2Enet.2Fcap.2F2021.2F08.2F05.2Fbf32f5c6-6c54-4a45-8659-d8d61e1b5637.2Ejpeg/373x187/background-color/ffffff/focus-point/340%2C400/quality/70/s-il-s-agissait-d-un-business-normal-le-foot-francais-serait-en-faillite.jpg",
+    image_url:"https://www.aizenay.fr/medias/2016/04/terrain-de-football.jpg",
     name: "Match de foot 11 vs 11",
     organizerId: yacine.id,
     date: "2024-06-21T13:30:00.000Z",
