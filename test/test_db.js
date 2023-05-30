@@ -170,6 +170,23 @@ describe("TEST DB", () => {
         },
       });
 
+      const exclu = await myDAO.save_event({
+        participants_number: 1,
+        category: "Exclusif",
+        description: "Un event avec un seul participant",
+        image_url: "https://image.com/image.jpg",
+        name: "Super Exclusif",
+        organizerId: hugo.id,
+        date: "2024-01-04T14:30:00.000Z",
+        MainCategoryId: cat_sport.id,
+        address: {
+          street: "avenue exclusive",
+          city: "Paris",
+          country: "France",
+          zip: "75000",
+        },
+      });
+
       await myDAO.participate(franck.id, jazz.id);
       await myDAO.participate(hugo.id, jazz.id);
       await myDAO.participate(paul.id, jazz.id);
@@ -979,6 +996,37 @@ describe("TEST DB", () => {
       const filling_smash = await myDAO.get_filling_event(smash.id);
       expect(filling_smash.nb_participants).to.equal(3);
       expect(filling_smash.nb_candidats).to.equal(2);
+    });
+    
+    it("test participate OK ", async () => {
+      const exclu = await myDAO.get_event_by_name("Super Exclusif");
+      const heba = await myDAO.get_user_by_username("heba");
+
+      await myDAO.participate(heba.id, exclu.id);
+      
+      let event_after = await myDAO.get_event_with_related_users({
+        eventId: exclu.id,
+        include_participants: true,
+      });
+      expect(event_after.participants.length).to.equal(1);
+    });
+
+    it("test participate NOT OK", async () => {
+      const exclu = await myDAO.get_event_by_name("Super Exclusif");
+      const heba = await myDAO.get_user_by_username("heba");
+      const damien = await myDAO.get_user_by_username("damien");
+
+      await myDAO.participate(heba.id, exclu.id);
+      
+      // let event_after = await myDAO.get_event_with_related_users({
+      //   eventId: exclu.id,
+      //   include_participants: true,
+      // });
+      // console.log("--->",(event_after.participants.length));
+
+      return expect(
+        myDAO.participate(damien.id, exclu.id)
+      ).to.be.rejectedWith(Error);
     });
 
  
