@@ -162,8 +162,9 @@ export async function setup_db(force, context) {
 
   // Disable only_full_group_by in MySQL, utile pour la fonction de recherche d'event avec filtres
   // https://stackoverflow.com/questions/35882816/how-to-disable-only-full-group-by-in-mysql-or-sequelize
-  await sequelize.query('SET sql_mode = ""');
+  await sequelize.query("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
 
+  
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
@@ -189,6 +190,7 @@ export async function setup_db(force, context) {
   } catch (error) {
     console.log("Error while synchronizing models: ", error);
   }
-
+  const [results, meta] = await sequelize.query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+  console.log("SQL_MODE", results, meta);
   return sequelize;
 }
