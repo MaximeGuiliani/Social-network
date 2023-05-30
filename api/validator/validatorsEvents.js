@@ -1,5 +1,11 @@
 import Joi from "joi";
 
+const schemaRelationship= Joi.object().keys({
+  userId: Joi.number().integer().required(),
+  eventId: Joi.number().integer().required(),
+});
+
+
 const schemaCreateEvent = Joi.object().keys({
   participants_number: Joi.number().integer().required(),
   category: Joi.string().required(),
@@ -93,5 +99,6 @@ export {
   schemaFilters,
   schemaUserIdANDEventId,
   schemaEventRelatedToUser,
+  schemaRelationship,
   validate,
 };

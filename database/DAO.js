@@ -264,8 +264,6 @@ class DAO {
     });
   }
 
-
-
   // get user avec ses event associés
   async get_user_with_related_events({
     id,
@@ -282,7 +280,19 @@ class DAO {
       include.push({
         model: Event,
         as: "organizedEvents",
-        attributes: ["id", "participants_number", "category", "description", "image_url", "name", "date", "creation_date", "organizerId", "MainCategoryId", "AddressId" /*[this.sequelize.literal("COUNT( DISTINCT UserId)"),"taken_places"]*/ ],
+        attributes: [
+          "id",
+          "participants_number",
+          "category",
+          "description",
+          "image_url",
+          "name",
+          "date",
+          "creation_date",
+          "organizerId",
+          "MainCategoryId",
+          "AddressId" /*[this.sequelize.literal("COUNT( DISTINCT UserId)"),"taken_places"]*/,
+        ],
         include: [
           {
             model: MainCategory,
@@ -295,14 +305,18 @@ class DAO {
           {
             model: User,
             as: "participants",
-            attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "password_hash"],
+            },
             through: { attributes: [] },
           },
           {
             model: User,
             as: "candidates",
-            attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
-            through: { attributes: [] },            
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "password_hash"],
+            },
+            through: { attributes: [] },
           },
         ],
       }); // Otherway, can be false or undefined
@@ -435,16 +449,16 @@ class DAO {
         },
         { model: Address, attributes: { exclude: ["createdAt", "updatedAt"] } },
         {
-            model: User,
-            as: "participants",
-            attributes: [
-              [
-                this.sequelize.literal(" COUNT( DISTINCT UserId)"),
-                "nb_places_taken",
-              ],
+          model: User,
+          as: "participants",
+          attributes: [
+            [
+              this.sequelize.literal(" COUNT( DISTINCT UserId)"),
+              "nb_places_taken",
             ],
-            through: { attributes: [] },
-          }
+          ],
+          through: { attributes: [] },
+        },
       ];
 
       if (eventId === undefined) throw new Error("eventId cannot be undefined");
@@ -989,7 +1003,7 @@ class DAO {
   }
 
   // get_upcoming_events with a limit of returned values if not undefined and only event after today
-  async get_upcoming_events({ limit }) {
+  async get_upcoming_events({ limit=3 }) {
     if (limit === undefined) limit = 25;
     const where = {
       date: { [Op.gte]: new Date() },
@@ -998,18 +1012,13 @@ class DAO {
       return Event.findAll({
         where,
         limit: parseInt(limit),
-        order: [['date', 'ASC']],
+        order: [["date", "ASC"]],
       });
     });
   }
 
-
-
-
-
   async get_filling_event(eventId) {
     return this.sequelize.transaction((t) => {
-      
       return Event.findByPk(eventId, {
         include: [
           {
@@ -1023,30 +1032,76 @@ class DAO {
             as: "candidates",
             attributes: [],
             through: { attributes: [] },
-          }
+          },
         ],
-        attributes: { include:[
-          // [this.sequelize.fn('COUNT', this.sequelize.col('`participants.EventParticipants.UserId`')), 'nb_participants'],
-          // [this.sequelize.fn('COUNT', this.sequelize.col('`candidates.EventCandidates.UserId`')), 'nb_candidats']
-          [this.sequelize.literal('COUNT( DISTINCT `Participants->EventParticipants`.`UserId`)'), 'nb_participants'],
-          [this.sequelize.literal('COUNT( DISTINCT `candidates->EventCandidates`.`UserId`)'), 'nb_candidats']
-        ], exclude: ["createdAt", "updatedAt"] },
-        raw:true,
-        nested:true
+        attributes: {
+          include: [
+            // [this.sequelize.fn('COUNT', this.sequelize.col('`participants.EventParticipants.UserId`')), 'nb_participants'],
+            // [this.sequelize.fn('COUNT', this.sequelize.col('`candidates.EventCandidates.UserId`')), 'nb_candidats']
+            [
+              this.sequelize.literal(
+                "COUNT( DISTINCT `Participants->EventParticipants`.`UserId`)"
+              ),
+              "nb_participants",
+            ],
+            [
+              this.sequelize.literal(
+                "COUNT( DISTINCT `candidates->EventCandidates`.`UserId`)"
+              ),
+              "nb_candidats",
+            ],
+          ],
+          exclude: ["createdAt", "updatedAt"],
+        },
+        raw: true,
+        nested: true,
       });
-
     });
   }
 
-
-
-
-
-
-
-
+  async get_user_event_relationship(userId, eventId) {
+    console.log("get_user_event_relationship");
+    console.log("eventId", eventId);
+    console.log("userId", userId);
+    const event = await Event.findOne({
+      where: { id: eventId },
+      include: [
+        {
+          model: User,
+          as: "participants",
+          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+          through: { attributes: [] },
+        },
+        {
+          model: User,
+          as: "candidates",
+          attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+          through: { attributes: [] },
+        },
+      ],
+    });
+    if (event) {
+      console.log("event", event);
+      if (event.dataValues.organizerId == userId) {
+        return { value: "event owner" };
+      } else if (
+        event.candidates.length > 0 &&
+        event.candidates.find((candidate) => candidate.id == userId)
+      ) {
+        return { value: "candidate" };
+      } else if (
+        event.participants.length > 0 &&
+        event.participants.find((participant) => participant.id == userId)
+      ) {
+        return { value: "participant" };
+      } else {
+        return { value: "not related" };
+      }
+    } else {
+      return { value: "event not found" };
+    }
+  }
 }
-
 
 export { DAO };
 

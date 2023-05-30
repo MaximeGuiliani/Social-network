@@ -6,6 +6,7 @@ import {
   schemaFilters,
   schemaUserIdANDEventId,
   schemaEventRelatedToUser,
+  schemaRelationship,
 } from "../validator/validatorsEvents.js";
 import { myDAO } from "../../app.js";
 
@@ -386,4 +387,26 @@ export async function event_get_upcoming(req, res, next) {
     .catch(function (err) {
       sendBadRequest(res, err.message);
     });
+
+
+}
+
+// search if user is related to event
+export async function event_relationship(req, res, next) {
+  const validFilters = validate(schemaRelationship.validate(req.query), res);
+  if (validFilters == null) {
+    return;
+  }
+  await myDAO.get_user_event_relationship(validFilters.userId, validFilters.eventId)
+    .then(function (result) {
+      res.status(200).json({
+        code: 200,
+        message: "Handling GET requests to /events : returning all events",
+        events: result,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err.message);
+    });
+
 }

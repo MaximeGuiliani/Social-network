@@ -15,6 +15,7 @@ import {
   event_remove_participant,
   event_get_by_filters,
   event_get_upcoming,
+  event_relationship,
 } from "../controllers/events.js";
 
 // (GET) /events
@@ -70,5 +71,9 @@ router.get("/search", event_get_by_filters);
 // (GET) /events/upcoming
 
 router.get("/upcoming", event_get_upcoming);
+
+// (GET) /events/event_relationship
+router.get("/event_relationship", event_relationship);
+
 
 export default router;
