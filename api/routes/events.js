@@ -16,6 +16,7 @@ import {
   event_get_by_filters,
   event_get_upcoming,
   event_relationship,
+  event_get_filling_event,
 } from "../controllers/events.js";
 
 // (GET) /events
@@ -75,5 +76,7 @@ router.get("/upcoming", event_get_upcoming);
 // (GET) /events/event_relationship
 router.get("/event_relationship", event_relationship);
 
+// (GET) /events/get_filling_event/:eventId
+router.get("/get_filling_event", event_get_filling_event);
 
 export default router;

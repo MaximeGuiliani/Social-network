@@ -410,3 +410,23 @@ export async function event_relationship(req, res, next) {
     });
 
 }
+
+export async function event_get_filling_event(req, res, next) {
+  const validEventId = validate(schemaId.validate(req.query.eventId), res);
+  if (validEventId == null) {
+    return;
+  }
+  await myDAO
+    .get_filling_event(req.query.eventId)
+    .then(function (result) {
+      res.status(200).json({
+        code: 200,
+        message:
+          "Handling GET requests to /events/filling : returning all filling events",
+        events: result,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err.message);
+    });
+}
