@@ -1,606 +1,1410 @@
-openapi: 3.0.0
-servers:
-  - description: social network API
-    url: https://virtserver.swaggerhub.com/MAXIMEGUILIANI_1/DocSN/1.1.0
+swagger: "2.0"
 info:
-  version: 1.1.0
-  title: SN-api
-  description: The API for the EatBacon IOT project
+  title: Social network API
+  description: Your API Description
+  version: "1.0.0"
+# host: localhost:3000
+# basePath: /
+schemes:
+  - https
 paths:
-  /home:
-    options:
-      tags: 
-      - TODO
-      summary: Supprimer un utilisateur
-      description: Supprime un utilisateur stocké dans la base de données.
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-  /Search:
-    options:
-      tags: 
-      - TODO
-      summary: Rechercher un utilisateur avec une ou plusieur option précise.
-      description: Recherche un utilisateur avec une ou plusieur option précise.
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-                    
-  /myevents:
-    options:
-      tags: 
-      - TODO
-      summary: Liste de mes evenements créés
-      description: Liste de mes evenements créés
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-  /myParticipation:
-    options:
-      tags: 
-      - TODO
-      summary: Liste de mes evenements créés
-      description: Liste de mes evenements créés
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
   /events:
     get:
-      tags: 
-      - Events
-      summary: Récupérer tous les événements
-      description: Retourne tous les événements stockés dans la base de données.
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-                  events:
-                    type: array
-                    description: Liste de tous les événements.
-                    items:
-                      $ref: '#/components/schemas/Event'
-        400:
-          description: Requête invalide
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
-  /events/{id}:
-    get:
-      tags: 
-      - Events
-      summary: Récupérer un événement
-      description: Retourne un événement stocké dans la base de données.
+      tags:
+        - Events
+      summary: Get events
+      description: Returns all events or an event with related users.
       parameters:
-        - name: id
-          in: path
-          description: ID de l'événement à récupérer
-          required: true
-          schema:
-            type: integer
-            minimum: 1
+        - name: eventId
+          in: query
+          description: ID of the event to retrieve.
+          required: false
+          type: integer
+        - name: include_organizer
+          in: query
+          description: Include the organizer in the response.
+          required: false
+          type: boolean
+        - name: include_candidates
+          in: query
+          description: Include the candidates in the response.
+          required: false
+          type: boolean
+        - name: include_participants
+          in: query
+          description: Include the participants in the response.
+          required: false
+          type: boolean
+        - name: include_notes
+          in: query
+          description: Include the notes in the response.
+          required: false
+          type: boolean
+        - name: include_messages
+          in: query
+          description: Include the messages in the response.
+          required: false
+          type: boolean
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-                  event:
-                    $ref: '#/components/schemas/Event'
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              events:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    event_id:
+                      type: integer
+                    event_name:
+                      type: string
+                    organizer:
+                      type: object
+                      properties:
+                        organizer_id:
+                          type: integer
+                        organizer_name:
+                          type: string
+                    candidates:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          candidate_id:
+                            type: integer
+                          candidate_name:
+                            type: string
+                    participants:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          participant_id:
+                            type: integer
+                          participant_name:
+                            type: string
+                    notes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          note_id:
+                            type: integer
+                          note_text:
+                            type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type: integer
+                          message_text:
+                            type: string
         400:
-          description: Requête invalide
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
+          description: Bad Request
+        401:
+          description: Unauthorized Access
         404:
-          description: Événement non trouvé
-          content:
-            application/json:
-              schema:
+          description: Not Found
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - Events
+      summary: Create event
+      description: Create a new event.
+      parameters:
+        - name: event
+          in: body
+          description: Event object
+          required: true
+          schema:
+            type: object
+            properties:
+              participants_number:
+                type: integer
+              category:
+                type: string
+              description:
+                type: string
+              image_url:
+                type: string
+              name:
+                type: string
+              date:
+                type: string
+              address:
                 type: object
                 properties:
-                  message:
+                  street:
                     type: string
-                    description: Message d'erreur.
-                  error:
+                  city:
                     type: string
-                    description: Description de l'erreur.
-    patch:
-      tags: 
-      - Events
-      security:
-        - BearerAuth: []
-      summary: Mettre à jour un événement
-      description: Permet à un utilisateur de mettre à jour un événement
+                  country:
+                    type: string
+                  zip:
+                    type: string
+              mainCategoryId:
+                type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              event:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  date:
+                    type: string
+                  address:
+                    type: object
+                    properties:
+                      street:
+                        type: string
+                      city:
+                        type: string
+                      country:
+                        type: string
+                      zip:
+                        type: string
+                  mainCategoryId:
+                    type: integer
+                  participantsNumber:
+                    type: integer
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  imageUrl:
+                    type: string
+                  organizerId:
+                    type: integer       
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+    patch: 
+      tags:
+        - Events
+      summary: Update event
+      description: Update an event.
       parameters:
-        - name: id
+        - name: eventId
           in: path
-          description: ID de l'événement à mettre à jour
+          description: ID of the event to update.
+          required: true
+          type: integer
+        - name: event
+          in: body
+          description: Event object
           required: true
           schema:
-            type: integer
-            minimum: 1
-      requestBody:
-        description: Objet représentant les informations de l'événement à mettre à jour
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EventUpdate'
+            type: object
+            properties:
+              participants_number:
+                type: integer
+              category:
+                type: string
+              description:
+                type: string
+              image_url:
+                type: string
+              name:
+                type: string
+              date:
+                type: string
+              address:
+                type: object
+                properties:
+                  street:
+                    type: string
+                  city:
+                    type: string
+                  country:
+                    type: string
+                  zip:
+                    type: string
+              mainCategoryId:
+                type: integer
       responses:
-        '200':
-          description: Événement mis à jour avec succès
-        '400':
-          description: Données de l'événement invalides
-        '404':
-          description: Événement non trouvé
-        '500':
-          description: Erreur interne du serveur
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              event:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  date:
+                    type: string
+                  address:
+                    type: object
+                    properties:
+                      street:
+                        type: string
+                      city:
+                        type: string
+                      country:
+                        type: string
+                      zip:
+                        type: string
+                  mainCategoryId:
+                    type: integer
+                  participantsNumber:
+                    type: integer
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  imageUrl:
+                    type: string
+                  organizerId:
+                    type: integer       
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
     delete:
-      tags: 
-      - Events
-      security:
-        - BearerAuth: []
-      summary: Supprimer un événement
-      description: Permet à un utilisateur de supprimer un événement
+      tags:
+        - Events
+      summary: Delete event
+      description: Delete an event.
       parameters:
-        - name: id
+        - name: eventId
           in: path
-          description: ID de l'événement à supprimer
+          description: ID of the event to delete.
           required: true
+          type: integer
+      responses:
+        200:
+          description: OK
           schema:
-            type: integer
-            minimum: 1
-      responses:
-        '200':
-          description: Événement supprimé avec succès
-        '404':
-          description: Événement non trouvé
-        '500':
-          description: Erreur interne du serveur
-
-  /events/create:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+# (POST) /events/:eventId/apply
+#router.post("/:eventId/apply", checkAuth, event_apply);
+  /events/{eventId}/apply:
     post:
-      tags: 
-      - Events
-      security:
-        - BearerAuth: []
-      summary: Créer un événement
-      description: Permet à un utilisateur de créer un événement
-      requestBody:
-        description: Objet représentant les informations de l'événement à créer
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Event'
+      tags:
+        - Events
+      summary: Apply to event
+      description: Apply to an event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to apply to.
+          required: true
+          type: integer
       responses:
-        '201':
-          description: Événement créé avec succès
-        '400':
-          description: Données de l'événement invalides
-        '500':
-          description: Erreur interne du serveur
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /events/{eventId}/unapply:
+    post:
+      tags:
+        - Events
+      summary: Unapply to event
+      description: Unapply to an event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to unapply to.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /events/{eventId}/accept/{userId}:
+    post:
+      tags:
+        - Events
+      summary: Accept candidate
+      description: Accept a candidate to an event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to accept a candidate to.
+          required: true
+          type: integer
+        - name: userId
+          in: path
+          description: ID of the user to accept to the event.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
 
+  
+  /events/{eventId}/refuse/{userId}:
+    post:
+      tags:
+        - Events
+      summary: Refuse candidate
+      description: Refuse a candidate to an event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to refuse a candidate to.
+          required: true
+          type: integer
+        - name: userId
+          in: path
+          description: ID of the user to refuse to the event.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /events/{eventId}/unparticipate:
+    post:
+      tags:
+        - Events
+      summary: Unparticipate to event
+      description: Unparticipate to an event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to unparticipate to.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /events/{eventId}/remove/{userId}:
+    post:
+      tags:
+        - Events
+      summary: Remove participant
+      description: Remove a participant from an event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to remove a participant from.
+          required: true
+          type: integer
+        - name: userId
+          in: path
+          description: ID of the user to remove from the event.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        403:
+          description: Forbidden
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+
+# (GET) /events/search
+# filters :
+# router.get("/search", event_get_by_filters);
+#   event_name: Joi.string().max(40).optional(),
+#   description: Joi.string().max(300).optional(),
+#   category: Joi.string().max(40).optional(),
+#   MainCategoryId: Joi.number().integer().optional(),
+  
+#     range_date_min: Joi.date().optional(),
+#     range_date_max: Joi.date().optional(),
+  
+#     range_places_min: Joi.number().integer().optional(),
+#     range_places_max: Joi.number().integer().optional(),
+
+#     street: Joi.string().optional(),
+#     city: Joi.string().optional(),
+#     country: Joi.string().optional(),
+#     zip: Joi.string().optional(),
+
+#   username: Joi.string().max(30).optional(),
+#   nb_places_wanted: Joi.number().integer().optional(),
+#   score_host_min: Joi.number().integer().optional(),
+  
+  /events/search:
+    get:
+      tags:
+        - Events
+      summary: Search events
+      description: Search events.
+      parameters:
+        - name: event_name
+          in: query
+          description: Name of the event to search.
+          required: false
+          type: string
+        - name: description
+          in: query
+          description: Description of the event to search.
+          required: false
+          type: string
+        - name: category
+          in: query
+          description: Category of the event to search.
+          required: false
+          type: string
+        - name: MainCategoryId
+          in: query
+          description: MainCategoryId of the event to search.
+          required: false
+          type: integer
+        - name: range_date_min
+          in: query
+          description: Minimum date of the event to search.
+          required: false
+          type: string
+        - name: range_date_max
+          in: query
+          description: Maximum date of the event to search.
+          required: false
+          type: string
+        - name: range_places_min
+          in: query
+          description: Minimum number of places of the event to search.
+          required: false
+          type: integer
+        - name: range_places_max
+          in: query
+          description: Maximum number of places of the event to search.
+          required: false
+          type: integer
+        - name: street
+          in: query
+          description: Street of the event to search.
+          required: false
+          type: string
+        - name: city
+          in: query
+          description: City of the event to search.
+          required: false
+          type: string
+        - name: country
+          in: query
+          description: Country of the event to search.
+          required: false
+          type: string
+        - name: zip
+          in: query
+          description: Zip of the event to search.
+          required: false
+          type: string
+        - name: username
+          in: query
+          description: Username of the event to search.
+          required: false
+          type: string
+        - name: nb_places_wanted
+          in: query
+          description: Number of places wanted of the event to search.
+          required: false
+          type: integer
+        - name: score_host_min
+          in: query
+          description: Minimum score of the host of the event to search.
+          required: false
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              events:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    event_id:
+                      type: integer
+                    event_name:
+                      type: string
+                    organizer:
+                      type: object
+                      properties:
+                        organizer_id:
+                          type: integer
+                        organizer_name:
+                          type: string
+                    candidates:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          candidate_id:
+                            type: integer
+                          candidate_name:
+                            type: string
+                    participants:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          participant_id:
+                            type: integer
+                          participant_name:
+                            type: string
+                    notes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          note_id:
+                            type: integer
+                          note_text:
+                            type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type: integer
+                          message_text:
+                            type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        500:
+          description: Internal Server Error
+# router.get("/upcoming", event_get_upcoming);
+  /events/upcoming:
+    get:
+      tags:
+        - Events
+      summary: Get upcoming events
+      description: Get upcoming events.
+      parameters:
+        - name: limit
+          in: query
+          description: Limit of upcoming events to retrieve.
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          description: Offset of upcoming events to retrieve.
+          required: false
+          type: integer
+        - name: include_organizer
+          in: query
+          description: Include the organizer in the response.
+          required: false
+          type: boolean
+        - name: include_candidates
+          in: query
+          description: Include the candidates in the response.
+          required: false
+          type: boolean
+        - name: include_participants
+          in: query
+          description: Include the participants in the response.
+          required: false
+          type: boolean
+        - name: include_notes
+          in: query
+          description: Include the notes in the response.
+          required: false
+          type: boolean
+        - name: include_messages
+          in: query
+          description: Include the messages in the response.
+          required: false
+          type: boolean
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+              events:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    event_id:
+                      type: integer
+                    event_name:
+                      type: string
+                    organizer:
+                      type: object
+                      properties:
+                        organizer_id:
+                          type: integer
+                        organizer_name:
+                          type: string
+                    candidates:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          candidate_id:
+                            type: integer
+                          candidate_name:
+                            type: string
+                    participants:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          participant_id:
+                            type: integer
+                          participant_name:
+                            type: string
+                    notes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          note_id:
+                            type: integer
+                          note_text:
+                            type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type : integer
+                          message_text: 
+                            type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        500:
+          description: Internal Server Error
+  /events/event_relationship:
+    get:
+      tags:
+        - Events
+      summary: Get event relationship
+      description: Get event relationship.
+      parameters:
+        - name: eventId
+          in: query
+          description: ID of the event to retrieve the relationship.
+          required: true
+          type: integer
+        - name: userId
+          in: query
+          description: ID of the user to retrieve the relationship.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              relationship:
+                type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        500:
+          description: Internal Server Error
   /users/signup:
     post:
-      tags: 
-      - Users
-      security:
-        - BearerAuth: []
-      summary: Inscription d'un utilisateur
-      description: Permet à un utilisateur de s'inscrire à l'application
-      requestBody:
-        description: Objet représentant les informations de l'utilisateur à créer
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserSignup'
+      tags:
+        - Users
+      summary: Signup
+      description: Signup.
+      parameters:
+        - name: user
+          in: body
+          description: User object
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              bio:
+                type: string
+              email:
+                type: string
+              picture:
+                type: string
       responses:
-        '201':
-          description: Utilisateur créé avec succès
-        '400':
-          description: Données de l'utilisateur invalides
-        '409':
-          description: Nom d'utilisateur déjà utilisé
-        '500':
-          description: Erreur interne du serveur
-          
-  /users/login :     
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              userId:
+                type: integer
+              username:
+                type: string
+              bio:
+                type: string
+              email:
+                type: string
+              picture:
+                type: string
+              score:
+                type: integer
+              createdAt:
+                type: string
+              updatedAt:
+                type: string
+        400:
+          description: Bad Request
+        409:
+          description: Conflict
+        500:
+          description: Internal Server Error
+  /users/login:
     post:
-      tags: 
-      - Users
-      summary: Connectez-vous en tant qu'utilisateur enregistré
-      description: Connectez-vous en utilisant un email et un mot de passe valides. Si     l'authentification réussit, un jeton d'accès est renvoyé dans la réponse.
-      requestBody:
-        description: Les informations de connexion de l'utilisateur
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginUser'
-      responses:
-        '200':
-          description: Succès de l'authentification
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  token:
-                    type: string
-        '401':
-          description: Échec de l'authentification
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-        '500':
-          description: Erreur interne du serveur
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /users :
-    get:
-      tags: 
-      - Users
-      summary: Récupérer tous les utilisateurs
-      description: Retourne tous les utilisateurs stockés dans la base de données.
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-                  users:
-                    type: array
-                    description: Liste de tous les utilisateurs.
-                    items:
-                      $ref: '#/components/schemas/User'
-        400:
-          description: Requête invalide
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
-  /users/{id}:
-    get:
-      tags: 
-      - Users
-      summary: Récupérer un utilisateur
-      description: Retourne un utilisateur stocké dans la base de données.
+      tags:
+        - Users
+      summary: Login
+      description: Login.
       parameters:
-        - name: id
-          in: path
-          description: ID de l'utilisateur à récupérer
+        - name: user
+          in: body
+          description: User object
           required: true
           schema:
-            type: integer
-            minimum: 1
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message de réussite.
-                  user:
-                    $ref: '#/components/schemas/User'
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+              userId:
+                type: integer
+              username:
+                type: string
+              bio:
+                type: string
+              email:
+                type: string
+              picture:
+                type: string
+              score:
+                type: integer
+              createdAt:
+                type: string
+              updatedAt:
+                type: string
         400:
-          description: Requête invalide
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
+          description: Bad Request
+        401:
+          description: Unauthorized Access
         404:
-          description: Utilisateur non trouvé
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get users
+      description: Get user all users or a user with related events.
+      parameters:
+        - name: id
+          in: query
+          description: ID of the user to retrieve.
+          required: false
+          type: integer
+        - name: include_organizedEvents
+          in: query
+          description: Include the organized events in the response.
+          required: false
+          type: boolean
+        - name: include_candidateEvents
+          in: query
+          description: Include the candidate events in the response.
+          required: false
+          type: boolean
+        - name: include_participantEvents
+          in: query
+          description: Include the participant events in the response.
+          required: false
+          type: boolean
+        - name: include_givenNotes
+          in: query
+          description: Include the given notes in the response.
+          required: false
+          type: boolean
+        - name: include_receivedNotes
+          in: query
+          description: Include the received notes in the response.
+          required: false
+          type: boolean
+        - name: include_messages
+          in: query
+          description: Include the messages in the response.
+          required: false
+          type: boolean
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                    user_name:
+                      type: string
+                    organized_events:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          event_id:
+                            type: integer
+                          event_name:
+                            type: string
+                    candidate_events:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          event_id:
+                            type: integer
+                          event_name:
+                            type: string
+                    participant_events:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          event_id:
+                            type: integer
+                          event_name:
+                            type: string
+                    given_notes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          note_id:
+                            type: integer
+                          note_text:
+                            type: string
+                    received_notes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          note_id:
+                            type:
+                              integer
+                          note_text:
+                            type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type: integer
+                          message_text:
+                            type: string
+        400:
+          description: Bad Request
+        500:
+          description: Internal Server Error
+  /users/:id:
     patch:
-      tags: 
-      - Users
-      summary: Mettre à jour un utilisateur
-      description: Met à jour un utilisateur stocké dans la base de données.
+      tags:
+        - Users
+      summary: Update user
+      description: Update a user.
       parameters:
         - name: id
           in: path
-          description: ID de l'utilisateur à mettre à jour
+          description: ID of the user to update.
+          required: true
+          type: integer
+        - name: user
+          in: body
+          description: User object
           required: true
           schema:
-            type: integer
-            minimum: 1
-      requestBody:
-        description: Objet représentant les informations de l'utilisateur à mettre à jour
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              bio:
+                type: string
+              email:
+                type: string
+              picture:
+                type: string
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
+          schema:
+            type: object
+            properties:
+              user:
                 type: object
                 properties:
-                  message:
+                  id:
+                    type: integer
+                  username:
                     type: string
-                    description: Message de réussite.
-                  user:
-                    $ref: '#/components/schemas/User'
+                  bio:
+                    type: string
+                  email:
+                    type: string
+                  picture:
+                    type: string
+                  score:
+                    type: integer
+                  createdAt:
+                    type: string
+                  updatedAt:
+                    type: string
         400:
-          description: Requête invalide
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
-      security:
-        - BearerAuth: []
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        409:
+          description: Conflict
+        500:
+          description: Internal Server Error
+  /user/:id:
     delete:
-      tags: 
-      - Users
-      summary: Supprimer un utilisateur
-      description: Supprime un utilisateur stocké dans la base de données.
+      tags:
+        - Users
+      summary: Delete user
+      description: Delete a user.
       parameters:
         - name: id
           in: path
-          description: ID de l'utilisateur à supprimer
+          description: ID of the user to delete.
           required: true
-          schema:
-            type: integer
-            minimum: 1
+          type: integer
       responses:
         200:
           description: OK
-          content:
-            application/json:
-              schema:
+          schema:
+            type: object
+            properties:
+              user:
                 type: object
                 properties:
-                  message:
+                  id:
+                    type: integer
+                  username:
                     type: string
-                    description: Message de réussite.
+                  bio:
+                    type: string
+                  email:
+                    type: string
+                  picture:
+                    type: string
+                  score:
+                    type: integer
+                  createdAt:
+                    type: string
+                  updatedAt:
+                    type: string
         400:
-          description: Requête invalide
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
-        404:
-          description: Utilisateur non trouvé
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Message d'erreur.
-                  error:
-                    type: string
-                    description: Description de l'erreur.
-      security:
-        - BearerAuth: []
-
-
-
-                    
-components:
-
-  securitySchemes:
-    BearerAuth:         
-      type: http
-      scheme: bearer
-      bearerFormat: JWT 
-      
-      
-  schemas:
- 
-    User :
-      type: object
-      properties:
-        id:
-          type: integer
-        score_host:
-          type: integer
-          minimum: 1
-          maximum: 5
-        score_participant:
-          type: integer
-          minimum: 1
-          maximum: 5
-        username:
-          type: string
-        email:
-          type: string
-          format: email
-      required:
-        - id
-        - username
-        - email
-    Event:
-      type: object
-      properties:
-        participants_number:
-          type: integer
-        address:
-          type: string
-        date:
-          type: string
-          format: date-time
-        name:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-        organizerId:
-          type: integer
-
-    UserSignup :
-      type: object
-      properties:
-        username:
-          type: string
-          minLength: 2
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          minLength: 6
-        
-      required:
-        - username
-        - email
-        - password
-        
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        409:
+          description: Conflict
+        500:
+          description: Internal Server Error
     
-    LoginUser :
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          minLength: 6
-      required:
-        - email
-        - password
-  
-    EventUpdate:
-      type: object
-      properties:
-        participants_number:
+# (POST) /notes/addnotefromhost
+# router.post("/addnotefromhost", checkAuth, post_note_from_host);
+# {
+#     ownerId: Joi.number().required(),
+#     eventId: Joi.number().required(),
+#     targetId: Joi.number().required(),
+#     value: Joi.number().required(),
+#     title: Joi.string().min(0) ,
+#     comment: Joi.string().min(0),
+# }
+
+  /notes/addnotefromhost:
+    post:
+      tags:
+        - Notes
+      summary: Add note from host
+      description: Add a note from host.
+      parameters:
+        - name: note
+          in: body
+          description: Note object
+          required: true
+          schema:
+            type: object
+            properties:
+              ownerId:
+                type: integer
+              eventId:
+                type: integer
+              targetId:
+                type: integer
+              value:
+                type: integer
+              title:
+                type: string
+              comment:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  ownerId:
+                    type: integer
+                  eventId:
+                    type: integer
+                  targetId:
+                    type: integer
+                  value:
+                    type: integer
+                  title:
+                    type: string
+                  comment:
+                    type: string
+                  createdAt:
+                    type: string
+                  updatedAt:
+                    type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        409:
+          description: Conflict
+        500:
+          description: Internal Server Error
+  /notes/addnotefromparticipant:
+    post:
+      tags:
+        - Notes
+      summary: Add note from participant
+      description: Add a note from participant.
+      parameters:
+        - name: note
+          in: body
+          description: Note object
+          required: true
+          schema:
+            type: object
+            properties:
+              ownerId:
+                type: integer
+              eventId:
+                type: integer
+              targetId:
+                type: integer
+              value:
+                type: integer
+              title:
+                type: string
+              comment:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              note:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  ownerId:
+                    type: integer
+                  eventId:
+                    type: integer
+                  targetId:
+                    type: integer
+                  value:
+                    type: integer
+                  title:
+                    type: string
+                  comment:
+                    type: string
+                  createdAt:
+                    type: string
+                  updatedAt:
+                    type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized Access
+        409:
+          description: Conflict
+        500:
+          description: Internal Server Error
+# (GET) /categories
+#router.get("/", get_main_categories);          
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get main categories
+      description: Get main categories.
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              categories:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    createdAt:
+                      type: string
+                    updatedAt:
+                      type: string
+        500:
+          description: Internal Server Error
+  /messages/:eventId:
+    get:
+      tags:
+        - Messages
+      summary: Get all messages from event
+      description: Get all messages from event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to retrieve the messages from.
+          required: true
           type: integer
-        address:
-          type: string
-        date:
-          type: string
-          format: date-time
-        name:
-          type: string
-        description:
-          type: string
-        category:
-          type: string
-        organizerId:
-          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              messages:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    text:
+                      type: string
+                    createdAt:
+                      type: string
+                    updatedAt:
+                      type: string
+        500:
+          description: Internal Server Error
+
+#router.post("/", add_messages_to_event);
+
+  /messages:
+    post:
+      tags:
+        - Messages
+      summary: Add messages to event
+      description: Add messages to event.
+      parameters:
+        - name: message
+          in: body
+          description: Message object
+          required: true
+          schema:
+            type: object
+            properties:
+              eventId:
+                type: integer
+              text:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              message:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  text:
+                    type: string
+                  createdAt:
+                    type: string
+                  updatedAt:
+                    type: string
+        500:
+          description: Internal Server Error
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /MAXIMEGUILIANI_2/Social_network_API/1.0.0
