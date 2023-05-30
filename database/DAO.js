@@ -962,7 +962,11 @@ class DAO {
     return this.sequelize.transaction(async (t) => {
       const user = await User.findByPk(userId);
       const event = await Event.findByPk(eventId);
-      if (!user || !event) throw new Error("User or event not found");
+      if (!user || !event) throw new Error("user or event not found");
+      
+      const filling = await this.get_filling_event(eventId)
+      if(filling.nb_participants>=event.participants_number) throw new Error("Plus de place disponible");
+      
       await event.removeCandidate(user);
       return event.addParticipant(user);
     });
@@ -989,7 +993,7 @@ class DAO {
   }
 
   // get_upcoming_events with a limit of returned values if not undefined and only event after today
-  async get_upcoming_events({ limit }) {
+  async get_upcoming_events({ limit=4 }) {
     if (limit === undefined) limit = 25;
     const where = {
       date: { [Op.gte]: new Date() },
