@@ -3,7 +3,7 @@ import Joi from "joi";
 const schemaMessage =  Joi.object().keys({
   userId: Joi.number().integer().required(),
   eventId: Joi.number().integer().required(),
-  content: Joi.string(),
+  content: Joi.string().required(),
 });
 
 function validate(validation, res) {

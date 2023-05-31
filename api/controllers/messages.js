@@ -1,6 +1,7 @@
 import { validate, schemaMessage } from "../validator/validatorsMessages.js";
 import { myDAO } from "../../app.js";
 import { schemaId } from "../validator/validatorsEvents.js";
+import { sendBadRequest } from "./errors.js";
 
 export async function add_messages_to_event(req, res, next) {
   const validMessage = validate(schemaMessage.validate(req.body), res);

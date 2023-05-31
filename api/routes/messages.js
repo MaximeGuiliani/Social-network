@@ -10,6 +10,6 @@ import {
 router.get("/:eventId", get_all_messages_from_event);
 
 // (POST) /messages
-router.post("/", add_messages_to_event);
+router.post("/",checkAuth,  add_messages_to_event);
 
 export default router;
