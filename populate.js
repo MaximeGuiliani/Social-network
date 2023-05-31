@@ -52,6 +52,8 @@ async function populate() {
   const cat_good_causes = await myDAO.add_main_category("Good causes");
   
 
+  // USERS
+
   const leopaul = await myDAO.add_user({
     username: "leopaul",
     email: "leo-paul.musardo@etu.univ-amu.fr",
@@ -111,13 +113,113 @@ async function populate() {
     bio: "la bio de heba",
   });
 
+  const anis = await myDAO.add_user({
+    username: "anis",
+    email: "anis@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "Intérêt principal : foot",
+    picture:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg",
+  });
+
+  const mehdi = await myDAO.add_user({
+    username: "mehdi",
+    email: "mehdi@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "Bonjour, je suis un grand fan de manga, et je dessine très souvent. J'aimerai pouvoir participé à des séances de dessin où l'on pourra se partager nos astuces.",
+    picture:"https://static.wikia.nocookie.net/bluelock/images/3/39/Yoichi_Isagi.png/revision/latest?cb=20200809200122&path-prefix=fr",
+  });
+
+  const nour = await myDAO.add_user({
+    username: "nour",
+    email: "nour@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "Bonjour tout le monde, je suis une grande sportive, intéressée par des marathons.",
+  });
+
+  const le_gamer = await myDAO.add_user({
+    username: "Xx_gameur_du_13_xX",
+    email: "gamer@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "J'aime trop les jeux vidéos, c'est ma passssiiiiiiiion ",
+  });
+
   const yacine = await myDAO.add_user({
     username: "yacine",
     email: "yacine@mail.com",
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
-    bio: "la bio de Yacine",
+    bio: "Très actif au niveau du football, cherche souvent des gens pour jouer 2 à 3 fois par semaine. ( à 11 ou city )",
+    picture: "https://www.nautiljon.com/images/perso/00/87/agatsuma_zenitsu_18378.webp",
   });
+
+  const oscar = await myDAO.add_user({
+    username: "oscar",
+    email: "oscar@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "Amateur de Harry Potter, on peut se faire des petites soirées jeux lié à cela.",
+    picture:"https://i.familiscope.fr/1400x787/smart/2022/04/06/livres-harry-potter.jpg",
+  });
+
+  const cedric = await myDAO.add_user({
+    username: "cedric",
+    email: "cedric@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "Je peins à mes heures perdues.",
+  });
+
+  const assia = await myDAO.add_user({
+    username: "assia",
+    email: "assia@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "Bonjour, amatrice d'escape game, j'aimerai rejoindre des esprits malin afin d'en accomplir le plus possible et dans les meilleurs temps !!",
+    picture:"https://img.lemde.fr/2015/12/04/26/0/640/640/664/0/75/0/79e8b7c_5194-wikr8j.jpg",
+  });
+
+  const sophie = await myDAO.add_user({
+    username: "sophie",
+    email: "sophie@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "la bio de sophie",
+  });
+
+  const eric = await myDAO.add_user({
+    username: "eric",
+    email: "eric@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "la bio de eric",
+  });
+
+  const amine = await myDAO.add_user({
+    username: "amine",
+    email: "amine@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "la bio de amine",
+  });
+
+  const souf = await myDAO.add_user({
+    username: "souf",
+    email: "souf@mail.com",
+    password_hash:
+      "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
+    bio: "la bio de souf",
+  });
+
+
+
+
+
+// EVENTS
+
   const jazz = await myDAO.save_event({
     participants_number: 50,
     category: "Concert",
