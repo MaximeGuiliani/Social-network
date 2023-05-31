@@ -128,7 +128,7 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Bonjour, je suis un grand fan de manga, et je dessine très souvent. J'aimerai pouvoir participé à des séances de dessin où l'on pourra se partager nos astuces.",
-    picture:"https://static.wikia.nocookie.net/bluelock/images/3/39/Yoichi_Isagi.png/revision/latest?cb=20200809200122&path-prefix=fr",
+    picture:"https://geekalition.com/wp-content/uploads/2022/11/Isagi-Yoichi-Blue-Lock.webp",
   });
 
   const nour = await myDAO.add_user({
@@ -220,122 +220,208 @@ async function populate() {
 
 // EVENTS
 
-  const jazz = await myDAO.save_event({
-    participants_number: 50,
-    category: "Concert",
-    description: "Concert de Jazz",
-    image_url: "https://example.com/image_jazz.jpg",
-    name: "Jazz Convergence",
-    organizerId: franck.id,
-    date: "2024-04-21T12:30:00.000Z",
-    MainCategoryId: cat_musique.id,
-    address: {
-      street: "200 avenue du concert",
-      city: "Marseille",
-      country: "france",
-      zip: "13900",
-    },
-  });
+// ART & CULTURE
 
-  const volley = await myDAO.save_event({
-    participants_number: 50,
-    category: "Volley ball",
-    description: "Beach volley a la Ciotat",
-    image_url: "https://example.com/image_volley.jpg",
-    name: "Volley Ball !",
-    organizerId: leopaul.id,
-    date: "2024-07-21T12:30:00.000Z",
-    MainCategoryId: cat_sport.id,
-    address: {
-      street: "plage Lumiere",
-      city: "La Ciotat",
-      country: "France",
-      zip: "13600",
-    },
-  });
+const japan_expo = await myDAO.save_event({
+  participants_number: 3,
+  category: "Culture Cosplay",
+  description: "Cherche un petit groupe pour aller à la japan expo en cosplay de Tanjiro, Zenitsu, Inosuke et Nezuko :) .",
+  image_url: "https://upload.wikimedia.org/wikipedia/fr/thumb/e/ed/Japan_Expo_Logo_2.svg/798px-Japan_Expo_Logo_2.svg.png",
+  name: "Japan Expo Cosplay",
+  organizerId: mehdi.id,
+  date: "2023-06-02T13:30:00.000Z",
+  MainCategoryId: cat_art_et_culture.id,
+  address: {
+    street: "12 avenue du prado",
+    city: "Marseille",
+    country: "France",
+    zip: "13009",
+  },
+});
 
-  const rando = await myDAO.save_event({
-    participants_number: 50,
-    category: "Randonnee",
-    description: "une rando à Luminy",
-    image_url: "https://example.com/image_rando.jpg",
-    name: "Sortie Luminy",
-    organizerId: paul.id,
-    date: "2024-04-21T12:30:00.000Z",
-    MainCategoryId: cat_sport.id,
-    address: {
-      street: "333 avenue de la rando",
-      city: "La Ciotat",
-      country: "france",
-      zip: "13600",
-    },
-  });
-  const concert = await myDAO.save_event({
-    participants_number: 50,
-    category: "Musique",
-    description: "Un concert de rock",
-    image_url: "https://example.com/image.jpg",
-    name: "Concert de rock",
-    organizerId: hugo.id,
-    date: "2024-04-21T12:30:00.000Z",
-    MainCategoryId: cat_musique.id,
-    address: {
-      street: "123 rue de la musique",
-      city: "Paris",
-      country: "France",
-      zip: "codedeparis",
-    },
-  });
-  const kart = await myDAO.save_event({
-    participants_number: 10,
-    category: "Karting",
-    description: "course de kart au castellet",
-    image_url: "https://example.com/image_karting.jpg",
-    name: "Mario Kart",
-    organizerId: charles.id,
-    date: "2024-04-21T12:30:00.000Z",
-    MainCategoryId: cat_sport.id,
-    address: {
-      street: "rue du karting",
-      city: "Paris",
-      country: "France",
-      zip: "75001",
-    },
-  });
-  
-  const fast_10 = await myDAO.save_event({
-    participants_number: 4,
-    category: "Film Cinéma",
-    description: "Je cherche des personnes qui veulent voir Fast and Furious 10 afin de passer un bon moment au cinéma.",
-    image_url: "https://fr.web.img5.acsta.net/pictures/23/05/10/10/55/5129031.jpg",
-    name: "Séance de Cinéma Fast and Furious 10",
-    organizerId: damien.id,
-    date: "2024-08-15T13:30:00.000Z",
-    MainCategoryId: cat_cinema.id,
-    address: {
-      street: "12 avenue du prado",
-      city: "Marseille",
-      country: "France",
-      zip: "13009",
-    },
-  });
+// CINEMA
 
-  const foot = await myDAO.save_event({
-    participants_number: 21,
-    category: "Football",
-    description: "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
-    image_url:"https://www.aizenay.fr/medias/2016/04/terrain-de-football.jpg",
-    name: "Match de foot 11 vs 11",
-    organizerId: yacine.id,
-    date: "2024-06-21T13:30:00.000Z",
-    MainCategoryId: cat_sport.id,
-    address: {
-      street: "Stade de Luminy",
-      city: "Marseille",
-      country: "France",
-      zip: "13009",
-    },
-  });
+const fast_10 = await myDAO.save_event({
+  participants_number: 4,
+  category: "Film Cinéma",
+  description: "Je cherche des personnes qui veulent voir Fast and Furious 10 afin de passer un bon moment au cinéma.",
+  image_url: "https://fr.web.img5.acsta.net/pictures/23/05/10/10/55/5129031.jpg",
+  name: "Séance de Cinéma Fast and Furious 10",
+  organizerId: damien.id,
+  date: "2023-06-02T13:30:00.000Z",
+  MainCategoryId: cat_cinema.id,
+  address: {
+    street: "12 avenue du prado",
+    city: "Marseille",
+    country: "France",
+    zip: "13009",
+  },
+});
+
+const hp = await myDAO.save_event({
+  participants_number: 5,
+  category: "Film Cinéma",
+  description: "Je cherche des personnes qui veulent voir Harry Potter à l'école des sorciers lors d'une retransmission organisé par l'association X.",
+  image_url: "https://imgsrc.cineserie.com/2001/12/1500437.jpg?ver=1",
+  name: "Harry Potter à L'Ecole Des Sorciers",
+  organizerId: oscar.id,
+  date: "2024-06-02T19:30:00.000Z",
+  MainCategoryId: cat_cinema.id,
+  address: {
+    street: "58 avenue des aigles",
+    city: "Marseille",
+    country: "France",
+    zip: "13009",
+  },
+});
+
+// FOOD
+
+// GOOD CAUSES
+
+// MUSIC
+
+const jazz = await myDAO.save_event({
+  participants_number: 50,
+  category: "Concert",
+  description: "Concert de Jazz",
+  image_url: "https://example.com/image_jazz.jpg",
+  name: "Jazz Convergence",
+  organizerId: franck.id,
+  date: "2024-04-21T12:30:00.000Z",
+  MainCategoryId: cat_musique.id,
+  address: {
+    street: "200 avenue du concert",
+    city: "Marseille",
+    country: "france",
+    zip: "13900",
+  },
+});
+
+const concert = await myDAO.save_event({
+  participants_number: 50,
+  category: "Musique",
+  description: "Un concert de rock",
+  image_url: "https://example.com/image.jpg",
+  name: "Concert de rock",
+  organizerId: hugo.id,
+  date: "2024-04-21T12:30:00.000Z",
+  MainCategoryId: cat_musique.id,
+  address: {
+    street: "123 rue de la musique",
+    city: "Paris",
+    country: "France",
+    zip: "codedeparis",
+  },
+});
+
+// SCIENCES
+
+const forum_science = await myDAO.save_event({
+  participants_number: 10,
+  category: "Forum",
+  description: "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
+  image_url: "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
+  name: "Forum de la santé",
+  organizerId: charles.id,
+  date: "2023-06-02T13:30:00.000Z",
+  MainCategoryId: cat_sciences.id,
+  address: {
+    street: "rue des aigles",
+    city: "Poitiers",
+    country: "France",
+    zip: "86000",
+  },
+});
+
+// SPORTS
+
+const volley = await myDAO.save_event({
+  participants_number: 50,
+  category: "Volley ball",
+  description: "Beach volley a la Ciotat",
+  image_url: "https://example.com/image_volley.jpg",
+  name: "Volley Ball !",
+  organizerId: leopaul.id,
+  date: "2024-07-21T12:30:00.000Z",
+  MainCategoryId: cat_sport.id,
+  address: {
+    street: "plage Lumiere",
+    city: "La Ciotat",
+    country: "France",
+    zip: "13600",
+  },
+});
+
+const rando = await myDAO.save_event({
+  participants_number: 50,
+  category: "Randonnee",
+  description: "une rando à Luminy",
+  image_url: "https://example.com/image_rando.jpg",
+  name: "Sortie Luminy",
+  organizerId: paul.id,
+  date: "2024-04-21T12:30:00.000Z",
+  MainCategoryId: cat_sport.id,
+  address: {
+    street: "333 avenue de la rando",
+    city: "La Ciotat",
+    country: "france",
+    zip: "13600",
+  },
+});
+
+const kart = await myDAO.save_event({
+  participants_number: 10,
+  category: "Karting",
+  description: "course de kart au castellet",
+  image_url: "https://example.com/image_karting.jpg",
+  name: "Mario Kart",
+  organizerId: charles.id,
+  date: "2024-04-21T12:30:00.000Z",
+  MainCategoryId: cat_sport.id,
+  address: {
+    street: "rue du karting",
+    city: "Paris",
+    country: "France",
+    zip: "75001",
+  },
+});
+
+const foot = await myDAO.save_event({
+  participants_number: 21,
+  category: "Foot",
+  description: "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
+  image_url:"https://www.aizenay.fr/medias/2016/04/terrain-de-football.jpg",
+  name: "Match de foot 11 vs 11",
+  organizerId: yacine.id,
+  date: "2023-06-02T13:30:00.000Z",
+  MainCategoryId: cat_sport.id,
+  address: {
+    street: "Stade de Luminy",
+    city: "Marseille",
+    country: "France",
+    zip: "13009",
+  },
+});
+
+const futsal = await myDAO.save_event({
+  participants_number: 7,
+  category: "Foot",
+  description: "J'organise un futsal, on recherche 7 personnes.",
+  image_url:"https://cityball.fr/wp-content/uploads/2023/01/futsal-nimes-7-1.jpg",
+  name: "City 5 vs 5",
+  organizerId: yacine.id,
+  date: "2023-06-02T13:30:00.000Z",
+  MainCategoryId: cat_sport.id,
+  address: {
+    street: "12 rue de la valentine",
+    city: "Marseille",
+    country: "France",
+    zip: "13012",
+  },
+});
+
+// VIDEO GAMES
 
   const smash = await myDAO.save_event({
     participants_number: 6,
@@ -354,23 +440,6 @@ async function populate() {
     },
   });
 
-  const forum_science = await myDAO.save_event({
-    participants_number: 10,
-    category: "Forum",
-    description: "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
-    image_url: "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
-    name: "Forum de la santé",
-    organizerId: charles.id,
-    date: "2024-09-27T13:30:00.000Z",
-    MainCategoryId: cat_sciences.id,
-    address: {
-      street: "rue des aigles",
-      city: "Poitiers",
-      country: "France",
-      zip: "86000",
-    },
-  });
-
   const club_pro = await myDAO.save_event({
     participants_number: 10,
     category: "Fifa 23",
@@ -378,7 +447,7 @@ async function populate() {
     image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgLRnYhXijgjIxbPOeDVt6o8oX9I5tJRDx-w&usqp=CAU",
     name: "Club pro fifa 23 ps4 ps5",
     organizerId: yacine.id,
-    date: "2024-07-21T13:30:00.000Z",
+    date: "2023-06-02T13:30:00.000Z",
     MainCategoryId: cat_jeux_videos.id,
     address: {
       street: "rue de club pro",
@@ -390,7 +459,14 @@ async function populate() {
   
   await myDAO.apply(leopaul.id, smash.id)
   await myDAO.apply(paul.id, volley.id)
+
+  await myDAO.apply(assia.id, japan_expo.id)
+  await myDAO.apply(nour.id, japan_expo.id)
+  await myDAO.apply(leopaul.id, japan_expo.id)
+  await myDAO.apply(eric.id, japan_expo.id)
+  await myDAO.apply(sophie.id, japan_expo.id)
   
+
   await myDAO.participate(hugo.id, volley.id);
   await myDAO.participate(leopaul.id, jazz.id);
   await myDAO.participate(hugo.id, jazz.id);
