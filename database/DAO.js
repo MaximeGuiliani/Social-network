@@ -653,8 +653,8 @@ class DAO {
   // add message to conversation(event)
   async add_message({ userId, eventId, content }) {
     return this.sequelize.transaction(async (t) => {
-      if (!(await this.message_is_possible({ userId, eventId })))
-        throw new Error("Ce message ne respecte pas les règles de coherence");
+      // if (!(await this.message_is_possible({ userId, eventId })))
+      //   throw new Error("Ce message ne respecte pas les règles de coherence");
       return EventMessage.create({
         userId,
         eventId,
@@ -673,7 +673,7 @@ class DAO {
           {
             model: User,
             as: "owner",
-            attributes: ["username"],
+            attributes: ["username","picture"],
           },
           {
             model: Event,
