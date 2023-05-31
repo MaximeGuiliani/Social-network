@@ -977,10 +977,11 @@ class DAO {
       const user = await User.findByPk(userId);
       const event = await Event.findByPk(eventId);
       if (!user || !event) throw new Error("user or event not found");
-      
-      const filling = await this.get_filling_event(eventId)
-      if(filling.nb_participants>=event.participants_number) throw new Error("Plus de place disponible");
-      
+
+      const filling = await this.get_filling_event(eventId);
+      if (filling.nb_participants >= event.participants_number)
+        throw new Error("Plus de place disponible");
+
       await event.removeCandidate(user);
       return event.addParticipant(user);
     });
@@ -1007,7 +1008,7 @@ class DAO {
   }
 
   // get_upcoming_events with a limit of returned values if not undefined and only event after today
-  async get_upcoming_events({ limit=4 }) {
+  async get_upcoming_events({ limit = 4 }) {
     if (limit === undefined) limit = 25;
     const where = {
       date: { [Op.gte]: new Date() },
@@ -1060,6 +1061,49 @@ class DAO {
         raw: true,
         nested: true,
       });
+    });
+  }
+
+  async get_user_scores(userId) {
+    return this.sequelize.transaction(async (t) => {
+      
+      let avg_score_host = await User.findByPk(userId, {
+        attributes: [[this.sequelize.literal("AVG(value)"), "avg_score_host"]],
+        include: [
+          {
+            model: Note,
+            as: "receivedNotes",
+            required: false,
+            where: { type: 0 },
+            attributes: [],
+          },
+        ],
+      });
+      console.log("avg_score_host", avg_score_host);
+  
+      let avg_score_participant = await User.findByPk(userId, {
+        attributes:[[this.sequelize.literal("AVG(value)"), "avg_score_participant"]],
+        include: [
+          {
+            model: Note,
+            as: "receivedNotes",
+            required: false,
+            where: { type: 1 },
+            attributes: [],
+          },
+        ],
+      });
+      console.log("avg_score_participant", avg_score_participant);
+
+      let user = await User.findByPk(userId, {
+        attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
+      });
+
+      user.dataValues.avg_score_host = avg_score_host.dataValues.avg_score_host
+      user.dataValues.avg_score_participant = avg_score_participant.dataValues.avg_score_participant
+      console.log("user", user);
+      return user.dataValues;
+
     });
   }
 

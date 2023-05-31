@@ -193,6 +193,7 @@ describe("TEST DB", () => {
       await myDAO.participate(franck.id, rando.id);
       await myDAO.participate(hugo.id, rando.id);
       await myDAO.participate(paul.id, concert.id);
+      await myDAO.participate(charles.id, concert.id);
 
       await myDAO.add_note_from_participant({
         creationDate: "2023-04-22T12:30:00.000Z",
@@ -237,6 +238,25 @@ describe("TEST DB", () => {
         value: 5,
         title: "avis6",
       });
+
+      await myDAO.add_note_from_participant({
+        creationDate: "2023-04-22T12:30:00.000Z",
+        ownerId: charles.id,
+        eventId: concert.id,
+        value: 4,
+        title: "avis6",
+      });
+
+
+      await myDAO.add_note_from_host({
+        ownerId : franck.id,
+        eventId : jazz.id,
+        targetId : hugo.id,
+        value : 3,
+        title : "",
+        comment : "",
+      })
+
     });
 
     afterEach(async () => {
@@ -1027,6 +1047,16 @@ describe("TEST DB", () => {
       return expect(
         myDAO.participate(damien.id, exclu.id)
       ).to.be.rejectedWith(Error);
+    });
+    
+    
+    it("test add_note_from_host h:4.5, p:3", async () => {
+      const hugo = await myDAO.get_user_by_username("hugo");
+      let scores = await myDAO.get_user_scores(hugo.id);
+      console.log("-------->", scores);
+    
+      expect(scores.avg_score_host).to.equal("4.5000");
+      expect(scores.avg_score_participant).to.equal("3.0000");
     });
 
  
