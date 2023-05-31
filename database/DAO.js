@@ -1098,6 +1098,7 @@ class DAO {
       let user = await User.findByPk(userId, {
         attributes: { exclude: ["createdAt", "updatedAt", "password_hash"] },
       });
+      if (!user) throw new Error("User not found");
 
       user.dataValues.avg_score_host = avg_score_host.dataValues.avg_score_host
       user.dataValues.avg_score_participant = avg_score_participant.dataValues.avg_score_participant
