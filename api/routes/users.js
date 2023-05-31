@@ -8,6 +8,7 @@ import {
   user_login,
   user_signup,
   user_update,
+  user_get_scores,
 
 } from "../controllers/users.js";
 
@@ -26,6 +27,7 @@ router.patch("/:id", checkAuth, user_update);
 // (DELETE) /users/:id
 router.delete("/:id", checkAuth, user_delete);
 
-
+// (GET)  /users/scores/:id
+router.get("/scores/:id", user_get_scores);
 
 export default router;

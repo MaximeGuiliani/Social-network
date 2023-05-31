@@ -254,3 +254,24 @@ export async function user_delete(req, res, next) {
       });
   }
 }
+
+export async function user_get_scores(req, res, next) {
+  const validId = validate(schemaId.validate(req.params.id), res);
+
+  if (validId == null) {
+    return;
+  }
+
+  await myDAO
+    .get_user_scores(req.params.id)
+    .then(function (scores) {
+      res.status(200).json({
+        code: 200,
+        message: "Handling GET requests to /users/scores/:id : returning scores",
+        scores: scores,
+      });
+    })
+    .catch(function (err) {
+      sendBadRequest(res, err.message);
+    });
+}
