@@ -36,9 +36,6 @@ class User extends Model {
         picture: {
           type: DataTypes.STRING,
           allowNull: true, // NULL AUTORISE
-          validate: {
-            isUrl: true,
-          },
         },
         bio: {
           type: DataTypes.STRING(500),

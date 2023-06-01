@@ -3,9 +3,9 @@ import Joi from "joi";
 const schemaSignupUser = Joi.object().keys({
   username: Joi.string().alphanum().min(3).max(30).required(),
   password: Joi.string().required(),
-  bio: Joi.string(),
+  bio: Joi.string().min(0),
   email: Joi.string().email().required(),
-  picture: Joi.string().uri(),
+  picture: Joi.string().min(0),
 });
 
 const schemaUpdateUser = Joi.object().keys({
@@ -16,8 +16,8 @@ const schemaUpdateUser = Joi.object().keys({
     password: Joi.string().required(),
     confirmpassword: Joi.string().valid(Joi.ref("password")).required(),
   }),
-  bio: Joi.string().required(),
-  picture: Joi.string().uri(),
+  bio: Joi.string().min(0),
+  picture: Joi.string().min(0),
 });
 
 const schemaId = Joi.number().integer().required();

@@ -32,9 +32,7 @@ class Event extends Model {
         image_url: {
           type: DataTypes.STRING,
           allowNull: true,
-          validate: {
-            isUrl: true,
-          },
+
         },
         name: {
           type: DataTypes.STRING(100),
