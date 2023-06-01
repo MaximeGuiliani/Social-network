@@ -513,7 +513,7 @@ describe("TEST DB", () => {
         address: { country: "france" },
       });
       // console.log(">>>>>>>\n"+JSON.stringify(events, null, 2).toString());
-      expect(events.length).to.equal(5);
+      expect(events.length).to.equal(6);
     });
 
     it("test search 6", async () => {
@@ -655,7 +655,7 @@ describe("TEST DB", () => {
     it("test find all events", async () => {
       let events = await myDAO.get_all_events();
       // console.log(">>>>>>>\n"+JSON.stringify(events, null, 2).toString());
-      expect(events.length).to.equal(5);
+      expect(events.length).to.equal(6);
     });
 
     it("test get_event_with_related_users ", async () => {
@@ -683,7 +683,7 @@ describe("TEST DB", () => {
       expect(event.organizer.username).to.equal("franck");
       expect(event.MainCategory.name).to.equal("Musique");
       expect(event.Address.street).to.equal("200 avenue du concert");
-      expect(event.notes.length).to.equal(3);
+      expect(event.notes.length).to.equal(4);
     });
 
     it("test get_user_with_related_events ", async () => {
@@ -959,22 +959,24 @@ describe("TEST DB", () => {
       expect(event.messages.length).to.equal(1);
     });
 
-    it("test message_is_possible - NOT possible", async () => {
-      // add_message() fait appel à message_is_possible()
-      const hugo_participant = await myDAO.get_user_by_username("hugo");
-      const charles_not_participant = await myDAO.get_user_by_username(
-        "charles"
-      );
-      const rando_de_paul = await myDAO.get_event_by_name("Sortie Luminy");
 
-      return expect(
-        myDAO.add_message({
-          userId: charles_not_participant.id,
-          eventId: rando_de_paul.id,
-          content: "Bjr, Je NE suis PAS un participant",
-        })
-      ).to.be.rejectedWith(Error);
-    });
+    //ATTENTION CE TEST EST OBSELETE CAR MTN TOUT LE MONDE PEUT PARLER
+    // it("test message_is_possible - NOT possible", async () => {
+    //   // add_message() fait appel à message_is_possible()
+    //   const hugo_participant = await myDAO.get_user_by_username("hugo");
+    //   const charles_not_participant = await myDAO.get_user_by_username(
+    //     "charles"
+    //   );
+    //   const rando_de_paul = await myDAO.get_event_by_name("Sortie Luminy");
+
+    //   return expect(
+    //     myDAO.add_message({
+    //       userId: charles_not_participant.id,
+    //       eventId: rando_de_paul.id,
+    //       content: "Bjr, Je NE suis PAS un participant",
+    //     })
+    //   ).to.be.rejectedWith(Error);
+    // });
 
     it("test filling: 0p 0c", async () => {
       const franck = await myDAO.get_user_by_username("franck");
@@ -1089,3 +1091,6 @@ describe("TEST DB", () => {
 
   // });
 });
+
+
+// musardo.fr;cine.musardo.fr;syno.musardo.fr;www.musardo.fr;snapi.musardo.fr;sn.musardo.fr

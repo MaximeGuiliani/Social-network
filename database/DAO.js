@@ -1023,44 +1023,45 @@ class DAO {
   }
 
   async get_filling_event(eventId) {
-    return this.sequelize.transaction((t) => {
-      return Event.findByPk(eventId, {
-        include: [
-          {
-            model: User,
-            as: "participants",
-            attributes: [],
-            through: { attributes: [] },
-          },
-          {
-            model: User,
-            as: "candidates",
-            attributes: [],
-            through: { attributes: [] },
-          },
-        ],
+    return this.sequelize.transaction(async (t) => {
+    
+      const  nb_participants = await Event.findByPk(eventId, {
+        include: [{
+          model: User,
+          as: "participants",
+          required: false,
+          through: { attributes: [] },
+          attributes: [],
+        }],
         attributes: {
-          include: [
-            // [this.sequelize.fn('COUNT', this.sequelize.col('`participants.EventParticipants.UserId`')), 'nb_participants'],
-            // [this.sequelize.fn('COUNT', this.sequelize.col('`candidates.EventCandidates.UserId`')), 'nb_candidats']
-            [
-              this.sequelize.literal(
-                "COUNT( DISTINCT `Participants->EventParticipants`.`UserId`)"
-              ),
-              "nb_participants",
-            ],
-            [
-              this.sequelize.literal(
-                "COUNT( DISTINCT `candidates->EventCandidates`.`UserId`)"
-              ),
-              "nb_candidats",
-            ],
-          ],
-          exclude: ["createdAt", "updatedAt"],
+          include: [ [this.sequelize.literal("COUNT( DISTINCT UserId)"), "nb_participants"] ],
         },
-        raw: true,
-        nested: true,
       });
+      
+      const  nb_candidats = await Event.findByPk(eventId, {
+        include: [{
+          model: User,
+          as: "candidates",
+          required: false,
+          through: { attributes: [] },
+          attributes: [],
+        }],
+        attributes: {
+          include: [ [this.sequelize.literal("COUNT( DISTINCT UserId )"), "nb_candidats"] ],
+        },
+      });
+     
+      const event = await Event.findByPk(eventId, {
+        attributes: {exclude: ["createdAt", "updatedAt"]}
+      });
+
+
+      event.dataValues.nb_participants = nb_participants.dataValues.nb_participants;
+      event.dataValues.nb_candidats = nb_candidats.dataValues.nb_candidats;
+      console.log("event", event);
+      return event.dataValues;
+
+  
     });
   }
 
