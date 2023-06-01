@@ -7,6 +7,12 @@ info:
 # basePath: /
 schemes:
   - https
+securityDefinitions:
+  JWT:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: JWT token
 paths:
   /events:
     get:
@@ -153,6 +159,8 @@ paths:
                     type: string
               mainCategoryId:
                 type: integer
+      security:
+        - JWT: []
       responses:
         200:
           description: OK
@@ -246,6 +254,8 @@ paths:
                     type: string
               mainCategoryId:
                 type: integer
+      security:
+        - JWT: []                
       responses:
         200:
           description: OK
@@ -297,6 +307,8 @@ paths:
         500:
           description: Internal Server Error
     delete:
+      security:
+        - JWT: []    
       tags:
         - Events
       summary: Delete event
@@ -325,8 +337,6 @@ paths:
           description: Not Found
         500:
           description: Internal Server Error
-# (POST) /events/:eventId/apply
-#router.post("/:eventId/apply", checkAuth, event_apply);
   /events/{eventId}/apply:
     post:
       tags:
@@ -339,6 +349,8 @@ paths:
           description: ID of the event to apply to.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -369,6 +381,8 @@ paths:
           description: ID of the event to unapply to.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -404,6 +418,8 @@ paths:
           description: ID of the user to accept to the event.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -441,6 +457,8 @@ paths:
           description: ID of the user to refuse to the event.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -471,6 +489,8 @@ paths:
           description: ID of the event to unparticipate to.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -506,6 +526,8 @@ paths:
           description: ID of the user to remove from the event.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -865,7 +887,7 @@ paths:
               email:
                 type: string
               picture:
-                type: string
+                type: string              
       responses:
         200:
           description: OK
@@ -1091,6 +1113,8 @@ paths:
                 type: string
               picture:
                 type: string
+      security:
+        - JWT: []                
       responses:
         200:
           description: OK
@@ -1136,6 +1160,8 @@ paths:
           description: ID of the user to delete.
           required: true
           type: integer
+      security:
+        - JWT: []          
       responses:
         200:
           description: OK
@@ -1169,18 +1195,7 @@ paths:
           description: Conflict
         500:
           description: Internal Server Error
-    
-# (POST) /notes/addnotefromhost
-# router.post("/addnotefromhost", checkAuth, post_note_from_host);
-# {
-#     ownerId: Joi.number().required(),
-#     eventId: Joi.number().required(),
-#     targetId: Joi.number().required(),
-#     value: Joi.number().required(),
-#     title: Joi.string().min(0) ,
-#     comment: Joi.string().min(0),
-# }
-
+  
   /notes/addnotefromhost:
     post:
       tags:
@@ -1207,6 +1222,8 @@ paths:
                 type: string
               comment:
                 type: string
+      security:
+        - JWT: []                
       responses:
         200:
           description: OK
@@ -1268,6 +1285,8 @@ paths:
                 type: string
               comment:
                 type: string
+      security:
+        - JWT: []                
       responses:
         200:
           description: OK
@@ -1366,7 +1385,6 @@ paths:
         500:
           description: Internal Server Error
 
-#router.post("/", add_messages_to_event);
 
   /messages:
     post:
@@ -1386,6 +1404,8 @@ paths:
                 type: integer
               text:
                 type: string
+      security:
+        - JWT: []                
       responses:
         200:
           description: OK
@@ -1405,6 +1425,143 @@ paths:
                     type: string
         500:
           description: Internal Server Error
+
+
+  /users/scores/:id:
+    get:
+      tags:
+        - Users
+      summary: Get user scores
+      description: Get user scores.
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to retrieve the scores from.
+          required: true
+          type: integer
+      
+# return errors or 
+# {
+#   "code": 200,
+#   "message": "Handling GET requests to /users/scores/:id : returning scores",
+#   "scores": {
+#     "id": 1,
+#     "username": "leopaul",
+#     "email": "leo-paul.musardo@etu.univ-amu.fr",
+#     "creation_date": "2023-05-31T14:32:39.000Z",
+#     "picture": "https://site.com/picture_du_leopaul",
+#     "bio": "la bio de leopaul",
+#     "avg_score_host": "4.0000",
+#     "avg_score_participant": "3.0000"
+#   }
+# }
+
+      
+      responses:
+        200: 
+          description: OK
+          schema:
+            type: object
+            properties:
+              scores:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  creation_date:
+                    type: string
+                  picture:
+                    type: string
+                  bio:
+                    type: string
+                  avg_score_host:
+                    type: string
+                  avg_score_participant:
+                    type: string
+        400:
+          description: Bad Request
+
+        500:
+          description: Internal Server Error
+
+
+  /events/get_filling_event/:eventId:
+    get:
+      tags:
+        - Events
+      summary: Get filling event
+      description: Get filling event.
+      parameters:
+        - name: eventId
+          in: path
+          description: ID of the event to retrieve the filling from.
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              events:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    event_id:
+                      type: integer
+                    event_name:
+                      type: string
+                    organizer:
+                      type: object
+                      properties:
+                        organizer_id:
+                          type: integer
+                        organizer_name:
+                          type: string
+                    candidates:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          candidate_id:
+                            type: integer
+                          candidate_name:
+                            type: string
+                    participants:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          participant_id:
+                            type: integer
+                          participant_name:
+                            type: string
+                    notes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          note_id:
+                            type: integer
+                          note_text:
+                            type: string
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          message_id:
+                            type: integer
+                          message_text:
+                            type: string
+        500:
+          description: Internal Server Error
+
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /MAXIMEGUILIANI_2/Social_network_API/1.0.0
