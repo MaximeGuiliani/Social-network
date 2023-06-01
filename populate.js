@@ -36,11 +36,11 @@ async function populate() {
   await EventMessage.destroy({ where: {} });
 
 
-// Sport
-// Culture
-// Music
-// Food
-// Other
+  // Sport
+  // Culture
+  // Music
+  // Food
+  // Other
 
   const cat_gastronomie = await myDAO.add_main_category("Food");
   const cat_jeux_videos = await myDAO.add_main_category("Video games");
@@ -50,7 +50,7 @@ async function populate() {
   const cat_musique = await myDAO.add_main_category("Music");
   const cat_cinema = await myDAO.add_main_category("Cinema");
   const cat_good_causes = await myDAO.add_main_category("Good causes");
-  
+
 
   // USERS
 
@@ -119,7 +119,7 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Intérêt principal : foot",
-    picture:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg",
+    picture: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg",
   });
 
   const mehdi = await myDAO.add_user({
@@ -128,7 +128,7 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Bonjour, je suis un grand fan de manga, et je dessine très souvent. J'aimerai pouvoir participé à des séances de dessin où l'on pourra se partager nos astuces.",
-    picture:"https://static.wikia.nocookie.net/bluelock/images/3/39/Yoichi_Isagi.png/revision/latest?cb=20200809200122&path-prefix=fr",
+    picture: "https://geekalition.com/wp-content/uploads/2022/11/Isagi-Yoichi-Blue-Lock.webp",
   });
 
   const nour = await myDAO.add_user({
@@ -145,6 +145,7 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "J'aime trop les jeux vidéos, c'est ma passssiiiiiiiion ",
+    picture: "https://media.istockphoto.com/id/1182383458/fr/vectoriel/gamer-esport-mascotte-logo-design.jpg?s=2048x2048&w=is&k=20&c=TQaNy6F46LbSgc6lk9ytQ1zm7LeHpTMKzxhyS-2Hits=",
   });
 
   const yacine = await myDAO.add_user({
@@ -162,7 +163,7 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Amateur de Harry Potter, on peut se faire des petites soirées jeux lié à cela.",
-    picture:"https://i.familiscope.fr/1400x787/smart/2022/04/06/livres-harry-potter.jpg",
+    picture: "https://i.familiscope.fr/1400x787/smart/2022/04/06/livres-harry-potter.jpg",
   });
 
   const cedric = await myDAO.add_user({
@@ -179,7 +180,7 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Bonjour, amatrice d'escape game, j'aimerai rejoindre des esprits malin afin d'en accomplir le plus possible et dans les meilleurs temps !!",
-    picture:"https://img.lemde.fr/2015/12/04/26/0/640/640/664/0/75/0/79e8b7c_5194-wikr8j.jpg",
+    picture: "https://img.lemde.fr/2015/12/04/26/0/640/640/664/0/75/0/79e8b7c_5194-wikr8j.jpg",
   });
 
   const sophie = await myDAO.add_user({
@@ -218,7 +219,68 @@ async function populate() {
 
 
 
-// EVENTS
+  // EVENTS
+
+  // ART & CULTURE
+
+  const japan_expo = await myDAO.save_event({
+    participants_number: 3,
+    category: "Culture Cosplay",
+    description: "Cherche un petit groupe pour aller à la japan expo en cosplay de Tanjiro, Zenitsu, Inosuke et Nezuko :) .",
+    image_url: "https://upload.wikimedia.org/wikipedia/fr/thumb/e/ed/Japan_Expo_Logo_2.svg/798px-Japan_Expo_Logo_2.svg.png",
+    name: "Japan Expo Cosplay",
+    organizerId: mehdi.id,
+    date: "2023-06-06T13:00:00.000Z",
+    MainCategoryId: cat_art_et_culture.id,
+    address: {
+      street: "12 avenue du prado",
+      city: "Marseille",
+      country: "France",
+      zip: "13009",
+    },
+  });
+
+  // CINEMA
+
+  const fast_10 = await myDAO.save_event({
+    participants_number: 4,
+    category: "Film Cinéma",
+    description: "Je cherche des personnes qui veulent voir Fast and Furious 10 afin de passer un bon moment au cinéma.",
+    image_url: "https://fr.web.img5.acsta.net/pictures/23/05/10/10/55/5129031.jpg",
+    name: "Séance de Cinéma Fast and Furious 10",
+    organizerId: damien.id,
+    date: "2023-06-06T13:30:00.000Z",
+    MainCategoryId: cat_cinema.id,
+    address: {
+      street: "12 avenue du prado",
+      city: "Marseille",
+      country: "France",
+      zip: "13009",
+    },
+  });
+
+  const hp = await myDAO.save_event({
+    participants_number: 5,
+    category: "Film Cinéma",
+    description: "Je cherche des personnes qui veulent voir Harry Potter à l'école des sorciers lors d'une retransmission organisé par l'association X.",
+    image_url: "https://imgsrc.cineserie.com/2001/12/1500437.jpg?ver=1",
+    name: "Harry Potter à L'Ecole Des Sorciers",
+    organizerId: oscar.id,
+    date: "2024-06-07T19:30:00.000Z",
+    MainCategoryId: cat_cinema.id,
+    address: {
+      street: "58 avenue des aigles",
+      city: "Marseille",
+      country: "France",
+      zip: "13009",
+    },
+  });
+
+  // FOOD
+
+  // GOOD CAUSES
+
+  // MUSIC
 
   const jazz = await myDAO.save_event({
     participants_number: 50,
@@ -236,6 +298,44 @@ async function populate() {
       zip: "13900",
     },
   });
+
+  const concert = await myDAO.save_event({
+    participants_number: 50,
+    category: "Musique",
+    description: "Un concert de rock",
+    image_url: "https://example.com/image.jpg",
+    name: "Concert de rock",
+    organizerId: hugo.id,
+    date: "2024-04-21T12:30:00.000Z",
+    MainCategoryId: cat_musique.id,
+    address: {
+      street: "123 rue de la musique",
+      city: "Paris",
+      country: "France",
+      zip: "codedeparis",
+    },
+  });
+
+  // SCIENCES
+
+  const forum_science = await myDAO.save_event({
+    participants_number: 10,
+    category: "Forum",
+    description: "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
+    image_url: "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
+    name: "Forum de la santé",
+    organizerId: charles.id,
+    date: "2023-06-06T13:30:00.000Z",
+    MainCategoryId: cat_sciences.id,
+    address: {
+      street: "rue des aigles",
+      city: "Poitiers",
+      country: "France",
+      zip: "86000",
+    },
+  });
+
+  // SPORTS
 
   const volley = await myDAO.save_event({
     participants_number: 50,
@@ -270,22 +370,7 @@ async function populate() {
       zip: "13600",
     },
   });
-  const concert = await myDAO.save_event({
-    participants_number: 50,
-    category: "Musique",
-    description: "Un concert de rock",
-    image_url: "https://example.com/image.jpg",
-    name: "Concert de rock",
-    organizerId: hugo.id,
-    date: "2024-04-21T12:30:00.000Z",
-    MainCategoryId: cat_musique.id,
-    address: {
-      street: "123 rue de la musique",
-      city: "Paris",
-      country: "France",
-      zip: "codedeparis",
-    },
-  });
+
   const kart = await myDAO.save_event({
     participants_number: 10,
     category: "Karting",
@@ -302,32 +387,15 @@ async function populate() {
       zip: "75001",
     },
   });
-  
-  const fast_10 = await myDAO.save_event({
-    participants_number: 4,
-    category: "Film Cinéma",
-    description: "Je cherche des personnes qui veulent voir Fast and Furious 10 afin de passer un bon moment au cinéma.",
-    image_url: "https://fr.web.img5.acsta.net/pictures/23/05/10/10/55/5129031.jpg",
-    name: "Séance de Cinéma Fast and Furious 10",
-    organizerId: damien.id,
-    date: "2024-08-15T13:30:00.000Z",
-    MainCategoryId: cat_cinema.id,
-    address: {
-      street: "12 avenue du prado",
-      city: "Marseille",
-      country: "France",
-      zip: "13009",
-    },
-  });
 
   const foot = await myDAO.save_event({
     participants_number: 21,
-    category: "Football",
+    category: "Foot",
     description: "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
-    image_url:"https://www.aizenay.fr/medias/2016/04/terrain-de-football.jpg",
+    image_url: "https://www.aizenay.fr/medias/2016/04/terrain-de-football.jpg",
     name: "Match de foot 11 vs 11",
     organizerId: yacine.id,
-    date: "2024-06-21T13:30:00.000Z",
+    date: "2023-06-07T13:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "Stade de Luminy",
@@ -336,6 +404,25 @@ async function populate() {
       zip: "13009",
     },
   });
+
+  const futsal = await myDAO.save_event({
+    participants_number: 7,
+    category: "Foot",
+    description: "J'organise un futsal, on recherche 7 personnes.",
+    image_url: "https://cityball.fr/wp-content/uploads/2023/01/futsal-nimes-7-1.jpg",
+    name: "City 5 vs 5",
+    organizerId: yacine.id,
+    date: "2023-06-06T13:30:00.000Z",
+    MainCategoryId: cat_sport.id,
+    address: {
+      street: "12 rue de la valentine",
+      city: "Marseille",
+      country: "France",
+      zip: "13012",
+    },
+  });
+
+  // VIDEO GAMES
 
   const smash = await myDAO.save_event({
     participants_number: 6,
@@ -354,23 +441,6 @@ async function populate() {
     },
   });
 
-  const forum_science = await myDAO.save_event({
-    participants_number: 10,
-    category: "Forum",
-    description: "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
-    image_url: "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
-    name: "Forum de la santé",
-    organizerId: charles.id,
-    date: "2024-09-27T13:30:00.000Z",
-    MainCategoryId: cat_sciences.id,
-    address: {
-      street: "rue des aigles",
-      city: "Poitiers",
-      country: "France",
-      zip: "86000",
-    },
-  });
-
   const club_pro = await myDAO.save_event({
     participants_number: 10,
     category: "Fifa 23",
@@ -378,7 +448,7 @@ async function populate() {
     image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgLRnYhXijgjIxbPOeDVt6o8oX9I5tJRDx-w&usqp=CAU",
     name: "Club pro fifa 23 ps4 ps5",
     organizerId: yacine.id,
-    date: "2024-07-21T13:30:00.000Z",
+    date: "2023-06-06T13:30:00.000Z",
     MainCategoryId: cat_jeux_videos.id,
     address: {
       street: "rue de club pro",
@@ -387,10 +457,47 @@ async function populate() {
       zip: "13005",
     },
   });
-  
+
+  const snip = await myDAO.save_event({
+    participants_number: 1,
+    category: "Call of Duty",
+    description: "Cherche un gars pour faire un 1 vs 1 snipersur mw2 !",
+    image_url: "https://image.jeuxvideo.com/medias/165511/1655108230-8066-jaquette-avant.jpg",
+    name: "1 vs 1 Call of",
+    organizerId: le_gamer.id,
+    date: "2023-06-06T12:30:00.000Z",
+    MainCategoryId: cat_jeux_videos.id,
+    address: {
+      street: "x",
+      city: "x",
+      country: "France",
+      zip: "00000",
+    },
+  });
+
   await myDAO.apply(leopaul.id, smash.id)
   await myDAO.apply(paul.id, volley.id)
-  
+
+  await myDAO.apply(assia.id, japan_expo.id)
+  await myDAO.apply(le_gamer.id, japan_expo.id)
+  await myDAO.apply(anis.id, japan_expo.id)
+  await myDAO.apply(yacine.id, japan_expo.id)
+  await myDAO.apply(oscar.id, japan_expo.id)
+  await myDAO.apply(eric.id, japan_expo.id)
+  await myDAO.apply(sophie.id, japan_expo.id)
+  await myDAO.apply(heba.id, japan_expo.id)
+  await myDAO.apply(nour.id, japan_expo.id)
+  await myDAO.apply(leopaul.id, japan_expo.id)
+
+  await myDAO.participate(mehdi.id, futsal.id);
+  await myDAO.participate(eric.id, futsal.id);
+  await myDAO.participate(amine.id, futsal.id);
+  await myDAO.participate(hugo.id, futsal.id);
+  await myDAO.participate(leopaul.id, futsal.id);
+  await myDAO.participate(cedric.id, futsal.id);
+  await myDAO.participate(souf.id, futsal.id);
+
+
   await myDAO.participate(hugo.id, volley.id);
   await myDAO.participate(leopaul.id, jazz.id);
   await myDAO.participate(hugo.id, jazz.id);
@@ -398,6 +505,128 @@ async function populate() {
   await myDAO.participate(franck.id, rando.id);
   await myDAO.participate(hugo.id, rando.id);
   await myDAO.participate(paul.id, concert.id);
+
+  await myDAO.participate(oscar.id, snip.id)
+
+  await myDAO.add_note_from_participant({
+    ownerId: oscar.id,
+    eventId: snip.id,
+    value: 1,
+    title: "NE PAS JOUER AVEC LUI !!!",
+    comment: "Ne fais qu'insulter lorsqu'il perd, joueur très désagréable, je ne recommande pas de jouer avec lui.",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: mehdi.id,
+    eventId: futsal.id,
+    value: 4,
+    title: "Sympa",
+    comment: "Bonne ambiance, bon niveau, fairplay, à refaire",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: eric.id,
+    eventId: futsal.id,
+    value: 3,
+    title: "Bien",
+    comment: "Bon match , si on oublie le fait que je n'avais pas beaucoup de ballons...",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: amine.id,
+    eventId: futsal.id,
+    value: 5,
+    title: "Excellent",
+    comment: "Super match ! On avait une beau équipe, et le duo avec Yacine était fabuleux !",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: souf.id,
+    eventId: futsal.id,
+    value: 4,
+    title: "Cool",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: cedric.id,
+    eventId: futsal.id,
+    value: 4,
+    title: "Bonne organisation",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: leopaul.id,
+    eventId: futsal.id,
+    value: 5,
+    title: "Très bien",
+    comment: "On a passé un bon moment, Yacine a très bien organisé, c'est à refaire !",
+  });
+
+  await myDAO.add_note_from_participant({
+    ownerId: hugo.id,
+    eventId: futsal.id,
+    value: 4,
+    title: "Bon match",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: amine.id,
+    value: 5,
+    title: "Magnifique",
+    comment: "Très bon joueur, je recommande.",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: leopaul.id,
+    value: 5,
+    title: "Bien",
+    comment: "Bon joueur et bonne mentalité",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: hugo.id,
+    value: 4,
+    title: "Bien",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: eric.id,
+    value: 2,
+    title: "Raleur",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: souf.id,
+    value: 5,
+    title: "Tres bien",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: mehdi.id,
+    value: 5,
+    title: "Bon joueur",
+    comment: "Bon joueur et bonne mentalité sur le terrain , je recommande fort !",
+  });
+
+  await myDAO.add_note_from_host({
+    ownerId: yacine.id,
+    eventId: futsal.id,
+    targetId: cedric.id,
+    value: 4,
+    title: "Bon gars",
+  });
 
   await myDAO.add_note_from_participant({
     ownerId: leopaul.id,
@@ -414,21 +643,21 @@ async function populate() {
   });
 
   await myDAO.add_note_from_host({
-    ownerId : franck.id,
-    eventId : jazz.id,
-    targetId : leopaul.id,
-    value : 3,
-    title : "super lp",
-    comment : "ouiiii",
+    ownerId: franck.id,
+    eventId: jazz.id,
+    targetId: leopaul.id,
+    value: 3,
+    title: "super lp",
+    comment: "ouiiii",
   });
 
   await myDAO.add_note_from_host({
-    ownerId : leopaul.id,
-    eventId : volley.id,
-    targetId : hugo.id,
-    value : 3,
-    title : "Hugoo",
-    comment : "hugooooo",
+    ownerId: leopaul.id,
+    eventId: volley.id,
+    targetId: hugo.id,
+    value: 3,
+    title: "Hugoo",
+    comment: "hugooooo",
   });
 
   await myDAO.add_note_from_participant({
