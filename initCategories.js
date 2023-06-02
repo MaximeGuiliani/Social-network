@@ -52,3 +52,5 @@ async function populate() {
   const cat_good_causes = await myDAO.add_main_category("Good causes");
 
 }
+
+populate();

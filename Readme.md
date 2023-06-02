@@ -49,11 +49,17 @@ npm start
 # http://localhost:3000
 ```
 
-Ensuite, il faut executer le script dans un second terminal [initCategories.js](initCategories.js) pour initialiser les categories.
-
+Ensuite, il faut executer un des scripts suivant dans un second terminal [initCategories.js](initCategories.js) pour initialiser les categories ou [populate.js](populate.js) pour commencer à utiliser l'application avec des données de test.
 
 ```bash 
 node initCategories.js
+```
+
+OU
+
+
+```bash 
+node populate.js
 ```
 
 
