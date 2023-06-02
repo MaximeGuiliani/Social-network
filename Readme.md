@@ -1,7 +1,13 @@
-# M1 IDL Project Social network (SN)
+# M1 IDL Projet Social network (SN)
 
-Le but de ce projet est de créer un réseau social en utilisant une API et une base de données MySQL.
-Cette application permettra de créer des utilisateurs, des posts, des commentaires et des notes pour des evenements.
+Le but de ce projet est de créer un réseau social en utilisant une API Rest et un client web pour cette API.
+Une base de données sera docn necessaire.
+
+L'application permettra de créer des utilisateurs, des événements, des commentaires et des notes.  
+
+- La partie _front-end_ repose principalement sur React-dom, Raact-Router, et Chakra-ui.
+
+- La partie back-end_, quand à elle, repose principalement sur Express, MySQL, Sequelize, JWT
 
 ## Pour commencer
 
@@ -26,9 +32,10 @@ Vous allez avoir besoin de :
 
 #### Configuration de la base de données
 
-Une liste de commande est disponible dans le fichier [start_mysql.sh](script/start_mysql.sh) pour créer la base de données et les tables.
+Il faut (juste) créer la base de donnée mySQL au préalable
+Une liste des commandes utiles est disponible dans le fichier [start_mysql.sh](script/start_mysql.sh)
 
-#### Configuration du backend
+#### Mise en place du backend
 
 Pour configurer le backend, il faut installer les dépendances.
 
@@ -49,7 +56,7 @@ npm start
 # http://localhost:3000
 ```
 
-Ensuite, il faut executer un des scripts suivant dans un second terminal [initCategories.js](initCategories.js) pour initialiser les categories ou [populate.js](populate.js) pour commencer à utiliser l'application avec des données de test.
+Ensuite, on peut executer l'un des scripts suivant dans un second terminal [initCategories.js](initCategories.js) pour initialiser les categories ou [populate.js](populate.js) pour commencer à utiliser l'application avec des données de test.
 
 ```bash 
 node initCategories.js
@@ -63,7 +70,7 @@ node populate.js
 ```
 
 
-## Vous pouver maintenant faire des requetes sur l'API
+## Vous pouver maintenant faire des requetes à l'API
 Une **documentation** est disponible à l'adresse suivante : [Social_network_API](https://app.swaggerhub.com/apis-docs/MAXIMEGUILIANI_2/Social_network_API/1.0.0)
 
 
