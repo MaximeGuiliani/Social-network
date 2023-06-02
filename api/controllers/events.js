@@ -41,6 +41,12 @@ export async function event_get(req, res, next) {
     await myDAO
       .get_event_with_related_users(validParams)
       .then(function (result) {
+
+        if (result.dataValues.id == null) {
+          console.log("result is null");
+          sendNotFound(res, "Event not found");
+          return;
+        }
         res.status(200).json({
           code: 200,
           message:
