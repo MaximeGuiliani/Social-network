@@ -55,6 +55,13 @@ Ensuite, il faut executer le script dans un second terminal [initCategories.js](
 ```bash 
 node initCategories.js
 ```
+
+
+## Vous pouver maintenant faire des requetes sur l'API
+Une **documentation** est disponible à l'adresse suivante : [Social_network_API](https://app.swaggerhub.com/apis-docs/MAXIMEGUILIANI_2/Social_network_API/1.0.0)
+
+
+
 ## Auteurs
 * **Léo-Paul Musardo**
 * **Maxime Guiliani**  
