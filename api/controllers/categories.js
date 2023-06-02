@@ -1,7 +1,3 @@
-import {
-  validate,
-  schemaCreateCategory,
-} from "../validator/validatorsCategories.js";
 import { myDAO } from "../../app.js";
 
 export async function get_main_categories(req, res, next) {

@@ -1,14 +1,14 @@
 export function sendServerError(res, err) {
   return res.status(500).json({
     code: 500,
-    error: err,
+    message: err,
   });
 }
 
 export function sendBadRequest(res, err) {
   return res.status(400).json({
     code: 400,
-    error: err,
+    message: err,
   });
 }
 

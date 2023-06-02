@@ -26,7 +26,6 @@ const myDAO = await async function test() {
 }();
 export {myDAO};
 
-//myDAO.initCategories();
 
 // handling CORS errors
 app.use((req, res, next) => {

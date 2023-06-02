@@ -12,8 +12,6 @@ import { myDAO } from "../../app.js";
 
 import {
   sendBadRequest,
-  sendServerError,
-  sendAuthFailed,
   sendNotFound,
 } from "../controllers/errors.js";
 

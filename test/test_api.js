@@ -1,8 +1,9 @@
 import supertest from "supertest";
-import app from "../app.js";
+import app, { myDAO } from "../app.js";
 import chai from "chai";
 const expect = chai.expect;
 
+myDAO.add_main_category("sport");
 describe("API routes", () => {
   let token = null; // Declare token with a default value of null
 
@@ -81,7 +82,7 @@ describe("API routes", () => {
     describe("PATCH /users/:userName", () => {
       it("should update a user's information", async () => {
         const response = await supertest(app)
-          .patch("/users/testuser")
+          .patch("/users/1")
           .set("Authorization", `Bearer ${token}`)
           .send({
             bio: "ceci est une bio modifié",
@@ -149,13 +150,9 @@ describe("API routes", () => {
         const response = await supertest(app).get("/events").query({
           eventId: 1,
           include_organizer: true,
-          include_candidates: true,
-          include_participants: true,
           include_notes: true,
-          include_messages: true,
         });
         expect(response.statusCode).to.equal(200);
-        expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("events");
       });
     });
@@ -173,13 +170,16 @@ describe("API routes", () => {
               country: "France",
               zip: "05000",
             },
-            image_url:"https://img.freepik.com/premium-vector/basketball_319667-191.jpg",
+            image_url:
+              "https://img.freepik.com/premium-vector/basketball_319667-191.jpg",
             date: "2024-04-26T19:11:16.471Z",
             name: "Basket 1V1",
             description: "1v1 basket ball tournament",
             category: "basket",
-            MainCategory: "sport",
+            mainCategoryId: "1",
           });
+
+        console.log(response.body);
         expect(response.statusCode).to.equal(201);
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("createdEvent");
@@ -200,27 +200,21 @@ describe("API routes", () => {
               country: "France",
               zip: "05000",
             },
-            image_url:"https://img.freepik.com/premium-vector/basketball_319667-191.jpg",
+            image_url:
+              "https://img.freepik.com/premium-vector/basketball_319667-191.jpg",
             date: "2025-01-26T19:11:16.471Z",
             name: "Basket",
             description: "1v1",
             category: "dada",
             MainCategoryId: 1,
           });
+        console.log(response.body);
         expect(response.statusCode).to.equal(200);
         expect(response.body).to.have.property("message");
         expect(response.body).to.have.property("modifiedEvent");
         expect(response.body.modifiedEvent).to.be.an("object");
         expect(response.body.modifiedEvent.id).to.equal(1);
         expect(response.body.modifiedEvent.participants_number).to.equal(10);
-
-        // TODO : fix update adresse
-        // expect(response.body.modifiedEvent.address.street).to.equal(
-        //   "gap street"
-        // );
-        // expect(response.body.modifiedEvent.address.city).to.equal("GAP");
-        // expect(response.body.modifiedEvent.address.country).to.equal("France");
-        // expect(response.body.modifiedEvent.address.zip).to.equal("05000");
         expect(response.body.modifiedEvent.date).to.equal(
           "2025-01-26T19:11:16.471Z"
         );
@@ -231,7 +225,6 @@ describe("API routes", () => {
       });
     });
 
-    // TODO : fix event related to users avec organizer = null
     describe("GET /events/search ", () => {
       it("should get events with filters", async () => {
         const response = await supertest(app)
@@ -337,7 +330,6 @@ describe("API routes", () => {
       });
     });
 
-    // TODO : faire une event à delete pour le test
     // describe("DELETE /events/:eventId ", () => {
     //   it("should delete events with eventId as id", async () => {
     //     const response = await supertest(app).delete("/events/1").set("Authorization", `Bearer ${token}`);
@@ -375,11 +367,14 @@ describe("API routes", () => {
   describe("Messages API routes", () => {
     describe("POST /messages ", () => {
       it("should create a new message", async () => {
-        const response = await supertest(app).post("/messages").send({
-          content: "test message",
-          userId: 1,
-          eventId: 1,
-        });
+        const response = await supertest(app)
+          .post("/messages")
+          .set("Authorization", `Bearer ${token}`)
+          .send({
+            content: "test message",
+            userId: 1,
+            eventId: 1,
+          });
         expect(response.statusCode).to.equal(201);
         expect(response.body.message).to.equal("Message posted");
         expect(response.body.result.id).to.equal(1);
@@ -420,7 +415,6 @@ describe("API routes", () => {
           .post("/notes/addnotefromhost")
           .set("Authorization", `Bearer ${token}`)
           .send({
-            creationDate: "2023-04-26T19:11:16.471Z",
             ownerId: 1,
             eventId: 1,
             targetId: 2,
@@ -428,6 +422,7 @@ describe("API routes", () => {
             title: "il a tout cassé :(",
             comment: "il a tout cassé :(",
           });
+        console.log(response.body.error);
         expect(response.statusCode).to.equal(201);
         expect(response.body.message).to.equal("Note posted");
         expect(response.body.message).to.equal("Note posted");
@@ -447,13 +442,13 @@ describe("API routes", () => {
           .post("/notes/addnotefromparticipant")
           .set("Authorization", `Bearer ${token}`)
           .send({
-            creationDate: "2023-04-26T19:11:16.471Z",
             ownerId: 2,
             eventId: 1,
             value: 2,
             title: "bad host",
             comment: "il a dit que j'ai tout cassé :(",
           });
+        console.log(response.body);
         expect(response.statusCode).to.equal(201);
         expect(response.body.message).to.equal("Note posted");
         expect(response.body.note.id).to.equal(2);

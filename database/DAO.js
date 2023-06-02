@@ -69,11 +69,18 @@ class DAO {
   //ajout d'un utilisateur et verification que le username ou que l'email n'est pas déjà utilisé
   async add_user({ username, email, password_hash, bio = "", picture = null }) {
     return this.sequelize.transaction(async (t) => {
-      const user = await User.findOne({
-        where: { [Op.or]: [{ username }, { email }] },
+
+      let user = await User.findOne({
+        where: { username: username },
       });
       if (user) {
-        throw new Error("Username or email already taken");
+        throw new Error("Username already taken");
+      }
+      user = await User.findOne({
+        where: { email: email },
+      });
+      if (user) {
+        throw new Error("Email already taken");
       }
       return this.sequelize.transaction((t) => {
         return User.create({

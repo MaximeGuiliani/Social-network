@@ -40,7 +40,7 @@ const schemaUpdateEvent = Joi.object().keys({
   MainCategoryId: Joi.number().integer(),
 });
 
-// verify that an objetc is an id
+// verify that an object is an id
 const schemaId = Joi.number().integer().required();
 
 const schemaUserIdANDEventId = Joi.object().keys({

@@ -18,8 +18,7 @@ import { hash, compare } from "bcrypt";
 import pkg from "jsonwebtoken";
 const { sign } = pkg;
 
-// NOTE : user_signup crée l'utilisateur en utilisant le hash du mot de passe
-
+// user_signup crée l'utilisateur en utilisant le hash du mot de passe
 export async function user_signup(req, res, next) {
   const validUser = validate(schemaSignupUser.validate(req.body), res);
   if (validUser == null) {
@@ -53,8 +52,7 @@ function createUser(req, res, validUser) {
   });
 }
 
-// NOTE : user_login verifie que l'utilisateur existe et que le mot de passe est correct avant de créer un token
-
+// user_login verifie que l'utilisateur existe et que le mot de passe est correct avant de créer un token
 export async function user_login(req, res, next) {
   const validLoginUser = validate(schemaLoginUser.validate(req.body), res);
   if (validLoginUser == null) {
@@ -142,7 +140,7 @@ export async function user_get(req, res, next) {
   }
 }
 
-// NOTE : user_get_all retourne tous les utilisateurs
+// user_get_all retourne tous les utilisateurs
 
 export async function user_get_all(req, res, next) {
   await myDAO
@@ -159,8 +157,7 @@ export async function user_get_all(req, res, next) {
     });
 }
 
-// TODO : définir les modifications possible pour un user
-// NOTE : user_update met à jour l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe On mets à jour que la bio pour le moment
+// user_update met à jour l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe On mets à jour que la bio pour le moment
 
 export async function user_update(req, res, next) {
   const validUserId = validate(schemaId.validate(req.params.id), res);
@@ -171,7 +168,7 @@ export async function user_update(req, res, next) {
   if (req.userData.id != req.params.id) {
     res.status(401).json({
       code: 401,
-      message: "Unauthorized access",
+      message: "Unauthorized access, You can only update your own profile",
       error: "You can only update your own profile",
     });
     return;
@@ -220,7 +217,7 @@ export async function user_update(req, res, next) {
   }
 }
 
-// NOTE : user_delete supprime l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe
+// user_delete supprime l'utilisateur correspondant à l'id passé en paramètre si il est valid et qu'il existe
 export async function user_delete(req, res, next) {
   const validId = validate(schemaId.validate(req.params.id), res);
 
