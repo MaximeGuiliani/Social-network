@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { sendAuthFailed } from "../controllers/errors.js";
 
 export default (req, res, next) => {
   try {
