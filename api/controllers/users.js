@@ -30,10 +30,7 @@ export async function user_signup(req, res, next) {
 function createUser(req, res, validUser) {
   hash(req.body.password, 10, async (err, hash) => {
     if (err) {
-      return res.status(500).json({
-        code: 500,
-        error: err.message,
-      });
+      return sendServerError(res, err);
     } else {
       validUser.password_hash = hash;
       await myDAO
@@ -46,7 +43,7 @@ function createUser(req, res, validUser) {
           });
         })
         .catch((err) => {
-          return sendServerError(res, err.message);
+          return sendServerError(res, err);
         });
     }
   });
@@ -108,7 +105,7 @@ export async function user_get(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   } else {
     const validParams = validate(
@@ -135,7 +132,7 @@ export async function user_get(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   }
 }
@@ -153,7 +150,7 @@ export async function user_get_all(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -197,7 +194,7 @@ export async function user_update(req, res, next) {
               });
             })
             .catch((err) => {
-              return sendServerError(res, err.message);
+              return sendServerError(res, err);
             });
         }
       });
@@ -211,7 +208,7 @@ export async function user_update(req, res, next) {
           });
         })
         .catch(function (err) {
-          sendBadRequest(res, err.message);
+          sendBadRequest(res, err);
         });
     }
   }
@@ -247,7 +244,7 @@ export async function user_delete(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   }
 }
@@ -269,6 +266,6 @@ export async function user_get_scores(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }

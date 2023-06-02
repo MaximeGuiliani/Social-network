@@ -19,7 +19,7 @@ export async function add_messages_to_event(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -37,6 +37,6 @@ export async function get_all_messages_from_event(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }

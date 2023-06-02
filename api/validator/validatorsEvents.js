@@ -1,4 +1,6 @@
 import Joi from "joi";
+import { sendBadRequest } from "../controllers/errors.js";
+
 
 const schemaRelationship= Joi.object().keys({
   userId: Joi.number().integer().required(),
@@ -83,10 +85,8 @@ const schemaEventRelatedToUser = Joi.object().keys({
 
 function validate(validation, res) {
   if (validation.error) {
-    res.status(400).json({
-      message: "Bad request",
-      error: validation.error,
-    });
+    sendBadRequest(res, validation.error);
+
     return null;
   }
   return validation.value;

@@ -13,7 +13,7 @@ export async function get_main_categories(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   } else {
     myDAO
@@ -27,7 +27,7 @@ export async function get_main_categories(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   }
 }

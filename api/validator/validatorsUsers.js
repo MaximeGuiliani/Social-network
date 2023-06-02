@@ -1,4 +1,6 @@
 import Joi from "joi";
+import { sendBadRequest } from "../controllers/errors.js";
+
 
 const schemaSignupUser = Joi.object().keys({
   username: Joi.string().alphanum().min(3).max(30).required(),
@@ -35,11 +37,7 @@ const schemaUpdatePassword = Joi.object().keys({
 
 function validate(validation, res) {
   if (validation.error) {
-    res.status(400).json({
-      code: 400,
-      message: "Bad request",
-      error: validation.error,
-    });
+    sendBadRequest(res, validation.error);
     return null;
   }
   return validation.value;

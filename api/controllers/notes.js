@@ -29,10 +29,7 @@ export async function get_note_by_noteId(req, res, next) {
       });
     })
     .catch(function (err) {
-      res.status(400).json({
-        message: "Bad request",
-        error: err.message,
-      });
+      sendBadRequest(res, err);
     });
 }
 

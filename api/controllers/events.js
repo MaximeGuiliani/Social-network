@@ -28,7 +28,7 @@ export async function event_get(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   } else {
     const validParams = validate(
@@ -49,7 +49,7 @@ export async function event_get(req, res, next) {
         });
       })
       .catch(function (err) {
-        sendBadRequest(res, err.message);
+        sendBadRequest(res, err);
       });
   }
 }
@@ -86,7 +86,7 @@ export async function event_create(req, res, next) {
             });
           })
           .catch(function (err) {
-            sendBadRequest(res, err.message);
+            sendBadRequest(res, err);
           });
       }
     });
@@ -109,7 +109,7 @@ export async function event_update(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -131,7 +131,7 @@ export async function event_delete(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -159,7 +159,7 @@ export async function event_apply(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -188,7 +188,7 @@ export async function event_unapply(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -217,7 +217,7 @@ export async function event_accept_candidate(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -246,7 +246,7 @@ export async function event_refuse_candidate(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -271,7 +271,7 @@ export async function event_unparticipate(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -302,7 +302,7 @@ export async function event_remove_participant(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -367,7 +367,7 @@ export async function event_get_by_filters(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
 
@@ -383,7 +383,7 @@ export async function event_get_upcoming(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 
 
@@ -404,7 +404,7 @@ export async function event_relationship(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 
 }
@@ -425,6 +425,6 @@ export async function event_get_filling_event(req, res, next) {
       });
     })
     .catch(function (err) {
-      sendBadRequest(res, err.message);
+      sendBadRequest(res, err);
     });
 }
