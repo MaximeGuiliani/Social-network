@@ -12,7 +12,6 @@ import {
 let sequelize;
 let myDAO;
 
-
 async function destroy() {
   sequelize = await setup_db(true, "prod");
   myDAO = new DAO(sequelize);
@@ -23,7 +22,6 @@ async function destroy() {
   await Note.destroy({ where: {} });
   await EventMessage.destroy({ where: {} });
 }
-
 
 async function populate() {
   sequelize = await setup_db(true, "prod");
@@ -36,12 +34,6 @@ async function populate() {
   await EventMessage.destroy({ where: {} });
 
 
-  // Sport
-  // Culture
-  // Music
-  // Food
-  // Other
-
   const cat_gastronomie = await myDAO.add_main_category("Food");
   const cat_jeux_videos = await myDAO.add_main_category("Video games");
   const cat_sciences = await myDAO.add_main_category("Sciences");
@@ -50,7 +42,6 @@ async function populate() {
   const cat_musique = await myDAO.add_main_category("Music");
   const cat_cinema = await myDAO.add_main_category("Cinema");
   const cat_good_causes = await myDAO.add_main_category("Good causes");
-
 
   // USERS
 
@@ -119,7 +110,8 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Intérêt principal : foot",
-    picture: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg",
+    picture:
+      "https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg",
   });
 
   const mehdi = await myDAO.add_user({
@@ -128,7 +120,8 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Bonjour, je suis un grand fan de manga, et je dessine très souvent. J'aimerai pouvoir participé à des séances de dessin où l'on pourra se partager nos astuces.",
-    picture: "https://geekalition.com/wp-content/uploads/2022/11/Isagi-Yoichi-Blue-Lock.webp",
+    picture:
+      "https://geekalition.com/wp-content/uploads/2022/11/Isagi-Yoichi-Blue-Lock.webp",
   });
 
   const nour = await myDAO.add_user({
@@ -145,7 +138,8 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "J'aime trop les jeux vidéos, c'est ma passssiiiiiiiion ",
-    picture: "https://media.istockphoto.com/id/1182383458/fr/vectoriel/gamer-esport-mascotte-logo-design.jpg?s=2048x2048&w=is&k=20&c=TQaNy6F46LbSgc6lk9ytQ1zm7LeHpTMKzxhyS-2Hits=",
+    picture:
+      "https://media.istockphoto.com/id/1182383458/fr/vectoriel/gamer-esport-mascotte-logo-design.jpg?s=2048x2048&w=is&k=20&c=TQaNy6F46LbSgc6lk9ytQ1zm7LeHpTMKzxhyS-2Hits=",
   });
 
   const yacine = await myDAO.add_user({
@@ -154,7 +148,8 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Très actif au niveau du football, cherche souvent des gens pour jouer 2 à 3 fois par semaine. ( à 11 ou city )",
-    picture: "https://www.nautiljon.com/images/perso/00/87/agatsuma_zenitsu_18378.webp",
+    picture:
+      "https://www.nautiljon.com/images/perso/00/87/agatsuma_zenitsu_18378.webp",
   });
 
   const oscar = await myDAO.add_user({
@@ -163,7 +158,8 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Amateur de Harry Potter, on peut se faire des petites soirées jeux lié à cela.",
-    picture: "https://i.familiscope.fr/1400x787/smart/2022/04/06/livres-harry-potter.jpg",
+    picture:
+      "https://i.familiscope.fr/1400x787/smart/2022/04/06/livres-harry-potter.jpg",
   });
 
   const cedric = await myDAO.add_user({
@@ -180,7 +176,8 @@ async function populate() {
     password_hash:
       "$2b$10$hnQ/tWVHXXFncPIKa.FUau59WIVkfJZ/3m9Uo20J3OqBC1edTi9y6",
     bio: "Bonjour, amatrice d'escape game, j'aimerai rejoindre des esprits malin afin d'en accomplir le plus possible et dans les meilleurs temps !!",
-    picture: "https://img.lemde.fr/2015/12/04/26/0/640/640/664/0/75/0/79e8b7c_5194-wikr8j.jpg",
+    picture:
+      "https://img.lemde.fr/2015/12/04/26/0/640/640/664/0/75/0/79e8b7c_5194-wikr8j.jpg",
   });
 
   const sophie = await myDAO.add_user({
@@ -215,10 +212,6 @@ async function populate() {
     bio: "la bio de souf",
   });
 
-
-
-
-
   // EVENTS
 
   // ART & CULTURE
@@ -226,8 +219,10 @@ async function populate() {
   const japan_expo = await myDAO.save_event({
     participants_number: 3,
     category: "Culture Cosplay",
-    description: "Cherche un petit groupe pour aller à la japan expo en cosplay de Tanjiro, Zenitsu, Inosuke et Nezuko :) .",
-    image_url: "https://upload.wikimedia.org/wikipedia/fr/thumb/e/ed/Japan_Expo_Logo_2.svg/798px-Japan_Expo_Logo_2.svg.png",
+    description:
+      "Cherche un petit groupe pour aller à la japan expo en cosplay de Tanjiro, Zenitsu, Inosuke et Nezuko :) .",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/fr/thumb/e/ed/Japan_Expo_Logo_2.svg/798px-Japan_Expo_Logo_2.svg.png",
     name: "Japan Expo Cosplay",
     organizerId: mehdi.id,
     date: "2023-06-06T13:00:00.000Z",
@@ -242,13 +237,15 @@ async function populate() {
 
   // CINEMA
 
-  const fast_10 = await myDAO.save_event({
+  const bestas = await myDAO.save_event({
     participants_number: 4,
     category: "Film Cinéma",
-    description: "Je cherche des personnes qui veulent voir Fast and Furious 10 afin de passer un bon moment au cinéma.",
-    image_url: "https://fr.web.img5.acsta.net/pictures/23/05/10/10/55/5129031.jpg",
-    name: "Séance de Cinéma Fast and Furious 10",
-    organizerId: damien.id,
+    description:
+      "Je cherche des personnes qui veulent voir As Bestas avec moi afin de passer un bon moment au cinéma.",
+    image_url:
+      "https://fr.web.img6.acsta.net/pictures/22/06/23/15/35/2625015.jpg",
+    name: "Séance Cinéma As Bestas",
+    organizerId: leopaul.id,
     date: "2023-06-06T13:30:00.000Z",
     MainCategoryId: cat_cinema.id,
     address: {
@@ -262,7 +259,8 @@ async function populate() {
   const hp = await myDAO.save_event({
     participants_number: 5,
     category: "Film Cinéma",
-    description: "Je cherche des personnes qui veulent voir Harry Potter à l'école des sorciers lors d'une retransmission organisé par l'association X.",
+    description:
+      "Je cherche des personnes qui veulent voir Harry Potter à l'école des sorciers lors d'une retransmission organisé par l'association X.",
     image_url: "https://imgsrc.cineserie.com/2001/12/1500437.jpg?ver=1",
     name: "Harry Potter à L'Ecole Des Sorciers",
     organizerId: oscar.id,
@@ -286,7 +284,7 @@ async function populate() {
     participants_number: 50,
     category: "Concert",
     description: "Concert de Jazz",
-    image_url: "https://example.com/image_jazz.jpg",
+    image_url: "https://www.unesco.org/sites/default/files/styles/best_image/public/2023-04/shutterstock_1370931491.jpg?itok=RbzVs1cy",
     name: "Jazz Convergence",
     organizerId: franck.id,
     date: "2024-04-21T12:30:00.000Z",
@@ -302,9 +300,9 @@ async function populate() {
   const concert = await myDAO.save_event({
     participants_number: 50,
     category: "Musique",
-    description: "Un concert de rock",
-    image_url: "https://example.com/image.jpg",
-    name: "Concert de rock",
+    description: "Dernier concert des Daft Punk",
+    image_url: "https://www.radiomeuh.com/images/9b938d7d-5de5-449e-aee3-2f418abd4e13/daft-punk-epilogue.png?fm=jpg&q=80&fit=max&crop=512%2C374%2C0%2C0",
+    name: "Concert Daft Punk",
     organizerId: hugo.id,
     date: "2024-04-21T12:30:00.000Z",
     MainCategoryId: cat_musique.id,
@@ -321,8 +319,10 @@ async function populate() {
   const forum_science = await myDAO.save_event({
     participants_number: 10,
     category: "Forum",
-    description: "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
-    image_url: "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
+    description:
+      "Participons à ce forum de la santé qui réunira plusieurs professionnelle du domaine.",
+    image_url:
+      "https://emf.fr/wp-content/uploads/2019/07/Affiche-Forum-sant%C3%A9-septembre-2019.jpg",
     name: "Forum de la santé",
     organizerId: charles.id,
     date: "2023-06-06T13:30:00.000Z",
@@ -338,10 +338,11 @@ async function populate() {
   // SPORTS
 
   const volley = await myDAO.save_event({
-    participants_number: 50,
+    participants_number: 10,
     category: "Volley ball",
     description: "Beach volley a la Ciotat",
-    image_url: "https://example.com/image_volley.jpg",
+    image_url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Beach_volleyball_%284701437938%29.jpg/1200px-Beach_volleyball_%284701437938%29.jpg",
     name: "Volley Ball !",
     organizerId: leopaul.id,
     date: "2024-07-21T12:30:00.000Z",
@@ -358,7 +359,8 @@ async function populate() {
     participants_number: 50,
     category: "Randonnee",
     description: "une rando à Luminy",
-    image_url: "https://example.com/image_rando.jpg",
+    image_url:
+      "https://active-road.com/img/activites/slidemedium-p1230374-copie.jpg",
     name: "Sortie Luminy",
     organizerId: paul.id,
     date: "2024-04-21T12:30:00.000Z",
@@ -375,10 +377,10 @@ async function populate() {
     participants_number: 10,
     category: "Karting",
     description: "course de kart au castellet",
-    image_url: "https://example.com/image_karting.jpg",
-    name: "Mario Kart",
-    organizerId: charles.id,
-    date: "2024-04-21T12:30:00.000Z",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/c/cc/Simeon_Ivanov_karting.jpg",
+    name: "Karting",
+    organizerId: leopaul.id,
+    date: "2023-06-05T23:30:00.000Z",
     MainCategoryId: cat_sport.id,
     address: {
       street: "rue du karting",
@@ -391,8 +393,9 @@ async function populate() {
   const foot = await myDAO.save_event({
     participants_number: 21,
     category: "Foot",
-    description: "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
-    image_url: "https://www.aizenay.fr/medias/2016/04/terrain-de-football.jpg",
+    description:
+      "J'organise un match à 11 contre 11, n'hésitez pas à venir nombreux dans la joie et la bonne humeur :) .",
+    image_url: "https://lvdneng.rosselcdn.net/sites/default/files/dpistyles_v2/ena_16_9_extra_big/2021/06/07/node_1021419/51559787/public/2021/06/07/B9727281356Z.1_20210607131243_000%2BG4II93U2R.3-0.jpg?itok=c3uu-2aT1623423388",
     name: "Match de foot 11 vs 11",
     organizerId: yacine.id,
     date: "2023-06-07T13:30:00.000Z",
@@ -409,7 +412,8 @@ async function populate() {
     participants_number: 7,
     category: "Foot",
     description: "J'organise un futsal, on recherche 7 personnes.",
-    image_url: "https://cityball.fr/wp-content/uploads/2023/01/futsal-nimes-7-1.jpg",
+    image_url:
+      "https://img.olympicchannel.com/images/image/private/t_social_share_thumb/f_auto/primary/qjxgsf7pqdmyqzsptxju",
     name: "City 5 vs 5",
     organizerId: yacine.id,
     date: "2023-06-06T13:30:00.000Z",
@@ -428,7 +432,8 @@ async function populate() {
     participants_number: 6,
     category: "Super Smash Bros Ultimate",
     description: "venez participer à un contest Smash",
-    image_url: "https://example.com/image_ssbu.jpg",
+    image_url:
+      "https://static1.millenium.org/articles/1/37/25/41/@/1422365-h2x1-nswitch-supersmashbrosultimate-02-image1600w-1-article_m-1.jpg",
     name: "Giga Contest Smash",
     organizerId: charles.id,
     date: "2024-04-21T13:30:00.000Z",
@@ -444,8 +449,10 @@ async function populate() {
   const club_pro = await myDAO.save_event({
     participants_number: 10,
     category: "Fifa 23",
-    description: "Recrute des joueurs club pro pour une coupe EA, tout poste recherché.",
-    image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgLRnYhXijgjIxbPOeDVt6o8oX9I5tJRDx-w&usqp=CAU",
+    description:
+      "Recrute des joueurs club pro pour une coupe EA, tout poste recherché.",
+    image_url:
+      "https://static.fnac-static.com/multimedia/Images/FD/Comete/161738/CCP_IMG_1200x800/2143874.jpg",
     name: "Club pro fifa 23 ps4 ps5",
     organizerId: yacine.id,
     date: "2023-06-06T13:30:00.000Z",
@@ -462,8 +469,9 @@ async function populate() {
     participants_number: 1,
     category: "Call of Duty",
     description: "Cherche un gars pour faire un 1 vs 1 snipersur mw2 !",
-    image_url: "https://image.jeuxvideo.com/medias/165511/1655108230-8066-jaquette-avant.jpg",
-    name: "1 vs 1 Call of",
+    image_url:
+      "https://image.jeuxvideo.com/medias/165511/1655108230-8066-jaquette-avant.jpg",
+    name: "1 vs 1 Call of Duty",
     organizerId: le_gamer.id,
     date: "2023-06-06T12:30:00.000Z",
     MainCategoryId: cat_jeux_videos.id,
@@ -475,19 +483,61 @@ async function populate() {
     },
   });
 
-  await myDAO.apply(leopaul.id, smash.id)
-  await myDAO.apply(paul.id, volley.id)
+  const exclusif = await myDAO.save_event({
+    participants_number: 1,
+    category: "Exclusif",
+    description: "Un event ultra exclusif avec 1 seul participant!",
+    image_url:
+      "https://st2.depositphotos.com/1007499/5773/v/950/depositphotos_57739015-stock-illustration-exclusive-stamp.jpg",
+    name: "Evenement Exclusif",
+    organizerId: leopaul.id,
+    date: "2024-06-06T12:30:00.000Z",
+    MainCategoryId: cat_jeux_videos.id,
+    address: {
+      street: "rue exclusive",
+      city: "La Ciotat",
+      country: "France",
+      zip: "13600",
+    },
+  });
 
-  await myDAO.apply(assia.id, japan_expo.id)
-  await myDAO.apply(le_gamer.id, japan_expo.id)
-  await myDAO.apply(anis.id, japan_expo.id)
-  await myDAO.apply(yacine.id, japan_expo.id)
-  await myDAO.apply(oscar.id, japan_expo.id)
-  await myDAO.apply(eric.id, japan_expo.id)
-  await myDAO.apply(sophie.id, japan_expo.id)
-  await myDAO.apply(heba.id, japan_expo.id)
-  await myDAO.apply(nour.id, japan_expo.id)
-  await myDAO.apply(leopaul.id, japan_expo.id)
+  const bros = await myDAO.save_event({
+    participants_number: 5,
+    category: "Mario Bros",
+    description: "Le meilleure jeu multi, venez tous",
+    image_url:
+      "https://cdn.cultura.com/cdn-cgi/image/width=768/media/pim/new-super-mario-bros-u-deluxe-0045496423759_20.jpg",
+    name: "Mario Bros Switch",
+    organizerId: damien.id,
+    date: "2024-06-06T12:30:00.000Z",
+    MainCategoryId: cat_jeux_videos.id,
+    address: {
+      street: "Switch",
+      city: "bla",
+      country: "bla",
+      zip: "00",
+    },
+  });
+
+  await myDAO.apply(leopaul.id, rando.id);
+  
+  await myDAO.apply(leopaul.id, smash.id);
+  await myDAO.apply(paul.id, volley.id);
+
+  await myDAO.apply(assia.id, volley.id);
+  await myDAO.apply(le_gamer.id, volley.id);
+  await myDAO.apply(anis.id, volley.id);
+  await myDAO.apply(yacine.id, volley.id);
+  await myDAO.apply(oscar.id, volley.id);
+  await myDAO.apply(eric.id, volley.id);
+  await myDAO.apply(sophie.id, volley.id);
+  await myDAO.apply(heba.id, volley.id);
+  await myDAO.apply(nour.id, volley.id);
+  
+  await myDAO.apply(damien.id, exclusif.id);
+  await myDAO.apply(heba.id, exclusif.id);
+  await myDAO.apply(hugo.id, exclusif.id);
+  await myDAO.apply(charles.id, exclusif.id);
 
   await myDAO.participate(mehdi.id, futsal.id);
   await myDAO.participate(eric.id, futsal.id);
@@ -497,7 +547,6 @@ async function populate() {
   await myDAO.participate(cedric.id, futsal.id);
   await myDAO.participate(souf.id, futsal.id);
 
-
   await myDAO.participate(hugo.id, volley.id);
   await myDAO.participate(leopaul.id, jazz.id);
   await myDAO.participate(hugo.id, jazz.id);
@@ -505,15 +554,17 @@ async function populate() {
   await myDAO.participate(franck.id, rando.id);
   await myDAO.participate(hugo.id, rando.id);
   await myDAO.participate(paul.id, concert.id);
+  await myDAO.participate(damien.id, concert.id);
 
-  await myDAO.participate(oscar.id, snip.id)
+  await myDAO.participate(oscar.id, snip.id);
 
   await myDAO.add_note_from_participant({
     ownerId: oscar.id,
     eventId: snip.id,
     value: 1,
     title: "NE PAS JOUER AVEC LUI !!!",
-    comment: "Ne fais qu'insulter lorsqu'il perd, joueur très désagréable, je ne recommande pas de jouer avec lui.",
+    comment:
+      "Ne fais qu'insulter lorsqu'il perd, joueur très désagréable, je ne recommande pas de jouer avec lui.",
   });
 
   await myDAO.add_note_from_participant({
@@ -529,7 +580,8 @@ async function populate() {
     eventId: futsal.id,
     value: 3,
     title: "Bien",
-    comment: "Bon match , si on oublie le fait que je n'avais pas beaucoup de ballons...",
+    comment:
+      "Bon match , si on oublie le fait que je n'avais pas beaucoup de ballons...",
   });
 
   await myDAO.add_note_from_participant({
@@ -537,7 +589,8 @@ async function populate() {
     eventId: futsal.id,
     value: 5,
     title: "Excellent",
-    comment: "Super match ! On avait une beau équipe, et le duo avec Yacine était fabuleux !",
+    comment:
+      "Super match ! On avait une beau équipe, et le duo avec Yacine était fabuleux !",
   });
 
   await myDAO.add_note_from_participant({
@@ -559,7 +612,8 @@ async function populate() {
     eventId: futsal.id,
     value: 5,
     title: "Très bien",
-    comment: "On a passé un bon moment, Yacine a très bien organisé, c'est à refaire !",
+    comment:
+      "On a passé un bon moment, Yacine a très bien organisé, c'est à refaire !",
   });
 
   await myDAO.add_note_from_participant({
@@ -612,12 +666,13 @@ async function populate() {
   });
 
   await myDAO.add_note_from_host({
-    ownerId: yacine.id,
-    eventId: futsal.id,
-    targetId: mehdi.id,
+    ownerId: hugo.id,
+    eventId: concert.id,
+    targetId: damien.id,
     value: 5,
-    title: "Bon joueur",
-    comment: "Bon joueur et bonne mentalité sur le terrain , je recommande fort !",
+    title: "Super",
+    comment:
+    "Ca c'est très bien passé",
   });
 
   await myDAO.add_note_from_host({
@@ -632,7 +687,7 @@ async function populate() {
     ownerId: leopaul.id,
     eventId: jazz.id,
     value: 4,
-    title: "super organisateur franck de jazz ",
+    title: "franck est un super organisateur",
   });
 
   await myDAO.add_note_from_participant({
@@ -647,8 +702,8 @@ async function populate() {
     eventId: jazz.id,
     targetId: leopaul.id,
     value: 3,
-    title: "super lp",
-    comment: "ouiiii",
+    title: "Super soirée avec LP",
+    comment: "bli bla blou",
   });
 
   await myDAO.add_note_from_host({
@@ -666,7 +721,6 @@ async function populate() {
     value: 4,
     title: "avis1",
   });
-
 
   // await myDAO.add_note_from_participant({
   //   creationDate: "2024-04-22T12:30:00.000Z",
